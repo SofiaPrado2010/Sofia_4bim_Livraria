@@ -1,0 +1,235 @@
+
+:root {
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;
+    --bege: #fff8f5;
+    --vinho: #674257;
+    --marrom: #a66b18;
+    --rosinha: #f2c6dc;
+    --branco: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bege);
+    color: var(--vinho);
+    min-height: 100vh;
+}
+
+/* Cabeçalho */
+
+header {
+    background: linear-gradient(to right, #fce88f, #f15098, #fce88f);
+    color: var(--branco);
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-bottom: 4px solid var(--laranja-claro);
+}
+
+header h1 {
+    color: var(--branco);
+    font-family: Georgia, serif;
+    font-size: 2rem;
+}
+
+/* Conteúdo principal */
+
+main {
+    width: 96%;
+    max-width: 1600px;
+    margin: 30px auto;
+}
+
+/* Seções */
+
+.form-section,
+.list-section {
+    background-color: var(--branco);
+    border: 1px solid var(--rosinha);
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(103, 66, 87, 0.08);
+}
+
+h2 {
+    color: var(--rosa-escuro);
+    font-family: Georgia, serif;
+    margin-bottom: 20px;
+}
+
+/* Busca */
+
+.search-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-container label {
+    font-weight: bold;
+}
+
+input,
+select {
+    padding: 10px;
+    border: 1px solid var(--rosinha);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--cor-texto);
+    background-color: var(--branco);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 0 5px rgba(228, 79, 156, 0.3);
+}
+
+/* Campos do formulário */
+
+fieldset {
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+legend {
+    color: var(--cor-primaria);
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+/* Botões */
+
+button {
+    background-color: var(--laranja-claro);
+    box-shadow: 0 0 10px var(--laranja-claro);
+    color: var(--vinho);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: var(--laranja-escuro);
+    box-shadow: 0 0 10px rgba(252, 191, 20, 0.5);
+    transform: translateY(-2px);
+}
+
+#btExcluir {
+    background-color: #c94b68;
+    box-shadow: 0 0 15px rgba(251, 87, 133, 0.8);
+    color: white;
+}
+
+/* Botão salvar */
+#btSalvar {
+    background-color: #55804b;
+    box-shadow: 0 0 15px rgba(85, 128, 75, 0.8);
+    color: white;
+}
+
+/* Botão cancelar */
+#btCancelar {
+    background-color: #927d89;
+    box-shadow: 0 0 15px rgba(146, 125, 137, 0.8);
+    color: white;
+}
+
+/* Tabela */
+
+#outputSaida {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#outputSaida table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#outputSaida th,
+#outputSaida td {
+    border: 1px solid var(--cor-borda);
+    padding: 12px;
+    text-align: center;
+}
+
+#outputSaida th {
+    background-color: var(--cor-rosa-claro);
+    color: var(--cor-texto);
+}
+
+#outputSaida tr:nth-child(even) {
+    background-color: #fff4fa;
+}
+
+#outputSaida tr:hover {
+    background-color: #ffe5f2;
+}
+
+/* Rodapé */
+
+footer {
+    background-color: var(--rosa-escuro);
+    color: white;
+    text-align: center;
+    padding: 18px;
+    border-top: 4px solid var(--laranja-claro);
+    margin-top: 30px;
+}
+
+/* Responsividade */
+
+@media (max-width: 700px) {
+    main {
+        width: 94%;
+    }
+
+    .form-section,
+    .list-section {
+        padding: 15px;
+    }
+
+    .search-container {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .search-container input,
+    .search-container button {
+        width: 100%;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+}

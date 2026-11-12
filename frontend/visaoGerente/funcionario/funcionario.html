@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD - Funcionários</title>
+    <link rel="stylesheet" href="./funcionario.css">
+</head>
+
+<body onload="listar()">
+
+    <header>
+        <h1>Cadastro de Funcionários</h1>
+    </header>
+
+    <main>
+
+        <section class="form-section">
+            <h2>Dados do Funcionário</h2>
+
+            <div class="search-container">
+                <label for="inputCpf">Buscar por CPF:</label>
+                <input type="text" id="inputCpf" maxlength="11" placeholder="Digite o CPF do funcionário">
+
+                <button type="button" id="btBuscar">Buscar</button>
+                <button type="button" id="btIncluir">Incluir</button>
+                <button type="button" id="btAlterar">Alterar</button>
+                <button type="button" id="btExcluir">Excluir</button>
+                <button type="button" id="btSalvar">Salvar</button>
+                <button type="button" id="btCancelar">Cancelar</button>
+            </div>
+
+            <fieldset id="dadosPessoais">
+                <legend>Dados pessoais</legend>
+
+                <div class="form-group">
+                    <label for="inputNome">Nome:</label>
+                    <input type="text" id="inputNome">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDataNascimento">Data de nascimento:</label>
+                    <input type="date" id="inputDataNascimento">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEndereco">Endereço:</label>
+                    <input type="text" id="inputEndereco">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputUsuario">Usuário:</label>
+                    <input type="text" id="inputUsuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputSenha">Senha:</label>
+                    <input type="password" id="inputSenha">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">E-mail:</label>
+                    <input type="email" id="inputEmail">
+                </div>
+            </fieldset>
+
+            <fieldset id="dadosProfissionais">
+                <legend>Dados profissionais</legend>
+
+                <div class="form-group">
+                    <label for="selectCargo">Cargo:</label>
+                    <select id="selectCargo">
+                        <option value="">Selecione um cargo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDataContratacao">Data de contratação:</label>
+                    <input type="date" id="inputDataContratacao">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputSalario">Salário:</label>
+                    <input type="number" id="inputSalario" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputComissao">Comissão (%):</label>
+                    <input type="number" id="inputComissao" step="0.01">
+                </div>
+            </fieldset>
+
+        </section>
+
+        <section class="list-section">
+            <h2>Funcionários cadastrados</h2>
+
+            <div id="outputSaida">
+                <!-- A lista será carregada pelo JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Livraria Virtual</p>
+    </footer>
+
+    <script src="./funcionario.js"></script>
+
+</body>
+
+</html>
