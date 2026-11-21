@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pedidos - Entre Páginas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="pedidos.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="titulo">
+            <h1>Entre Páginas</h1>
+            <p>Toda página guarda um novo universo</p>
+        </div>
+    </header>
+
+    <main>
+
+        <div class="cabecalho-pedidos">
+            <div>
+                <span>SEU CANTINHO DE LEITURAS</span>
+                <h2>Meus pedidos</h2>
+                <p>Acompanhe suas compras e reveja os detalhes de cada pedido.</p>
+            </div>
+
+            <button id="btVoltar">
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar à loja
+            </button>
+        </div>
+
+        <!-- HISTÓRICO DE PEDIDOS -->
+        <section id="listaPedidos" class="lista-pedidos">
+
+            <p class="mensagem">Carregando seus pedidos...</p>
+
+        </section>
+
+        <!-- DETALHES DO PEDIDO -->
+        <section id="detalhesPedido" class="detalhes-pedido" style="display: none;">
+
+            <div class="cabecalho-detalhes">
+                <h2>Detalhes do pedido</h2>
+
+                <button id="btFecharDetalhes" title="Fechar detalhes">
+                    ✕
+                </button>
+            </div>
+
+            <div id="conteudoDetalhes"></div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Entre Páginas - Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="pedidos.js"></script>
+
+</body>
+
+</html>

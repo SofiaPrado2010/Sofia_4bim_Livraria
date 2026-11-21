@@ -1,0 +1,160 @@
+/* CATÁLOGO */
+.catalogo {
+    width: 100%;
+    text-align: center;
+}
+
+.catalogo h2 {
+    font-family: Georgia, serif;
+    color: #E91E91;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+#listaLivros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
+    width: 100%;
+}
+
+/* CARTÕES DOS LIVROS */
+.card-livro {
+    background-color: white;
+    border: 1px solid #F7E3E9;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.card-livro:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(233, 30, 145, 0.10);
+}
+
+.card-livro img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+.card-livro h3 {
+    font-family: Georgia, serif;
+    color: #593B4B;
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.card-livro p {
+    color: #806B76;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+/* DETALHES DO LIVRO */
+.detalhes-livro {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(50, 30, 40, 0.55);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.janela-detalhes {
+    position: relative;
+    background-color: #FFF9EF;
+    width: 750px;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* BOTÃO ADICIONAR AO CARRINHO */
+#btAdicionarCarrinho {
+    background-color: #E91E91;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 12px 20px;
+    margin: 15px auto 0;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+    display: block;
+}
+
+#btAdicionarCarrinho:hover {
+    background-color: #C21875;
+}
+
+/* QUANTIDADE */
+#quantidadeLivro {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #F7C5DC;
+    border-radius: 6px;
+    background-color: white;
+    color: #593B4B;
+    font-size: 15px;
+    outline: none;
+}
+
+#quantidadeLivro:focus {
+    border-color: #E91E91;
+}
+
+/* FECHAR DETALHES */
+#btFecharDetalhes {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #593B4B;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#btFecharDetalhes:hover {
+    color: #E91E91;
+}
+
+/* ORGANIZAÇÃO DOS DETALHES */
+.detalhe-livro {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.detalhe-livro img {
+    width: 230px;
+    max-width: 40%;
+    object-fit: contain;
+}
+
+.detalhe-livro h2 {
+    color: #E91E91;
+}
+
+@media (max-width: 600px) {
+    .detalhe-livro {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detalhe-livro img {
+        max-width: 100%;
+    }
+}

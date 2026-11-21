@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Entre Páginas</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Entre Páginas</h1>
+        <p>UM UNIVERSO DE HISTÓRIAS</p>
+    </header>
+
+    <main>
+
+        <section class="login">
+
+            <h2>Bem-vindo de volta!</h2>
+
+            <p>Entre na sua conta para continuar explorando nossas histórias.</p>
+
+            <form id="formLogin">
+
+                <div class="campo">
+                    <label for="usuario">Nome de usuário</label>
+                    <input type="text" id="usuario" placeholder="Digite seu nome de usuário" required>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                </div>
+
+                <button type="submit" id="btEntrar">
+                    Entrar
+                </button>
+
+                <p id="mensagem"></p>
+
+            </form>
+
+            <div id="escolhaArea" class="escolha-area" hidden>
+
+                <h2>Como deseja entrar no site?</h2>
+                <p>Escolha a área que deseja acessar:</p>
+
+                <button type="button" id="btFuncionario">
+                    Funcionário
+                </button>
+
+                <button type="button" id="btCliente">
+                    Cliente
+                </button>
+
+            </div>
+
+            <p class="cadastro">
+                Não possui uma conta?
+                <a href="../cadastro/cadastro.html">Cadastre-se</a>
+            </p>
+            
+            <div class="esqueci-senha">
+                <a href="esqueciSenha.html">Esqueci minha senha</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>

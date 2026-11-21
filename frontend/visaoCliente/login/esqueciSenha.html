@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar senha | Entre Páginas</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Entre Páginas</h1>
+        <p>UM UNIVERSO DE HISTÓRIAS</p>
+    </header>
+
+    <main>
+
+        <section class="login">
+
+            <h2>Esqueceu sua senha?</h2>
+
+            <p>
+                Informe o e-mail cadastrado na sua conta.
+                Enviaremos um link para você criar uma nova senha.
+            </p>
+
+            <form id="formRecuperacao">
+
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Digite seu e-mail"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="btEntrar">
+                    Enviar link de recuperação
+                </button>
+
+                <p id="mensagem"></p>
+
+            </form>
+
+            <p class="cadastro">
+                <a href="login.html">Voltar para o login</a>
+            </p>
+
+        </section>
+
+    </main>
+
+    <script src="esqueciSenha.js"></script>
+
+</body>
+
+</html>

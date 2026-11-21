@@ -1,0 +1,225 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fffaf3;
+    font-family: Georgia, serif;
+    color: #4e342e;
+}
+
+/* CABEÇALHO */
+header {
+    background: linear-gradient(to right, #ffed9e, #ffc8e1, #ffed9e);
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    color: #ed1685;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #80665e;
+    font-size: 12px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 65vh;
+    padding: 35px 20px;
+}
+
+/* FORMULÁRIO */
+.login {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    border: 1px solid #f7dce8;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(78, 52, 46, 0.08);
+}
+
+.login h2 {
+    text-align: center;
+    color: #ed1685;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.login>p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #80665e;
+}
+
+/* CAMPOS */
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.campo label {
+    font-weight: bold;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.campo input {
+    padding: 12px;
+    border: 1px solid #f2d5e2;
+    border-radius: 7px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    outline: none;
+    background-color: #fffdfd;
+    color: #4e342e;
+    transition: 0.3s;
+}
+
+.campo input:focus {
+    border-color: #ed1685;
+    box-shadow: 0 0 5px rgba(237, 22, 133, 0.15);
+}
+
+/* BOTÃO */
+#btEntrar {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 20px;
+    background-color: #E91E91;
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(255, 47, 179, 0.615);
+}
+
+#btEntrar:hover {
+    background-color: #c91070;
+}
+
+/* MENSAGEM */
+#mensagem {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* LINK DE CADASTRO */
+.cadastro {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.cadastro a {
+    color: #ed1685;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.cadastro a:hover {
+    text-decoration: underline;
+}
+
+.esqueci-senha {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.esqueci-senha a {
+    color: #ed1685;
+    text-decoration: none;
+    text-align: center;
+}
+
+.esqueci-senha a:hover {
+    text-decoration: underline;
+}
+
+/* ESCOLHA DA ÁREA */
+
+.escolha-area {
+    margin-top: 25px;
+    text-align: center;
+    border-top: 1px solid #f7dce8;
+    padding-top: 25px;
+}
+
+.escolha-area h2 {
+    color: #ed1685;
+    font-size: 23px;
+    margin-bottom: 10px;
+}
+
+.escolha-area p {
+    color: #80665e;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.escolha-area button {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 20px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btFuncionario {
+    background-color: #E91E91;
+    color: white;
+    box-shadow: 0 0 8px rgba(255, 47, 179, 0.3);
+}
+
+#btFuncionario:hover {
+    background-color: #c91070;
+}
+
+#btCliente {
+    background-color: #ffed9e;
+    color: #4e342e;
+}
+
+#btCliente:hover {
+    background-color: #f5dc7c;
+}
+
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+    main {
+        padding: 25px 15px;
+    }
+
+    .login {
+        padding: 25px 20px;
+    }
+
+    header h1 {
+        font-size: 26px;
+    }
+}

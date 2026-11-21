@@ -1,0 +1,133 @@
+
+/* CARRINHO */
+.carrinho {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 400px;
+    max-width: 100%;
+    height: 100vh;
+    background-color: #ffffff;
+    z-index: 1000;
+    padding: 25px;
+    box-shadow: -3px 0 15px rgba(0, 0, 0, 0.15);
+    transition: right 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.carrinho.aberto {
+    right: 0;
+}
+
+/* CABEÇALHO */
+.cabecalho-carrinho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0c5d8;
+}
+
+.cabecalho-carrinho h2 {
+    font-family: Georgia, serif;
+    color: #593B4B;
+}
+
+.cabecalho-carrinho button {
+    border: none;
+    background: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ITENS */
+#itensCarrinho {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+.item-carrinho {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0c5d8;
+}
+
+.item-carrinho img {
+    width: 65px;
+    height: 90px;
+    object-fit: cover;
+}
+
+.info-item {
+    flex: 1;
+}
+
+.info-item h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.info-item p {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.info-item input {
+    width: 55px;
+    padding: 5px;
+}
+
+.btRemover {
+    background-color: transparent;
+    color: #C05B8B;
+    border: 1px solid #E8A9C5;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.btRemover:hover {
+    background-color: #FCE4EF;
+    color: #A51B60;
+}
+
+/* RODAPÉ */
+.rodape-carrinho {
+    border-top: 1px solid #f0c5d8;
+    padding-top: 20px;
+}
+
+.rodape-carrinho h3 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.rodape-carrinho button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#btComprar {
+    background-color: #E91E91;
+    color: white;
+}
+
+#btCancelar {
+    background-color: #FCE4EF;
+    color: #593B4B;
+}

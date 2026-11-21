@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entre Páginas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="livro/livro.css">
+    <link rel="stylesheet" href="carrinho/carrinho.css">
+</head>
+
+<body>
+    <div class="pagina">
+        <!-- BARRA LATERAL -->
+        <aside class="barra-lateral">
+            <h2>Categorias</h2>
+
+            <section>
+                <h3>Gêneros</h3>
+                <div id="filtroGenero"></div>
+            </section>
+
+            <section>
+                <h3>Tipo de capa</h3>
+                <div id="filtroCapa"></div>
+            </section>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main>
+
+            <!-- CABEÇALHO -->
+            <header>
+                <div class="titulo">
+                    <h1>Entre Páginas</h1>
+                    <p>Toda página guarda um novo universo</p>
+                </div>
+
+                <div class="botoes-cabecalho">
+                    <div id="areaUsuario">
+                        <button id="btLogin">Login</button>
+                    </div>
+                    <button id="btCarrinho" title="Carrinho">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- TELA INICIAL -->
+            <section id="telaInicial">
+                <section class="apresentacao">
+
+                    <!-- IMAGENS DO CARROSSEL -->
+                    <div class="carrossel">
+                        <img src="http://localhost:3001/fundos/fundo1.png" class="imagem ativa">
+                        <img src="http://localhost:3001/fundos/fundo2.png" class="imagem">
+                    </div>
+
+                    <!-- CONTEÚDO DA APRESENTAÇÃO -->
+                    <div class="conteudo-apresentacao">
+                        <span>UM UNIVERSO DE HISTÓRIAS</span>
+                        <h2>Encontre sua próxima leitura</h2>
+                        <p>Explore histórias, descubra novos autores e encontre livros para todos os momentos.</p>
+                        <button id="btExplorar">Explore nossos livros</button>
+                    </div>
+
+                </section>
+            </section>
+
+            <!-- TELA DO CATÁLOGO -->
+            <section id="telaCatalogo" style="display: none;">
+
+                <section class="pesquisa">
+                    <input type="text" id="inputPesquisa" placeholder="Pesquise pelo nome do livro ou autor">
+                </section>
+
+                <section class="catalogo">
+                    <h2>Nossos livros</h2>
+                    <div id="listaLivros"></div>
+                </section>
+
+            </section>
+
+            <!-- DETALHES DO LIVRO -->
+            <section id="detalhesLivro" class="detalhes-livro">
+                <div class="janela-detalhes">
+                    <button id="btFecharDetalhes">✕</button>
+                    <div id="conteudoDetalhes"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- CARRINHO -->
+        <aside id="carrinho" class="carrinho">
+
+            <div class="cabecalho-carrinho">
+                <h2>Meu carrinho 🛒</h2>
+                <button id="btFecharCarrinho">✕</button>
+            </div>
+
+            <div id="itensCarrinho">
+                <!-- Os livros serão adicionados aqui -->
+            </div>
+
+            <div class="rodape-carrinho">
+                <h3>Total: <span id="totalCarrinho">R$ 0,00</span></h3>
+
+                <button id="btComprar">Comprar</button>
+                <button id="btCancelar">Cancelar</button>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <p>© 2026 Entre Páginas - Todos os direitos reservados.</p>
+    </footer>
+
+
+    <div id="avisoCookies" class="aviso-cookies">
+
+        <div class="texto-cookies">
+            <h3>🍪 Sua privacidade é importante!</h3>
+
+            <p>
+                Este site utiliza cookies para manter sua sessão de login
+                e proporcionar uma melhor experiência durante a navegação.
+            </p>
+        </div>
+
+        <button id="btAceitarCookies">Entendi</button>
+
+    </div>
+
+
+    <script type="module" src="index.js"></script>
+
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3001';
+const URL_API = 'http://127.0.0.1:3001';
 const SILHUETA_URL = `${URL_API}/imagens/silhueta.png`;
 
 let oQueEstaFazendo = '';
@@ -82,8 +82,8 @@ async function procurePorChavePrimaria(chave) {
 
 async function procure() {
     const id_livro = document.getElementById("inputId_livro").value;
-    if (isNaN(id_livro) || !Number.isInteger(Number(id_livro)) || id_livro === "") {
-        mostrarAviso("Por favor digite um número inteiro");
+    if (isNaN(id_livro) || !Number.isInteger(Number(id_livro)) || id_livro === "" || id_livro < 0) {
+        mostrarAviso("Por favor digite um número inteiro positivo");
         return;
     }
 
@@ -160,7 +160,6 @@ async function salvar() {
         mostrarAviso("Erro ao efetuar operação no servidor.");
     }
 }
-
 
 async function listar() {
     try {

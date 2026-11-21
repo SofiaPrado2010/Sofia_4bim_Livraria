@@ -1,0 +1,283 @@
+/* CONFIGURAÇÕES GERAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fffbf3;
+    color: #593B4B;
+    font-family: Arial, sans-serif;
+}
+
+/* CABEÇALHO */
+header {
+    padding: 25px;
+    text-align: center;
+    background-color: #FCE4EF;
+    border-bottom: 3px solid #f7c5dc;
+}
+
+.titulo h1 {
+    font-family: Georgia, serif;
+    font-size: 42px;
+    color: #e91e87;
+}
+
+.titulo p {
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+main {
+    width: 90%;
+    max-width: 1100px;
+    min-height: 75vh;
+    margin: 45px auto;
+}
+
+/* APRESENTAÇÃO DOS PEDIDOS */
+.cabecalho-pedidos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.cabecalho-pedidos span {
+    color: #e91e87;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.cabecalho-pedidos h2 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    margin: 12px 0;
+}
+
+.cabecalho-pedidos p {
+    color: #765968;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* BOTÕES */
+button {
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+#btVoltar {
+    background-color: #E91E91;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#btVoltar:hover {
+    background-color: #C91678;
+}
+
+/* LISTA DE PEDIDOS */
+.lista-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pedido-card {
+    background-color: white;
+    border: 1px solid #F7C5DC;
+    border-radius: 15px;
+    padding: 23px;
+    box-shadow: 0 3px 12px rgba(246, 102, 181, 0.12);
+}
+
+.informacoes-pedido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.numero-pedido {
+    color: #e91e87;
+    font-family: Georgia, serif;
+    font-size: 21px;
+    margin-bottom: 10px;
+}
+
+.informacoes-pedido p {
+    color: #765968;
+    font-size: 14px;
+    margin-top: 7px;
+}
+
+.valor-pedido {
+    font-size: 19px;
+    font-weight: bold;
+    color: #593B4B;
+}
+
+.status-pedido {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    background-color: #FCE4EF;
+    color: #a31961;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btDetalhes {
+    background-color: #E91E91;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-top: 18px;
+}
+
+.btDetalhes:hover {
+    background-color: #C91678;
+}
+
+/* MENSAGENS */
+.mensagem {
+    background-color: white;
+    border: 1px solid #F7C5DC;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    line-height: 1.7;
+    color: #765968;
+}
+
+/* DETALHES DO PEDIDO */
+.detalhes-pedido {
+    background-color: white;
+    border: 1px solid #F7C5DC;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 35px;
+    box-shadow: 0 3px 12px rgba(246, 102, 181, 0.12);
+}
+
+.cabecalho-detalhes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.cabecalho-detalhes h2 {
+    font-family: Georgia, serif;
+    color: #e91e87;
+}
+
+#btFecharDetalhes {
+    background: none;
+    color: #e91e87;
+    font-size: 23px;
+}
+
+#btFecharDetalhes:hover {
+    color: #C91678;
+}
+
+/* INFORMAÇÕES GERAIS */
+.bloco-detalhes {
+    margin-bottom: 25px;
+}
+
+.bloco-detalhes h3 {
+    font-family: Georgia, serif;
+    color: #a31961;
+    font-size: 19px;
+    margin-bottom: 13px;
+}
+
+.bloco-detalhes p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #593B4B;
+}
+
+/* LIVROS */
+.item-livro {
+    padding: 15px;
+    border: 1px solid #F7C5DC;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.item-livro h4 {
+    color: #593B4B;
+    margin-bottom: 8px;
+}
+
+.item-livro p {
+    font-size: 13px;
+}
+
+/* TOTAL */
+.total-detalhes {
+    border-top: 1px solid #F7C5DC;
+    padding-top: 18px;
+    text-align: right;
+    font-size: 21px;
+    font-weight: bold;
+    color: #e91e87;
+}
+
+/* RODAPÉ */
+footer {
+    background-color: #d8538f;
+    color: white;
+    padding: 35px 5%;
+    text-align: center;
+    border-top: 4px solid #e5a900;
+}
+
+footer p {
+    font-size: 13px;
+}
+
+/* TELAS MENORES */
+@media (max-width: 650px) {
+
+    main {
+        width: 92%;
+        margin: 30px auto;
+    }
+
+    .titulo h1 {
+        font-size: 34px;
+    }
+
+    .cabecalho-pedidos {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .informacoes-pedido {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pedido-card,
+    .detalhes-pedido {
+        padding: 18px;
+    }
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha conta - Entre Páginas</title>
+
+    <link rel="stylesheet" href="informacoes.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Entre Páginas</h1>
+        <p>Minhas informações</p>
+    </header>
+
+    <main>
+        <section class="informacoes">
+
+            <h2>Informações da conta</h2>
+
+            <div class="dados">
+
+                <div class="campo">
+                    <label>Nome:</label>
+                    <span id="nome"></span>
+                    <input type="text" id="inputNome" hidden>
+                </div>
+
+                <div class="campo">
+                    <label>CPF:</label>
+                    <span id="cpf"></span>
+                </div>
+
+                <div class="campo">
+                    <label>Data de nascimento:</label>
+                    <span id="dataNascimento"></span>
+                    <input type="date" id="inputDataNascimento" hidden>
+                </div>
+
+                <div class="campo">
+                    <label>Endereço:</label>
+                    <span id="endereco"></span>
+                    <input type="text" id="inputEndereco" hidden>
+                </div>
+
+                <div class="campo">
+                    <label>Cidade:</label>
+                    <span id="cidade"></span>
+                    <input type="text" id="inputCidade" hidden>
+                </div>
+
+                <div class="campo">
+                    <label>Estado:</label>
+                    <span id="estado"></span>
+                    <input type="text" id="inputEstado" maxlength="2" hidden>
+                </div>
+
+                <div class="campo">
+                    <label>Usuário:</label>
+                    <span id="usuario"></span>
+                </div>
+
+                <div class="campo">
+                    <label>E-mail:</label>
+                    <span id="email"></span>
+                    <input type="email" id="inputEmail" hidden>
+                </div>
+
+            </div>
+
+            <button id="btAlterar">Alterar informações</button>
+            <button id="btSalvar" hidden>Salvar alterações</button>
+            <button id="btCancelar" hidden>Cancelar</button>
+            <button id="btVoltar">Voltar à loja</button>
+        </section>
+
+    </main>
+
+    <script src="informacoes.js"></script>
+
+</body>
+
+</html>

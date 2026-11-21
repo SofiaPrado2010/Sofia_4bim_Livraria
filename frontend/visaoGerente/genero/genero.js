@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3001';
+const URL_API = 'http://127.0.0.1:3001';
 
 let oQueEstaFazendo = '';
 let genero = null;
@@ -16,8 +16,8 @@ async function procurePorChavePrimaria(chave) {
 
 async function procure() {
     const id_genero = document.getElementById("inputId_genero").value.trim().toUpperCase();
-    if (isNaN(id_genero) || !Number.isInteger(Number(id_genero)) || id_genero === "") {
-        mostrarAviso("Por favor digite um número inteiro");
+    if (isNaN(id_genero) || !Number.isInteger(Number(id_genero)) || id_genero === "" || id_genero < 0) {
+        mostrarAviso("Por favor digite um número inteiro positivo");
         return;
     }
 

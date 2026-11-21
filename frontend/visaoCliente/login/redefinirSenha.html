@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova senha | Entre Páginas</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <header>
+        <h1>Entre Páginas</h1>
+        <p>UM UNIVERSO DE HISTÓRIAS</p>
+    </header>
+
+    <main>
+        <section class="login">
+
+            <h2>Crie uma nova senha</h2>
+
+            <p>
+                Escolha uma nova senha para acessar sua conta.
+            </p>
+
+            <form id="formRedefinirSenha">
+
+                <div class="campo">
+                    <label for="novaSenha">Nova senha</label>
+                    <input
+                        type="password"
+                        id="novaSenha"
+                        placeholder="Digite sua nova senha"
+                        minlength="8"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="confirmarSenha">Confirmar nova senha</label>
+                    <input
+                        type="password"
+                        id="confirmarSenha"
+                        placeholder="Digite novamente sua senha"
+                        minlength="8"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="btEntrar">
+                    Redefinir senha
+                </button>
+
+                <p id="mensagem"></p>
+
+            </form>
+
+            <p class="cadastro">
+                <a href="login.html">Voltar para o login</a>
+            </p>
+
+        </section>
+    </main>
+
+    <script src="redefinirSenha.js"></script>
+
+</body>
+
+</html>

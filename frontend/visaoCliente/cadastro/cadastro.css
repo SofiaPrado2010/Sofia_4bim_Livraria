@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fffaf3;
+    font-family: Georgia, serif;
+    color: #4e342e;
+}
+
+/* CABEÇALHO */
+header {
+    background:linear-gradient(to right, #ffed9e, #ffc8e1, #ffed9e);
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    color: #ed1685;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #80665e;
+    font-size: 12px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+main {
+    display: flex;
+    justify-content: center;
+    padding: 35px 20px;
+}
+
+/* FORMULÁRIO */
+
+.cadastro {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 750px;
+    padding: 35px;
+    border: 1px solid #f7dce8;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(78, 52, 46, 0.08);
+}
+
+.cadastro h2 {
+    text-align: center;
+    color: #ed1685;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.cadastro > p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #80665e;
+}
+
+/* CAMPOS */
+#formCadastro {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    font-weight: bold;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.campo input {
+    padding: 12px;
+    border: 1px solid #f2d5e2;
+    border-radius: 7px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    outline: none;
+    background-color: #fffdfd;
+    color: #4e342e;
+    transition: 0.3s;
+}
+
+.campo input:focus {
+    border-color: #ed1685;
+    box-shadow: 0 0 5px rgba(237, 22, 133, 0.15);
+}
+
+/* BOTÃO */
+
+#btCadastrar {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 20px;
+    background-color: #E91E91;
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(255, 47, 179, 0.615);
+}
+
+#btCadastrar:hover {
+    background-color: #c91070;
+}
+
+/* MENSAGEM */
+
+#mensagem {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* RODAPÉ */
+footer {
+    background-color: #d8538f;
+    color: white;
+    padding: 60px 5%;
+    border-top: 4px solid #e5a900;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 600px) {
+    main {
+        padding: 25px 15px;
+    }
+
+    .cadastro {
+        padding: 25px 20px;
+    }
+
+    #formCadastro {
+        grid-template-columns: 1fr;
+    }
+
+    #btCadastrar,
+    #mensagem {
+        grid-column: span 1;
+    }
+}

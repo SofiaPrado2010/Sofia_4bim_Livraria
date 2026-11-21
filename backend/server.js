@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const session = require('express-session');
 
 // Importa a função de consulta do banco
 const { query } = require('./database');
@@ -14,15 +15,31 @@ const pessoaRoutes = require('./routes/pessoaRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 const funcionarioRoutes = require('./routes/funcionarioRoutes');
 const forma_pagamentoRoutes = require('./routes/forma_pagamentoRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const pedidoRoutes = require('./routes/pedidoRoutes');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    credentials: true
+}));
 app.use(express.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 1000 * 60 * 60
+    }
+}));
 
 // Servir imagens estáticas
 app.use('/imagens', express.static(path.join(__dirname, '../imagens')));
-
+app.use('/fundos', express.static(path.join(__dirname, '../fundos')));
 // Definir Rotas
 app.use('/cargo', cargoRoutes);
 app.use('/genero', generoRoutes);
@@ -31,6 +48,8 @@ app.use('/pessoa', pessoaRoutes);
 app.use('/cliente', clienteRoutes);
 app.use('/funcionario', funcionarioRoutes);
 app.use('/forma_pagamento', forma_pagamentoRoutes);
+app.use('/login', loginRoutes);
+app.use('/pedido', pedidoRoutes);
 
 
 const PORT = process.env.PORT || 3001;

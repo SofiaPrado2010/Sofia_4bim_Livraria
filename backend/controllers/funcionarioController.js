@@ -1,8 +1,11 @@
-const { query } = require('../database');
+const { query, pool } = require('../database');
+const bcrypt = require('bcrypt');
 const path = require('path');
 
+// Abrir CRUD de Funcionários
 exports.abrirCrudFuncionario = (req, res) => {
   const usuario = req.cookies ? req.cookies.usuarioLogado : null;
+
   if (usuario) {
     res.sendFile(path.join(__dirname, '../../frontend/funcionario/funcionario.html'));
   } else {
@@ -10,127 +13,289 @@ exports.abrirCrudFuncionario = (req, res) => {
   }
 };
 
+// Listar Funcionários
 exports.listarFuncionarios = async (req, res) => {
   try {
     const result = await query(
-      'SELECT f.cpf_pessoa, p.nome_pessoa, f.salario, f.id_cargo, f.porcentagem_comissao_funcionario ' +
-      'FROM funcionarios f, pessoas p WHERE f.cpf_pessoa = p.cpf_pessoa ORDER BY f.cpf_pessoa'
+      'SELECT f.cpf_funcionario, p.nome_pessoa, f.id_cargo, ' +
+      'f.data_contratacao, f.salario, f.porcentagem_comissao_funcionario ' +
+      'FROM funcionario f, pessoa p ' +
+      'WHERE f.cpf_funcionario = p.cpf_pessoa ' +
+      'ORDER BY f.cpf_funcionario'
     );
+
     res.json({ sucesso: true, funcionarios: result.rows });
+
   } catch (error) {
     console.error('Erro ao listar funcionários:', error);
     res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor' });
   }
 };
 
-exports.criarFuncionario = async (req, res) => {
-  try {
-    const { cpf_pessoa, salario, id_cargo, porcentagem_comissao_funcionario } = req.body;
+// Criar Funcionário
 
-    if (!salario) {
+exports.criarFuncionario = async (req, res) => {
+  const conexao = await pool.connect();
+
+  try {
+    const {
+      cpf_pessoa,
+      nome_pessoa,
+      data_nascimento_pessoa,
+      endereco_pessoa,
+      usuario_pessoa,
+      senha_pessoa,
+      email_pessoa,
+      id_cargo,
+      data_contratacao,
+      salario,
+      porcentagem_comissao_funcionario
+    } = req.body;
+
+    if (
+      !cpf_pessoa ||
+      !nome_pessoa ||
+      !data_nascimento_pessoa ||
+      !endereco_pessoa ||
+      !usuario_pessoa ||
+      !senha_pessoa ||
+      !email_pessoa ||
+      !id_cargo ||
+      !data_contratacao ||
+      !salario
+    ) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'O salário do funcionário é obrigatório'
+        mensagem: 'Preencha todos os campos obrigatórios'
       });
     }
 
-    const result = await query(
-      'INSERT INTO funcionarios (cpf_pessoa, salario, id_cargo, porcentagem_comissao_funcionario) VALUES ($1, $2, $3, $4) RETURNING *',
-      [cpf_pessoa, salario, id_cargo, porcentagem_comissao_funcionario]
+    const senhaCriptografada = await bcrypt.hash(senha_pessoa, 10);
+
+    await conexao.query('BEGIN');
+
+    await conexao.query(
+      `INSERT INTO pessoa
+            (cpf_pessoa, nome_pessoa, data_nascimento_pessoa,
+            endereco_pessoa, usuario_pessoa, senha_pessoa, email_pessoa)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        cpf_pessoa,
+        nome_pessoa,
+        data_nascimento_pessoa,
+        endereco_pessoa,
+        usuario_pessoa,
+        senhaCriptografada,
+        email_pessoa
+      ]
     );
 
-    res.status(201).json({ sucesso: true, funcionario: result.rows[0] });
+    const result = await conexao.query(
+      `INSERT INTO funcionario
+            (cpf_funcionario, id_cargo, data_contratacao,
+            salario, porcentagem_comissao_funcionario)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *`,
+      [
+        cpf_pessoa,
+        id_cargo,
+        data_contratacao,
+        salario,
+        porcentagem_comissao_funcionario || 0
+      ]
+    );
+
+    await conexao.query('COMMIT');
+
+    res.status(201).json({
+      sucesso: true,
+      mensagem: 'Funcionário cadastrado com sucesso!',
+      funcionario: result.rows[0]
+    });
+
   } catch (error) {
+    await conexao.query('ROLLBACK');
+
     console.error('Erro ao criar funcionário:', error);
 
-    if (error.code === '23502') {
+    if (error.code === '23505') {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'Dados obrigatórios não fornecidos'
+        mensagem: 'CPF, usuário ou e-mail já cadastrado'
       });
     }
 
-    res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor' });
+    if (error.code === '23503') {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'Cargo não encontrado'
+      });
+    }
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem: 'Erro interno do servidor'
+    });
+
+  } finally {
+    conexao.release();
   }
 };
 
+// Obter Funcionário
 exports.obterFuncionario = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const cpf = req.params.id;
 
-    if (isNaN(id)) {
-      return res.status(400).json({ sucesso: false, mensagem: 'ID deve ser um número válido' });
+    if (!cpf) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'CPF inválido'
+      });
     }
 
     const result = await query(
-      'SELECT * FROM funcionarios WHERE cpf_pessoa = $1',
-      [id]
+      'SELECT p.cpf_pessoa, p.nome_pessoa, p.data_nascimento_pessoa, ' +
+      'p.endereco_pessoa, p.usuario_pessoa, p.email_pessoa, ' +
+      'f.id_cargo, f.data_contratacao, f.salario, ' +
+      'f.porcentagem_comissao_funcionario ' +
+      'FROM pessoa p, funcionario f ' +
+      'WHERE p.cpf_pessoa = f.cpf_funcionario AND f.cpf_funcionario = $1',
+      [cpf]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Funcionário não encontrado' });
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: 'Funcionário não encontrado'
+      });
     }
 
     res.json({ sucesso: true, funcionario: result.rows[0] });
+
   } catch (error) {
     console.error('Erro ao obter funcionário:', error);
     res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor' });
   }
 };
 
+// Atualizar Funcionário
+
 exports.atualizarFuncionario = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const { salario, id_cargo, porcentagem_comissao_funcionario } = req.body;
+    const cpf = req.params.id;
 
-    const existingPersonResult = await query(
-      'SELECT * FROM funcionarios WHERE cpf_pessoa = $1',
-      [id]
-    );
+    const {
+      id_cargo,
+      data_contratacao,
+      salario,
+      porcentagem_comissao_funcionario
+    } = req.body;
 
-    if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Funcionário não encontrado' });
+    if (!cpf) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'CPF inválido'
+      });
     }
 
-    const currentFunc = existingPersonResult.rows[0];
-
-    const updatedFields = {
-      salario: salario !== undefined ? salario : currentFunc.salario,
-      id_cargo: id_cargo !== undefined ? id_cargo : currentFunc.id_cargo,
-      porcentagem_comissao_funcionario: porcentagem_comissao_funcionario !== undefined ? porcentagem_comissao_funcionario : currentFunc.porcentagem_comissao_funcionario
-    };
-
-    const updateResult = await query(
-      'UPDATE funcionarios SET salario = $1, id_cargo = $2, porcentagem_comissao_funcionario = $3 WHERE cpf_pessoa = $4 RETURNING *',
-      [updatedFields.salario, updatedFields.id_cargo, updatedFields.porcentagem_comissao_funcionario, id]
+    const funcionarioAtual = await query(
+      'SELECT * FROM funcionario WHERE cpf_funcionario = $1',
+      [cpf]
     );
 
-    res.json({ sucesso: true, funcionario: updateResult.rows[0] });
+    if (funcionarioAtual.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: 'Funcionário não encontrado'
+      });
+    }
+
+    const funcionario = funcionarioAtual.rows[0];
+
+    const cargoAtualizado = id_cargo !== undefined
+      ? id_cargo
+      : funcionario.id_cargo;
+
+    const dataAtualizada = data_contratacao !== undefined
+      ? data_contratacao
+      : funcionario.data_contratacao;
+
+    const salarioAtualizado = salario !== undefined
+      ? salario
+      : funcionario.salario;
+
+    const comissaoAtualizada = porcentagem_comissao_funcionario !== undefined
+      ? porcentagem_comissao_funcionario
+      : funcionario.porcentagem_comissao_funcionario;
+
+    const result = await query(
+      `UPDATE funcionario
+       SET id_cargo = $1,
+           data_contratacao = $2,
+           salario = $3,
+           porcentagem_comissao_funcionario = $4
+       WHERE cpf_funcionario = $5
+       RETURNING *`,
+      [
+        cargoAtualizado,
+        dataAtualizada,
+        salarioAtualizado,
+        comissaoAtualizada,
+        cpf
+      ]
+    );
+
+    res.json({
+      sucesso: true,
+      mensagem: 'Dados profissionais atualizados com sucesso!',
+      funcionario: result.rows[0]
+    });
+
   } catch (error) {
     console.error('Erro ao atualizar funcionário:', error);
-    res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor' });
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem: 'Erro interno do servidor'
+    });
   }
 };
 
+// Deletar Funcionário
 exports.deletarFuncionario = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const cpf = req.params.id;
 
-    const existingPersonResult = await query(
-      'SELECT * FROM funcionarios WHERE cpf_pessoa = $1',
-      [id]
+    if (!cpf) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'CPF inválido'
+      });
+    }
+
+    const existingFuncionario = await query(
+      'SELECT * FROM funcionario WHERE cpf_funcionario = $1',
+      [cpf]
     );
 
-    if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Funcionário não encontrado' });
+    if (existingFuncionario.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: 'Funcionário não encontrado'
+      });
     }
 
     await query(
-      'DELETE FROM funcionarios WHERE cpf_pessoa = $1',
-      [id]
+      'DELETE FROM funcionario WHERE cpf_funcionario = $1',
+      [cpf]
     );
 
-    res.json({ sucesso: true, mensagem: 'Funcionário excluído com sucesso' });
+    res.json({
+      sucesso: true,
+      mensagem: 'Funcionário excluído com sucesso'
+    });
+
   } catch (error) {
     console.error('Erro ao deletar funcionário:', error);
 

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001';
+const URL_API = 'http://127.0.0.1:3001';
 let currentPersonId = null;
 let operacao = null;
 

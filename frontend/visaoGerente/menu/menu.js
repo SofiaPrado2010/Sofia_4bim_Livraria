@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3001';
+const URL_API = 'http://127.0.0.1:3001';
 
 // Verifica a conexão com o servidor backend ao carregar a página
 document.addEventListener('DOMContentLoaded', async () => {

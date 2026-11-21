@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fffaf4;
+    font-family: Georgia, serif;
+    color: #4e342e;
+}
+
+/* Cabeçalho */
+header {
+    background: linear-gradient(90deg, #ffe89a, #ffc2d9, #ffe7a6);
+    padding: 12px;
+    text-align: center;
+}
+
+header h1 {
+    color: #ec1688;
+    font-size: 38px;
+    font-weight: bold;
+}
+
+header p {
+    color: #765b5b;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* Área principal */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 630px;
+}
+
+/* Cartão de informações */
+.informacoes {
+    background-color: white;
+    width: 100%;
+    max-width: 800px;
+    padding: 40px 45px;
+    border: 1px solid #f8d6e5;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.informacoes h2 {
+    color: #ec1688;
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Dados da pessoa */
+.dados p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f8e2eb;
+}
+
+.dados strong {
+    color: #4e342e;
+}
+
+.dados span {
+    color: #765b5b;
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 30px;
+    background-color: #ec1688;
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(236, 22, 136, 0.3);
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #cf1478;
+    transform: scale(1.02);
+}
+
+/* Rodapé */
+footer {
+    background-color: #cf4d91;
+    border-top: 4px solid #ffdc4b;
+    color: white;
+    padding: 45px 80px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 600px) {
+    .informacoes {
+        padding: 30px 20px;
+    }
+
+    .informacoes h2 {
+        font-size: 25px;
+    }
+
+    footer {
+        padding: 30px 20px;
+        text-align: center;
+    }
+}

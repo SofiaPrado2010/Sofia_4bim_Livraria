@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3001';
+const URL_API = 'http://127.0.0.1:3001';
 
 let oQueEstaFazendo = '';
 let forma_pagamento = null;
@@ -16,7 +16,7 @@ async function procurePorChavePrimaria(chave) {
 
 async function procure() {
     const id_forma_pagamento = document.getElementById("inputId_forma_pagamento").value.trim().toUpperCase();
-    if (isNaN(id_forma_pagamento) || !Number.isInteger(Number(id_forma_pagamento)) || id_forma_pagamento === "") {
+    if (isNaN(id_forma_pagamento) || !Number.isInteger(Number(id_forma_pagamento)) || id_forma_pagamento === "" || id_forma_pagamento < 0) {
         mostrarAviso("Por favor digite um número inteiro");
         return;
     }

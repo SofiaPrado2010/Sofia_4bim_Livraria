@@ -6,7 +6,15 @@ const pessoaController = require('../controllers/pessoaController');
 
 router.get('/abrirCrudPessoa', pessoaController.abrirCrudPessoa);
 router.get('/', pessoaController.listarPessoas);
+
 router.post('/', pessoaController.criarPessoa);
+router.post('/cadastroCliente', pessoaController.cadastrarCliente);
+
+// Informações da pessoa conectada
+router.get('/minhasInformacoes', pessoaController.minhasInformacoes);
+router.put('/minhasInformacoes', pessoaController.atualizarMinhasInformacoes);
+
+// Rotas que utilizam parâmetros devem ficar depois
 router.get('/:id', pessoaController.obterPessoa);
 router.put('/:id', pessoaController.atualizarPessoa);
 router.delete('/:id', pessoaController.deletarPessoa);
