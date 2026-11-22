@@ -4,64 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Principal - Livraira</title>
+    <title>Menu Principal - Entre Páginas</title>
     <link rel="stylesheet" href="menu.css">
 </head>
 
 <body>
-    <!-- Cabeçalho Semântico -->
+
     <header>
         <h1>Sistema Entre Páginas</h1>
         <p>Selecione o módulo que deseja gerenciar</p>
+
+        <div class="informacoes-usuario">
+            <span id="nomeFuncionario"></span>
+            <button id="btSair" type="button">Sair da conta</button>
+        </div>
     </header>
 
-    <!-- Conteúdo Principal -->
     <main class="container-master">
-        <div class="menu-grid">
-            <a href="../livro/livro.html" class="card-menu">
+        <div class="menu-grid" id="menuGrid">
+
+            <a href="../livro/livro.html"
+                class="card-menu"
+                data-permissao="livro:visualizar">
                 <div class="card-icon">📖</div>
                 <h2>Livros</h2>
-                <p>Cadastrar, alterar, consultar e excluir produtos do estoque.</p>
+                <p>Consultar e gerenciar livros do estoque.</p>
             </a>
 
-            <a href="../genero/genero.html" class="card-menu">
+            <a href="../pedido/pedido.html"
+                class="card-menu"
+                data-permissao="pedido:visualizar">
+                <div class="card-icon">📦</div>
+                <h2>Pedidos</h2>
+                <p>Consultar pedidos realizados pelos clientes.</p>
+            </a>
+
+            <a href="../genero/genero.html"
+                class="card-menu"
+                data-permissao="genero:gerenciar">
                 <div class="card-icon">🎭</div>
                 <h2>Gêneros</h2>
                 <p>Gerenciar gêneros utilizados no sistema.</p>
             </a>
 
-            <a href="../cargo/cargo.html" class="card-menu">
+            <a href="../cargo/cargo.html"
+                class="card-menu"
+                data-permissao="cargo:gerenciar">
                 <div class="card-icon">👔</div>
                 <h2>Cargos</h2>
                 <p>Gerenciar cargos utilizados no sistema.</p>
             </a>
 
-            <a href="../pessoa/pessoa.html" class="card-menu">
+            <a href="../pessoa/pessoa.html"
+                class="card-menu"
+                data-permissoes="pessoa:consultar,pessoa:gerenciar">
                 <div class="card-icon">🧑🏽</div>
-                <h2>Pessoa</h2>
-                <p>Cadastro de pessoas.</p>
+                <h2>Pessoas</h2>
+                <p>Consultar pessoas cadastradas.</p>
             </a>
 
-            <a href="../forma_pagamento/forma_pagamento.html" class="card-menu">
+            <a href="../forma_pagamento/forma_pagamento.html"
+                class="card-menu"
+                data-permissao="forma_pagamento:gerenciar">
                 <div class="card-icon">💵</div>
                 <h2>Formas de pagamento</h2>
-                <p>Gerenciamento das formas de pagamento.</p>
+                <p>Gerenciar formas de pagamento.</p>
             </a>
 
-            <a href="../funcionario/funcionario.html" class="card-menu">
+            <a href="../funcionario/funcionario.html"
+                class="card-menu"
+                data-permissao="funcionario:gerenciar">
                 <div class="card-icon">👨🏽‍💼</div>
                 <h2>Funcionários</h2>
-                <p>Gerenciamento dos funcionários</p>
+                <p>Gerenciar funcionários.</p>
             </a>
+
         </div>
     </main>
 
-    <!-- Rodapé Semântico -->
     <footer>
-        <p>&copy; 2026 Sistema Livraria. Todos os direitos reservados.</p>
+        <p>&copy; 2026 Sistema Entre Páginas. Todos os direitos reservados.</p>
     </footer>
 
     <script src="menu.js"></script>
+
 </body>
 
 </html>

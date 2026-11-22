@@ -1,0 +1,381 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fffaf3;
+    font-family: Georgia, serif;
+    color: #4e342e;
+}
+
+/* CABEÇALHO */
+
+header {
+    background: linear-gradient(to right, #ffed9e, #ffc8e1, #ffed9e);
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    color: #ed1685;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #80665e;
+    font-size: 12px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+main {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.pagamento {
+    background-color: white;
+    width: 100%;
+    max-width: 1000px;
+    padding: 35px;
+    border: 1px solid #f7dce8;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(78, 52, 46, 0.08);
+}
+
+.pagamento > h2 {
+    text-align: center;
+    color: #ed1685;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.pagamento > p {
+    text-align: center;
+    color: #80665e;
+    margin-bottom: 25px;
+}
+
+/* SEÇÕES */
+
+.resumo,
+.formas-pagamento,
+.resumo-pagamento {
+    background-color: #fffdfd;
+    border: 1px solid #f7dce8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 22px;
+}
+
+.resumo h3,
+.formas-pagamento h3,
+.resumo-pagamento h3 {
+    color: #ed1685;
+    margin-bottom: 18px;
+    font-size: 19px;
+}
+
+/* INFORMAÇÕES DO PEDIDO */
+
+#informacoesPedido {
+    color: #80665e;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* LIVROS */
+
+#listaLivros {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.item-resumo {
+    padding: 12px;
+    background-color: #fff5f9;
+    border-radius: 8px;
+    border: 1px solid #f7dce8;
+}
+
+.item-resumo p {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.total {
+    text-align: right;
+    margin-top: 20px;
+    color: #4e342e !important;
+}
+
+/* TÍTULO DAS FORMAS */
+
+.titulo-formas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#contadorFormas {
+    background-color: #ffed9e;
+    color: #4e342e;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* CARTÕES DE PAGAMENTO */
+
+.cartao-pagamento {
+    background-color: #fff5f9;
+    border: 1px solid #f7dce8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.cabecalho-cartao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.cabecalho-cartao h4 {
+    color: #4e342e;
+    font-size: 16px;
+}
+
+.btRemover {
+    background-color: #ffe0e0;
+    color: #a52a2a;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: Georgia, serif;
+}
+
+.btRemover:hover {
+    background-color: #ffcaca;
+}
+
+/* CAMPOS */
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.campo label {
+    font-weight: bold;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.campo input,
+.campo select {
+    padding: 12px;
+    border: 1px solid #f2d5e2;
+    border-radius: 7px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    outline: none;
+    background-color: white;
+    color: #4e342e;
+    transition: 0.3s;
+}
+
+.campo input:focus,
+.campo select:focus {
+    border-color: #ed1685;
+    box-shadow: 0 0 5px rgba(237, 22, 133, 0.15);
+}
+
+/* BOTÕES */
+
+#btAdicionar,
+#btFinalizar,
+#btVoltar {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 20px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btAdicionar {
+    background-color: #ffed9e;
+    color: #4e342e;
+}
+
+#btAdicionar:hover {
+    background-color: #f5dc7c;
+}
+
+#btFinalizar {
+    background-color: #E91E91;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 47, 179, 0.3);
+}
+
+#btFinalizar:hover {
+    background-color: #c91070;
+}
+
+#btVoltar {
+    background-color: #ffed9e;
+    color: #4e342e;
+}
+
+#btVoltar:hover {
+    background-color: #f5dc7c;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* CONFERÊNCIA DOS VALORES */
+
+.resumo-pagamento p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+#diferenca {
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.valor-correto {
+    color: green;
+}
+
+.valor-incorreto {
+    color: #c62828;
+}
+
+/* MENSAGEM */
+
+#mensagem {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+
+/* DADOS DO PIX */
+
+.dados-pix,
+.dados-cartao {
+    background-color: white;
+    border: 1px solid #f7dce8;
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 18px;
+}
+
+.dados-pix h4,
+.dados-cartao h4 {
+    color: #ed1685;
+    margin-bottom: 12px;
+}
+
+.dados-pix p,
+.dados-cartao p {
+    color: #80665e;
+    font-size: 13px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.imagem-qrcode {
+    display: block;
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    margin: 15px auto;
+    border: 5px solid white;
+}
+
+.dados-pix label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.dados-pix input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #f2d5e2;
+    border-radius: 7px;
+    color: #80665e;
+    background-color: #fffaf3;
+    font-size: 13px;
+}
+
+.btCopiar {
+    width: 100%;
+    padding: 11px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: #ffed9e;
+    color: #4e342e;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btCopiar:hover {
+    background-color: #f5dc7c;
+}
+
+/* DADOS DO CARTÃO */
+
+.dados-cartao {
+    margin-bottom: 15px;
+}
+
+.dados-cartao .campo:last-child {
+    margin-bottom: 0;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+
+    main {
+        padding: 25px 15px;
+    }
+
+    .pagamento {
+        padding: 22px 18px;
+    }
+
+    header h1 {
+        font-size: 26px;
+    }
+
+    .cabecalho-cartao {
+        gap: 10px;
+    }
+}

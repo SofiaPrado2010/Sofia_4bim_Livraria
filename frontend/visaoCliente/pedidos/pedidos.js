@@ -7,8 +7,13 @@ const conteudoDetalhes = document.getElementById('conteudoDetalhes');
 const btVoltar = document.getElementById('btVoltar');
 const btFecharDetalhes = document.getElementById('btFecharDetalhes');
 
+let intervaloPrazo;
+let pedidoAtual = null;
+
+
 // Formatar valores em reais
 function formatarMoeda(valor) {
+
     return Number(valor || 0).toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -18,10 +23,22 @@ function formatarMoeda(valor) {
 // Formatar datas
 function formatarData(data) {
 
-    return new Date(data).toLocaleDateString('pt-BR', {
+    if (!data) {
+        return 'Não informado';
+    }
+
+    const dataFormatada = new Date(data);
+
+    if (isNaN(dataFormatada.getTime())) {
+        return 'Não informado';
+    }
+
+    return dataFormatada.toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
     });
 }
 
@@ -42,6 +59,69 @@ function escaparHTML(texto) {
     });
 }
 
+// Verificar se o prazo ainda está válido
+function prazoValido(prazo) {
+
+    if (!prazo) {
+        return false;
+    }
+
+    const dataPrazo = new Date(prazo);
+
+    return !isNaN(dataPrazo.getTime()) &&
+        dataPrazo.getTime() > Date.now();
+}
+
+// Mostrar o tempo restante
+function atualizarPrazos() {
+
+    const camposPrazo = document.querySelectorAll('[data-prazo]');
+
+    camposPrazo.forEach(function (campo) {
+
+        const prazo = new Date(campo.dataset.prazo);
+        const restante = prazo.getTime() - Date.now();
+
+        if (isNaN(prazo.getTime())) {
+
+            campo.textContent = 'Prazo não informado';
+            campo.classList.remove('prazo-valido');
+            campo.classList.add('prazo-encerrado');
+
+            return;
+        }
+
+        if (restante <= 0) {
+
+            campo.textContent = 'Prazo encerrado';
+            campo.classList.remove('prazo-valido');
+            campo.classList.add('prazo-encerrado');
+
+            return;
+        }
+
+        const horas = Math.floor(restante / (1000 * 60 * 60));
+        const minutos = Math.floor((restante % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((restante % (1000 * 60)) / 1000);
+
+        campo.textContent =
+            `${horas}h ${minutos}min ${segundos}s`;
+
+        campo.classList.add('prazo-valido');
+        campo.classList.remove('prazo-encerrado');
+    });
+}
+
+// Iniciar atualização dos prazos
+function iniciarAtualizacaoPrazos() {
+
+    clearInterval(intervaloPrazo);
+
+    atualizarPrazos();
+
+    intervaloPrazo = setInterval(atualizarPrazos, 1000);
+}
+
 // Carregar histórico de pedidos
 async function carregarPedidos() {
 
@@ -55,20 +135,21 @@ async function carregarPedidos() {
         const dados = await resposta.json();
 
         if (!resposta.ok) {
+
             listaPedidos.innerHTML = `
                 <p class="mensagem">
                     ${escaparHTML(dados.mensagem || 'Não foi possível carregar seus pedidos.')}
                 </p>
             `;
+
             return;
         }
 
-        // Verificar se existem pedidos
         if (!dados.pedidos || dados.pedidos.length === 0) {
 
             listaPedidos.innerHTML = `
                 <p class="mensagem">
-                    Você ainda não realizou nenhuma compra. 
+                    Você ainda não realizou nenhum pedido.
                     Que tal encontrar sua próxima leitura?
                 </p>
             `;
@@ -78,12 +159,42 @@ async function carregarPedidos() {
 
         listaPedidos.innerHTML = '';
 
-        // Mostrar cada pedido
         dados.pedidos.forEach(function (pedido) {
 
             const card = document.createElement('div');
 
             card.className = 'pedido-card';
+
+            let prazoHTML = '';
+
+            if (pedido.status_pedido === 'Pendente') {
+
+                if (pedido.prazo_pagamento) {
+
+                    prazoHTML = `
+                        <p class="informacao-prazo">
+                            <strong>Prazo para pagamento:</strong>
+                            ${escaparHTML(formatarData(pedido.prazo_pagamento))}
+                        </p>
+
+                        <p class="informacao-prazo">
+                            <strong>Tempo restante:</strong>
+                            <span
+                                class="tempo-restante"
+                                data-prazo="${escaparHTML(pedido.prazo_pagamento)}">
+                            </span>
+                        </p>
+                    `;
+
+                } else {
+
+                    prazoHTML = `
+                        <p class="informacao-prazo">
+                            Prazo de pagamento não informado.
+                        </p>
+                    `;
+                }
+            }
 
             card.innerHTML = `
                 <div class="informacoes-pedido">
@@ -104,6 +215,8 @@ async function carregarPedidos() {
                                 ${escaparHTML(pedido.status_pedido)}
                             </span>
                         </p>
+
+                        ${prazoHTML}
                     </div>
 
                     <div>
@@ -119,15 +232,15 @@ async function carregarPedidos() {
                 </button>
             `;
 
-            const btDetalhes = card.querySelector('.btDetalhes');
-
-            btDetalhes.onclick = function () {
+            card.querySelector('.btDetalhes').onclick = function () {
                 carregarDetalhes(pedido.id_pedido);
             };
 
             listaPedidos.appendChild(card);
 
         });
+
+        iniciarAtualizacaoPrazos();
 
     } catch (error) {
 
@@ -146,6 +259,8 @@ async function carregarPedidos() {
 async function carregarDetalhes(idPedido) {
 
     try {
+
+        pedidoAtual = idPedido;
 
         conteudoDetalhes.innerHTML = `
             <p class="mensagem">Carregando detalhes do pedido...</p>
@@ -172,11 +287,13 @@ async function carregarDetalhes(idPedido) {
         }
 
         const pedido = dados.pedido;
+        const itens = dados.itens || [];
+        const pagamentos = dados.pagamentos || [];
 
         // Organizar os livros
         let livrosHTML = '';
 
-        dados.itens.forEach(function (item) {
+        itens.forEach(function (item) {
 
             livrosHTML += `
                 <div class="item-livro">
@@ -204,19 +321,79 @@ async function carregarDetalhes(idPedido) {
         // Organizar os pagamentos
         let pagamentosHTML = '';
 
-        dados.pagamentos.forEach(function (pagamento) {
+        pagamentos.forEach(function (pagamento) {
+
+            const parcelas = Number(pagamento.quantidade_parcelas || 1);
 
             pagamentosHTML += `
                 <p>
                     <strong>${escaparHTML(pagamento.nome_forma_pagamento)}:</strong>
                     ${escaparHTML(formatarMoeda(pagamento.valor_pago))}
+                    ${parcelas > 1 ? `(${parcelas} parcelas)` : ''}
                 </p>
             `;
         });
 
         if (!pagamentosHTML) {
-            pagamentosHTML = '<p>Informações de pagamento não disponíveis.</p>';
+
+            pagamentosHTML = `
+                <p>Este pedido ainda não possui pagamento registrado.</p>
+            `;
         }
+
+        // Mostrar prazo de pagamento
+        let prazoHTML = '';
+
+        if (pedido.status_pedido === 'Pendente') {
+
+            if (pedido.prazo_pagamento) {
+
+                prazoHTML = `
+                    <p>
+                        <strong>Prazo para pagamento:</strong>
+                        ${escaparHTML(formatarData(pedido.prazo_pagamento))}
+                    </p>
+
+                    <p>
+                        <strong>Tempo restante:</strong>
+                        <span
+                            class="tempo-restante"
+                            data-prazo="${escaparHTML(pedido.prazo_pagamento)}">
+                        </span>
+                    </p>
+                `;
+
+            } else {
+
+                prazoHTML = `
+                    <p>Prazo de pagamento não informado.</p>
+                `;
+            }
+        }
+
+
+        // Botões de acordo com o status do pedido
+        let botoesHTML = '';
+
+        if (pedido.status_pedido === 'Pendente') {
+
+            botoesHTML = `
+                <div class="acoes-pedido">
+
+                    ${prazoValido(pedido.prazo_pagamento) ? `
+                        <button type="button" id="btPagarPedido">
+                            Pagar pedido
+                        </button>
+                    ` : ''}
+
+                    <button type="button" id="btCancelarPedido">
+                        Cancelar pedido
+                    </button>
+
+                </div>
+            `;
+        }
+
 
         // Mostrar todos os detalhes
         conteudoDetalhes.innerHTML = `
@@ -240,11 +417,13 @@ async function carregarDetalhes(idPedido) {
                     ${escaparHTML(pedido.status_pedido)}
                 </p>
 
+                ${prazoHTML}
+
             </div>
 
             <div class="bloco-detalhes">
 
-                <h3>Livros comprados</h3>
+                <h3>Livros do pedido</h3>
 
                 ${livrosHTML || '<p>Nenhum livro encontrado.</p>'}
 
@@ -267,7 +446,7 @@ async function carregarDetalhes(idPedido) {
 
             <div class="bloco-detalhes">
 
-                <h3>Formas de pagamento</h3>
+                <h3>Informações de pagamento</h3>
 
                 ${pagamentosHTML}
 
@@ -279,7 +458,35 @@ async function carregarDetalhes(idPedido) {
 
             </div>
 
+            ${botoesHTML}
+
         `;
+
+
+        // Configurar botão de pagamento
+        const btPagarPedido = document.getElementById('btPagarPedido');
+
+        if (btPagarPedido) {
+
+            btPagarPedido.onclick = function () {
+
+                window.location.href =
+                    `pagamentoPedido.html?id=${encodeURIComponent(pedido.id_pedido)}`;
+            };
+        }
+
+
+        // Configurar botão de cancelamento
+        const btCancelarPedido = document.getElementById('btCancelarPedido');
+
+        if (btCancelarPedido) {
+
+            btCancelarPedido.onclick = function () {
+                cancelarPedido(pedido.id_pedido);
+            };
+        }
+
+        atualizarPrazos();
 
         detalhesPedido.scrollIntoView({
             behavior: 'smooth',
@@ -298,16 +505,72 @@ async function carregarDetalhes(idPedido) {
     }
 }
 
+// Cancelar pedido
+async function cancelarPedido(idPedido) {
+
+    const confirmar = confirm(
+        `Deseja realmente cancelar o pedido nº ${idPedido}?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    const btCancelarPedido = document.getElementById('btCancelarPedido');
+
+    try {
+
+        btCancelarPedido.disabled = true;
+        btCancelarPedido.textContent = 'Cancelando...';
+
+        const resposta = await fetch(`${URL_API}/pedido/${idPedido}/cancelar`, {
+
+            method: 'PATCH',
+
+            credentials: 'include'
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                dados.mensagem || 'Não foi possível cancelar o pedido.'
+            );
+        }
+
+        alert('Pedido cancelado com sucesso!');
+
+        detalhesPedido.style.display = 'none';
+
+        await carregarPedidos();
+
+    } catch (error) {
+
+        console.error('Erro ao cancelar pedido:', error);
+
+        alert(error.message);
+
+        if (btCancelarPedido) {
+            btCancelarPedido.disabled = false;
+            btCancelarPedido.textContent = 'Cancelar pedido';
+        }
+    }
+}
+
 // Fechar detalhes
 btFecharDetalhes.onclick = function () {
 
     detalhesPedido.style.display = 'none';
+    pedidoAtual = null;
 };
+
 
 // Voltar à loja
 btVoltar.onclick = function () {
     window.location.href = '../index.html';
 };
+
 
 // Iniciar a página
 carregarPedidos();

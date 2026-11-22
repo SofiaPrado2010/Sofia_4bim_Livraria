@@ -1,0 +1,217 @@
+/* Configurações gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;
+    --bege: #fff8f5;
+    --vinho: #674257;
+    --marrom: #a66b18;
+    --rosinha: #f2c6dc;
+    --branco: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bege);
+    color: var(--vinho);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cabeçalho */
+header {
+    background: linear-gradient(to right, #fce88f, #f15098, #fce88f);
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+    position: relative;
+    border-bottom: 5px solid var(--laranja-claro);
+}
+
+.titulo h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.titulo p {
+    font-size: 1rem;
+}
+
+/* Botão voltar */
+.btnVoltar {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    border: 2px solid white;
+    border-radius: 25px;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btnVoltar:hover {
+    background-color: white;
+    color: var(--rosa-escuro);
+}
+
+/* Conteúdo principal */
+main.container-master {
+    width: 96%;
+    max-width: 1600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    flex: 1;
+}
+
+/* Seções */
+.lista-pedidos,
+.detalhes-pedido {
+    background-color: var(--branco);
+    padding: 2rem;
+    border: 2px solid var(--rosinha);
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.lista-pedidos h2,
+.detalhes-pedido h2 {
+    color: var(--rosa-escuro);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--laranja-claro);
+}
+
+/* Tabelas */
+#outputSaida,
+#outputDetalhes {
+    overflow-x: auto;
+}
+
+.tabela-pedidos,
+.tabela-itens {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.tabela-pedidos th,
+.tabela-itens th {
+    background-color: var(--rosa-escuro);
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+.tabela-pedidos td,
+.tabela-itens td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--rosinha);
+}
+
+.tabela-pedidos tr:nth-child(even),
+.tabela-itens tr:nth-child(even) {
+    background-color: #fff8e5;
+}
+
+.tabela-pedidos tr:hover,
+.tabela-itens tr:hover {
+    background-color: #fce1ed;
+}
+
+/* Botão de visualizar */
+.btnDetalhes {
+    background-color: var(--laranja-claro);
+    box-shadow: 0 0 10px var(--laranja-claro);
+    color: var(--vinho);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btnDetalhes:hover {
+    background-color: var(--laranja-escuro);
+}
+
+/* Informações dos detalhes */
+.dados-pedido {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.dados-pedido p {
+    padding: 12px;
+    background-color: var(--bege);
+    border-left: 4px solid var(--rosa-escuro);
+    border-radius: 5px;
+}
+
+.dados-pedido strong {
+    color: var(--rosa-escuro);
+}
+
+.detalhes-pedido h3 {
+    color: var(--marrom);
+    margin: 1.5rem 0 1rem;
+}
+
+.valor-total {
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--rosa-escuro);
+    margin-top: 1.5rem;
+}
+
+/* Rodapé */
+footer {
+    background-color: var(--rosa-escuro);
+    color: var(--branco);
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    border-top: 4px solid var(--laranja-claro);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header {
+        padding: 5rem 1rem 2rem;
+    }
+
+    .btnVoltar {
+        top: 15px;
+        left: 15px;
+        transform: none;
+    }
+
+    .titulo h1 {
+        font-size: 1.6rem;
+    }
+
+    .lista-pedidos,
+    .detalhes-pedido {
+        padding: 1rem;
+    }
+
+    .dados-pedido {
+        grid-template-columns: 1fr;
+    }
+}

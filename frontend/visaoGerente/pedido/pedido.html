@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Pedidos</title>
+    <link rel="stylesheet" href="pedido.css">
+</head>
+
+<body onload="inicializar()">
+
+    <header>
+        <div class="titulo">
+            <h1>Gerenciamento de Pedidos</h1>
+            <p>Consulte os pedidos realizados pelos clientes.</p>
+        </div>
+
+        <button onclick="history.back()" class="btnVoltar">
+            ← Voltar
+        </button>
+    </header>
+
+    <main class="container-master">
+
+        <section class="lista-pedidos">
+            <h2>Pedidos Cadastrados</h2>
+
+            <div id="outputSaida">
+                Carregando pedidos...
+            </div>
+        </section>
+
+        <section class="detalhes-pedido">
+            <h2>Detalhes do Pedido</h2>
+
+            <div id="outputDetalhes">
+                Selecione um pedido na tabela para visualizar seus detalhes.
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Sistema Entre Páginas. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="./pedido.js"></script>
+
+</body>
+</html>

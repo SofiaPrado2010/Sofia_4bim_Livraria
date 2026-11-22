@@ -9,6 +9,25 @@ const estadosPermitidos = [
     'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
+// Devolver os livros ao estoque
+async function devolverEstoque(conexao, idPedido) {
+
+    await conexao.query(
+        `UPDATE livro l
+         SET quantidade_estoque = l.quantidade_estoque + itens.quantidade
+         FROM (
+             SELECT
+                 id_livro,
+                 SUM(quantidade) AS quantidade
+             FROM item_pedido
+             WHERE id_pedido = $1
+             GROUP BY id_livro
+         ) AS itens
+         WHERE l.id_livro = itens.id_livro`,
+        [idPedido]
+    );
+}
+
 // Criar pedido
 exports.criarPedido = async (req, res) => {
 
@@ -20,7 +39,7 @@ exports.criarPedido = async (req, res) => {
         if (!cliente) {
             return res.status(401).json({
                 sucesso: false,
-                mensagem: 'Você precisa estar conectado para realizar uma compra.'
+                mensagem: 'Você precisa estar conectado para realizar um pedido.'
             });
         }
 
@@ -52,22 +71,19 @@ exports.criarPedido = async (req, res) => {
             endereco,
             cidade,
             estado,
-            pagamentos,
             chaveIdempotencia
         } = req.body;
 
         // Verificar os dados do pedido
         if (
             !Array.isArray(itens) || itens.length === 0 ||
-            !Array.isArray(pagamentos) || pagamentos.length === 0 ||
-            pagamentos.length > 3 ||
             typeof endereco !== 'string' || !endereco.trim() ||
             typeof cidade !== 'string' || !cidade.trim() ||
             typeof estado !== 'string' || !estado.trim()
         ) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: 'Preencha todos os dados para finalizar a compra.'
+                mensagem: 'Preencha todos os dados para confirmar o pedido.'
             });
         }
 
@@ -81,7 +97,7 @@ exports.criarPedido = async (req, res) => {
         ) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: 'Chave de identificação da compra inválida.'
+                mensagem: 'Chave de identificação do pedido inválida.'
             });
         }
 
@@ -109,66 +125,8 @@ exports.criarPedido = async (req, res) => {
             });
         }
 
-        // Verificar as formas de pagamento
-        const formasPermitidas = ['PIX', 'CREDITO', 'DEBITO'];
-        const formasEscolhidas = [];
-
-        let somaPagamentos = 0;
-
-        for (const pagamento of pagamentos) {
-
-            if (
-                !pagamento ||
-                typeof pagamento !== 'object' ||
-                Array.isArray(pagamento)
-            ) {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: 'Dados de pagamento inválidos.'
-                });
-            }
-
-            const forma = pagamento.formaPagamento;
-            const valor = Number(pagamento.valor);
-
-            if (
-                typeof forma !== 'string' ||
-                !formasPermitidas.includes(forma)
-            ) {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: 'Forma de pagamento inválida.'
-                });
-            }
-
-            // Não permitir repetir a mesma forma
-            if (formasEscolhidas.includes(forma)) {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: 'Não repita a mesma forma de pagamento.'
-                });
-            }
-
-            // Verificar se o valor é válido
-            if (
-                !Number.isFinite(valor) ||
-                valor <= 0 ||
-                Math.abs(valor * 100 - Math.round(valor * 100)) > 0.00001
-            ) {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: 'Informe valores válidos para os pagamentos.'
-                });
-            }
-
-            formasEscolhidas.push(forma);
-
-            somaPagamentos += Math.round(valor * 100);
-        }
-
         // Verificar se os livros e as quantidades são válidos
         const livrosEscolhidos = [];
-
         const itensNormalizados = [];
 
         for (const item of itens) {
@@ -217,30 +175,19 @@ exports.criarPedido = async (req, res) => {
         // Organizar os livros por ID
         itensNormalizados.sort((a, b) => a.idLivro - b.idLivro);
 
-        // Organizar os pagamentos
-        const pagamentosNormalizados = pagamentos.map(pagamento => ({
-            formaPagamento: pagamento.formaPagamento,
-            valorCentavos: Math.round(Number(pagamento.valor) * 100)
-        }));
-
-        pagamentosNormalizados.sort((a, b) =>
-            a.formaPagamento.localeCompare(b.formaPagamento)
-        );
-
-        // Criar um resumo dos dados da compra
-        const dadosCompra = {
+        // Criar um resumo dos dados do pedido
+        const dadosPedido = {
             cpf: cliente.cpf,
             itens: itensNormalizados,
             endereco: enderecoFinal,
             cidade: cidadeFinal,
-            estado: siglaEstado,
-            pagamentos: pagamentosNormalizados
+            estado: siglaEstado
         };
 
         // Gerar o hash dos dados
         const hashIdempotencia = crypto
             .createHash('sha256')
-            .update(JSON.stringify(dadosCompra))
+            .update(JSON.stringify(dadosPedido))
             .digest('hex');
 
         // Iniciar uma conexão com o banco
@@ -251,7 +198,7 @@ exports.criarPedido = async (req, res) => {
             // Iniciar a transação
             await conexao.query('BEGIN');
 
-            // Criar o pedido com a chave de idempotência
+            // Criar o pedido com prazo de 24 horas
             const pedido = await conexao.query(
                 `INSERT INTO pedido (
                     cpf_pessoa,
@@ -260,15 +207,25 @@ exports.criarPedido = async (req, res) => {
                     endereco_entrega,
                     cidade_entrega,
                     estado_entrega,
+                    prazo_pagamento,
                     chave_idempotencia,
                     hash_idempotencia
                 )
-                VALUES ($1, NOW(), $2, $3, $4, $5, $6, $7)
+                VALUES (
+                    $1,
+                    NOW(),
+                    'Pendente',
+                    $2,
+                    $3,
+                    $4,
+                    NOW() + INTERVAL '24 hours',
+                    $5,
+                    $6
+                )
                 ON CONFLICT (chave_idempotencia) DO NOTHING
-                RETURNING id_pedido`,
+                RETURNING id_pedido, prazo_pagamento`,
                 [
                     cliente.cpf,
-                    'Concluído',
                     enderecoFinal,
                     cidadeFinal,
                     siglaEstado,
@@ -277,7 +234,7 @@ exports.criarPedido = async (req, res) => {
                 ]
             );
 
-            // Verificar se essa compra já foi registrada
+            // Verificar se esse pedido já foi registrado
             if (pedido.rows.length === 0) {
 
                 const pedidoExistente = await conexao.query(
@@ -285,7 +242,19 @@ exports.criarPedido = async (req, res) => {
                         p.id_pedido,
                         p.cpf_pessoa,
                         p.hash_idempotencia,
-                        pg.valor_total
+                        p.status_pedido,
+                        p.prazo_pagamento,
+                        COALESCE(
+                            pg.valor_total,
+                            (
+                                SELECT COALESCE(
+                                    SUM(ip.quantidade * ip.preco_unitario),
+                                    0
+                                )
+                                FROM item_pedido ip
+                                WHERE ip.id_pedido = p.id_pedido
+                            )
+                        ) AS valor_total
                     FROM pedido p
                     LEFT JOIN pagamento pg
                         ON pg.id_pedido = p.id_pedido
@@ -299,14 +268,14 @@ exports.criarPedido = async (req, res) => {
 
                 const existente = pedidoExistente.rows[0];
 
-                // Verificar se a chave pertence à mesma compra
+                // Verificar se a chave pertence ao mesmo pedido
                 if (
                     existente.cpf_pessoa !== cliente.cpf ||
                     existente.hash_idempotencia !== hashIdempotencia
                 ) {
 
                     const erro = new Error(
-                        'Essa chave já foi utilizada em outra solicitação de compra.'
+                        'Essa chave já foi utilizada em outra solicitação de pedido.'
                     );
 
                     erro.status = 409;
@@ -314,7 +283,6 @@ exports.criarPedido = async (req, res) => {
                     throw erro;
                 }
 
-                // Finalizar a transação sem criar outro pedido
                 await conexao.query('COMMIT');
 
                 return res.status(200).json({
@@ -322,11 +290,14 @@ exports.criarPedido = async (req, res) => {
                     repetido: true,
                     mensagem: 'Esse pedido já foi registrado anteriormente.',
                     idPedido: existente.id_pedido,
-                    valorTotal: Number(existente.valor_total)
+                    valorTotal: Number(existente.valor_total),
+                    status: existente.status_pedido,
+                    prazoPagamento: existente.prazo_pagamento
                 });
             }
 
             const idPedido = pedido.rows[0].id_pedido;
+            const prazoPagamento = pedido.rows[0].prazo_pagamento;
 
             // Registrar os livros do pedido
             let valorTotalCentavos = 0;
@@ -395,7 +366,7 @@ exports.criarPedido = async (req, res) => {
                     ]
                 );
 
-                // Atualizar o estoque
+                // Reservar os livros no estoque
                 await conexao.query(
                     `UPDATE livro
                      SET quantidade_estoque = quantidade_estoque - $1
@@ -407,11 +378,299 @@ exports.criarPedido = async (req, res) => {
                 );
             }
 
+            const valorTotal = valorTotalCentavos / 100;
+
+            // Confirmar todas as operações no banco
+            await conexao.query('COMMIT');
+
+            return res.status(201).json({
+                sucesso: true,
+                repetido: false,
+                mensagem: 'Pedido registrado com sucesso! Você tem 24 horas para realizar o pagamento.',
+                idPedido: idPedido,
+                valorTotal: valorTotal,
+                status: 'Pendente',
+                prazoPagamento: prazoPagamento
+            });
+
+        } catch (error) {
+
+            // Cancelar as operações se algo der errado
+            await conexao.query('ROLLBACK');
+
+            throw error;
+
+        } finally {
+
+            // Liberar a conexão com o banco
+            conexao.release();
+        }
+
+    } catch (error) {
+
+        console.error('Erro ao criar pedido:', error);
+
+        return res.status(error.status || 500).json({
+            sucesso: false,
+            mensagem: error.status
+                ? error.message
+                : 'Erro ao registrar pedido.'
+        });
+    }
+};
+
+// Pagar um pedido
+exports.pagarPedido = async (req, res) => {
+
+    const cliente = req.session.usuario;
+
+    try {
+
+        // Verificar se existe alguém conectado
+        if (!cliente) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: 'Você precisa estar conectado para pagar um pedido.'
+            });
+        }
+
+        // Verificar se o usuário possui perfil de cliente
+        if (
+            !Array.isArray(cliente.perfis) ||
+            !cliente.perfis.includes('CLIENTE')
+        ) {
+            return res.status(403).json({
+                sucesso: false,
+                mensagem: 'Somente clientes podem pagar pedidos.'
+            });
+        }
+
+        // Verificar o número do pedido
+        const idPedido = Number(req.params.id);
+
+        if (!Number.isInteger(idPedido) || idPedido <= 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Número do pedido inválido.'
+            });
+        }
+
+        const { pagamentos } = req.body;
+
+        // Verificar os dados dos pagamentos
+        if (
+            !Array.isArray(pagamentos) ||
+            pagamentos.length === 0 ||
+            pagamentos.length > 3
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Informe de uma a três formas de pagamento.'
+            });
+        }
+
+        const formasPermitidas = ['PIX', 'CREDITO', 'DEBITO'];
+        const formasEscolhidas = [];
+        const pagamentosNormalizados = [];
+
+        let somaPagamentos = 0;
+
+        // Validar cada pagamento
+        for (const pagamento of pagamentos) {
+
+            if (
+                !pagamento ||
+                typeof pagamento !== 'object' ||
+                Array.isArray(pagamento)
+            ) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Dados de pagamento inválidos.'
+                });
+            }
+
+            const forma = pagamento.formaPagamento;
+            const valor = Number(pagamento.valor);
+            const parcelas = pagamento.parcelas === undefined
+                ? 1
+                : Number(pagamento.parcelas);
+
+            if (
+                typeof forma !== 'string' ||
+                !formasPermitidas.includes(forma)
+            ) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Forma de pagamento inválida.'
+                });
+            }
+
+            // Não permitir repetir a mesma forma
+            if (formasEscolhidas.includes(forma)) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Não repita a mesma forma de pagamento.'
+                });
+            }
+
+            // Verificar se o valor é válido
+            if (
+                !Number.isFinite(valor) ||
+                valor <= 0 ||
+                Math.abs(valor * 100 - Math.round(valor * 100)) > 0.00001
+            ) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Informe valores válidos para os pagamentos.'
+                });
+            }
+
+            // Verificar a quantidade de parcelas
+            if (
+                !Number.isInteger(parcelas) ||
+                parcelas < 1 ||
+                parcelas > 12
+            ) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'A quantidade de parcelas deve estar entre 1 e 12.'
+                });
+            }
+
+            // Somente crédito permite parcelamento
+            if (forma !== 'CREDITO' && parcelas !== 1) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Somente pagamentos com cartão de crédito podem ser parcelados.'
+                });
+            }
+
+            formasEscolhidas.push(forma);
+
+            const valorCentavos = Math.round(valor * 100);
+
+            somaPagamentos += valorCentavos;
+
+            pagamentosNormalizados.push({
+                formaPagamento: forma,
+                valorCentavos: valorCentavos,
+                parcelas: parcelas
+            });
+        }
+
+        // Iniciar uma conexão com o banco
+        const conexao = await pool.connect();
+
+        try {
+
+            await conexao.query('BEGIN');
+
+            // Buscar e bloquear o pedido
+            const pedido = await conexao.query(
+                `SELECT
+                    id_pedido,
+                    status_pedido,
+                    prazo_pagamento,
+                    (
+                        prazo_pagamento IS NULL OR prazo_pagamento <= NOW()
+                    ) AS prazo_expirado
+                 FROM pedido
+                 WHERE id_pedido = $1
+                 AND cpf_pessoa = $2
+                 FOR UPDATE`,
+                [idPedido, cliente.cpf]
+            );
+
+            // Verificar se o pedido existe e pertence ao cliente
+            if (pedido.rows.length === 0) {
+
+                const erro = new Error('Pedido não encontrado.');
+                erro.status = 404;
+
+                throw erro;
+            }
+
+            const dadosPedido = pedido.rows[0];
+
+            // Verificar se o pedido ainda está pendente
+            if (dadosPedido.status_pedido !== 'Pendente') {
+
+                const erro = new Error(
+                    'Este pedido não está disponível para pagamento.'
+                );
+
+                erro.status = 409;
+
+                throw erro;
+            }
+
+            // Verificar se o prazo de pagamento expirou
+            if (dadosPedido.prazo_expirado) {
+
+                // Cancelar o pedido e devolver o estoque
+                await devolverEstoque(conexao, idPedido);
+
+                await conexao.query(
+                    `UPDATE pedido
+                     SET status_pedido = 'Cancelado'
+                     WHERE id_pedido = $1`,
+                    [idPedido]
+                );
+
+                await conexao.query('COMMIT');
+
+                return res.status(409).json({
+                    sucesso: false,
+                    mensagem: 'O prazo de pagamento deste pedido expirou. Ele foi cancelado.'
+                });
+            }
+
+            // Verificar se já existe um pagamento
+            const pagamentoExistente = await conexao.query(
+                `SELECT id_pedido
+                 FROM pagamento
+                 WHERE id_pedido = $1`,
+                [idPedido]
+            );
+
+            if (pagamentoExistente.rows.length > 0) {
+
+                const erro = new Error(
+                    'Este pedido já possui um pagamento registrado.'
+                );
+
+                erro.status = 409;
+
+                throw erro;
+            }
+
+            // Calcular o valor total do pedido
+            const totalPedido = await conexao.query(
+                `SELECT
+                    COALESCE(
+                        SUM(
+                            ROUND(ip.preco_unitario * 100)::BIGINT
+                            * ip.quantidade
+                        ),
+                        0
+                    ) AS total_centavos
+                 FROM item_pedido ip
+                 WHERE ip.id_pedido = $1`,
+                [idPedido]
+            );
+
+            const valorTotalCentavos =
+                Number(totalPedido.rows[0].total_centavos);
+
+            if (valorTotalCentavos <= 0) {
+                throw new Error('Não foi possível calcular o valor do pedido.');
+            }
+
             // Verificar se os pagamentos correspondem ao total
             if (somaPagamentos !== valorTotalCentavos) {
 
                 const erro = new Error(
-                    'A soma dos pagamentos precisa ser igual ao total da compra.'
+                    'A soma dos pagamentos precisa ser igual ao total do pedido.'
                 );
 
                 erro.status = 400;
@@ -432,7 +691,7 @@ exports.criarPedido = async (req, res) => {
                 [idPedido, valorTotal]
             );
 
-            // Registrar cada forma de pagamento escolhida
+            // Registrar cada forma de pagamento
             for (const pagamento of pagamentosNormalizados) {
 
                 // Buscar o ID da forma de pagamento
@@ -462,59 +721,182 @@ exports.criarPedido = async (req, res) => {
                 const idFormaPagamento =
                     forma.rows[0].id_forma_pagamento;
 
-                // Registrar o valor correspondente à forma escolhida
+                // Registrar o valor e a quantidade de parcelas
                 await conexao.query(
                     `INSERT INTO pagamento_tem_forma_pagamento (
                         pagamento_id_pedido,
                         id_forma_pagamento,
-                        valor_pago
+                        valor_pago,
+                        quantidade_parcelas
                     )
-                    VALUES ($1, $2, $3)`,
+                    VALUES ($1, $2, $3, $4)`,
                     [
                         idPedido,
                         idFormaPagamento,
-                        pagamento.valorCentavos / 100
+                        pagamento.valorCentavos / 100,
+                        pagamento.parcelas
                     ]
                 );
             }
 
-            // Confirmar todas as operações no banco
+            // Atualizar o status do pedido
+            await conexao.query(
+                `UPDATE pedido
+                 SET status_pedido = 'Concluído'
+                 WHERE id_pedido = $1`,
+                [idPedido]
+            );
+
             await conexao.query('COMMIT');
 
-            res.status(201).json({
+            return res.status(200).json({
                 sucesso: true,
-                repetido: false,
-                mensagem: 'Compra realizada com sucesso!',
+                mensagem: 'Pagamento realizado com sucesso!',
                 idPedido: idPedido,
-                valorTotal: valorTotal
+                valorTotal: valorTotal,
+                status: 'Concluído'
             });
 
         } catch (error) {
 
-            // Cancelar as operações se algo der errado
             await conexao.query('ROLLBACK');
 
             throw error;
 
         } finally {
 
-            // Liberar a conexão com o banco
             conexao.release();
         }
 
     } catch (error) {
 
-        console.error('Erro ao criar pedido:', error);
+        console.error('Erro ao pagar pedido:', error);
 
-        res.status(error.status || 500).json({
+        return res.status(error.status || 500).json({
             sucesso: false,
             mensagem: error.status
                 ? error.message
-                : 'Erro ao realizar pedido.'
+                : 'Erro ao realizar o pagamento.'
         });
     }
 };
 
+// Cancelar um pedido
+exports.cancelarPedido = async (req, res) => {
+
+    const cliente = req.session.usuario;
+
+    try {
+
+        // Verificar se existe alguém conectado
+        if (!cliente) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: 'Você precisa estar conectado para cancelar um pedido.'
+            });
+        }
+
+        // Verificar se o usuário possui perfil de cliente
+        if (
+            !Array.isArray(cliente.perfis) ||
+            !cliente.perfis.includes('CLIENTE')
+        ) {
+            return res.status(403).json({
+                sucesso: false,
+                mensagem: 'Somente clientes podem cancelar pedidos.'
+            });
+        }
+
+        // Verificar o número do pedido
+        const idPedido = Number(req.params.id);
+
+        if (!Number.isInteger(idPedido) || idPedido <= 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Número do pedido inválido.'
+            });
+        }
+
+        const conexao = await pool.connect();
+
+        try {
+
+            await conexao.query('BEGIN');
+
+            // Buscar e bloquear o pedido
+            const pedido = await conexao.query(
+                `SELECT id_pedido, status_pedido
+                 FROM pedido
+                 WHERE id_pedido = $1
+                 AND cpf_pessoa = $2
+                 FOR UPDATE`,
+                [idPedido, cliente.cpf]
+            );
+
+            // Verificar se o pedido existe e pertence ao cliente
+            if (pedido.rows.length === 0) {
+
+                const erro = new Error('Pedido não encontrado.');
+                erro.status = 404;
+
+                throw erro;
+            }
+
+            // Somente pedidos pendentes podem ser cancelados
+            if (pedido.rows[0].status_pedido !== 'Pendente') {
+
+                const erro = new Error(
+                    'Somente pedidos pendentes podem ser cancelados.'
+                );
+
+                erro.status = 409;
+
+                throw erro;
+            }
+
+            // Devolver os livros ao estoque
+            await devolverEstoque(conexao, idPedido);
+
+            // Atualizar o status do pedido
+            await conexao.query(
+                `UPDATE pedido
+                 SET status_pedido = 'Cancelado'
+                 WHERE id_pedido = $1`,
+                [idPedido]
+            );
+
+            await conexao.query('COMMIT');
+
+            return res.status(200).json({
+                sucesso: true,
+                mensagem: 'Pedido cancelado com sucesso.',
+                idPedido: idPedido,
+                status: 'Cancelado'
+            });
+
+        } catch (error) {
+
+            await conexao.query('ROLLBACK');
+
+            throw error;
+
+        } finally {
+
+            conexao.release();
+        }
+
+    } catch (error) {
+
+        console.error('Erro ao cancelar pedido:', error);
+
+        return res.status(error.status || 500).json({
+            sucesso: false,
+            mensagem: error.status
+                ? error.message
+                : 'Erro ao cancelar pedido.'
+        });
+    }
+};
 
 // Listar pedidos do cliente conectado
 exports.listarPedidos = async (req, res) => {
@@ -548,7 +930,18 @@ exports.listarPedidos = async (req, res) => {
                 p.id_pedido,
                 p.data_pedido,
                 p.status_pedido,
-                pg.valor_total
+                p.prazo_pagamento,
+                COALESCE(
+                    pg.valor_total,
+                    (
+                        SELECT COALESCE(
+                            SUM(ip.quantidade * ip.preco_unitario),
+                            0
+                        )
+                        FROM item_pedido ip
+                        WHERE ip.id_pedido = p.id_pedido
+                    )
+                ) AS valor_total
             FROM pedido p
             LEFT JOIN pagamento pg
                 ON pg.id_pedido = p.id_pedido
@@ -557,7 +950,6 @@ exports.listarPedidos = async (req, res) => {
             [cliente.cpf]
         );
 
-        // Retornar os pedidos encontrados
         return res.status(200).json({
             sucesso: true,
             pedidos: pedidos.rows
@@ -573,7 +965,6 @@ exports.listarPedidos = async (req, res) => {
         });
     }
 };
-
 
 // Consultar detalhes de um pedido
 exports.obterDetalhesPedido = async (req, res) => {
@@ -617,10 +1008,21 @@ exports.obterDetalhesPedido = async (req, res) => {
                 p.id_pedido,
                 p.data_pedido,
                 p.status_pedido,
+                p.prazo_pagamento,
                 p.endereco_entrega,
                 p.cidade_entrega,
                 p.estado_entrega,
-                pg.valor_total
+                COALESCE(
+                    pg.valor_total,
+                    (
+                        SELECT COALESCE(
+                            SUM(ip.quantidade * ip.preco_unitario),
+                            0
+                        )
+                        FROM item_pedido ip
+                        WHERE ip.id_pedido = p.id_pedido
+                    )
+                ) AS valor_total
             FROM pedido p
             LEFT JOIN pagamento pg
                 ON pg.id_pedido = p.id_pedido
@@ -657,7 +1059,8 @@ exports.obterDetalhesPedido = async (req, res) => {
         const pagamentos = await pool.query(
             `SELECT
                 fp.nome_forma_pagamento,
-                ptfp.valor_pago
+                ptfp.valor_pago,
+                ptfp.quantidade_parcelas
             FROM pagamento_tem_forma_pagamento ptfp
             INNER JOIN forma_pagamento fp
                 ON fp.id_forma_pagamento = ptfp.id_forma_pagamento
@@ -681,5 +1084,77 @@ exports.obterDetalhesPedido = async (req, res) => {
             sucesso: false,
             mensagem: 'Erro ao consultar os detalhes do pedido.'
         });
+    }
+};
+
+// Cancelar automaticamente pedidos com prazo expirado
+exports.cancelarPedidosExpirados = async () => {
+
+    const conexao = await pool.connect();
+
+    try {
+
+        await conexao.query('BEGIN');
+
+        // Buscar pedidos pendentes cujo prazo já terminou
+        const pedidos = await conexao.query(
+            `SELECT id_pedido
+             FROM pedido
+             WHERE status_pedido = 'Pendente'
+             AND prazo_pagamento <= NOW()
+             FOR UPDATE SKIP LOCKED`
+        );
+
+        if (pedidos.rows.length === 0) {
+            await conexao.query('COMMIT');
+            return 0;
+        }
+
+        const idsPedidos = pedidos.rows.map(pedido => pedido.id_pedido);
+
+        // Devolver os livros de todos os pedidos expirados
+        await conexao.query(
+            `WITH itens AS (
+                SELECT
+                    id_livro,
+                    SUM(quantidade) AS quantidade
+                FROM item_pedido
+                WHERE id_pedido = ANY($1::INTEGER[])
+                GROUP BY id_livro
+            )
+            UPDATE livro l
+            SET quantidade_estoque = l.quantidade_estoque + itens.quantidade
+            FROM itens
+            WHERE l.id_livro = itens.id_livro`,
+            [idsPedidos]
+        );
+
+        // Cancelar os pedidos
+        await conexao.query(
+            `UPDATE pedido
+             SET status_pedido = 'Cancelado'
+             WHERE id_pedido = ANY($1::INTEGER[])`,
+            [idsPedidos]
+        );
+
+        await conexao.query('COMMIT');
+
+        console.log(
+            `${idsPedidos.length} pedido(s) expirado(s) e cancelado(s).`
+        );
+
+        return idsPedidos.length;
+
+    } catch (error) {
+
+        await conexao.query('ROLLBACK');
+
+        console.error('Erro ao cancelar pedidos expirados:', error);
+
+        throw error;
+
+    } finally {
+
+        conexao.release();
     }
 };

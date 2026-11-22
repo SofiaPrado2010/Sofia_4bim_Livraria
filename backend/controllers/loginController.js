@@ -2,6 +2,7 @@ const { query } = require('../database');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const permissaoController = require('../middlewares/verificarPermissao');
 
 // Configuração do envio de e-mails
 const transporter = nodemailer.createTransport({
@@ -117,7 +118,6 @@ exports.realizarLogin = async (req, res) => {
     }
 };
 
-
 // Verificar sessão
 exports.verificarSessao = (req, res) => {
 
@@ -128,18 +128,25 @@ exports.verificarSessao = (req, res) => {
         });
     }
 
+    const usuario = req.session.usuario;
+
+    // Busca as permissões caso seja funcionário
+    const permissoes = usuario.perfis.includes('FUNCIONARIO')
+        ? permissaoController.obterPermissoes(usuario.cargo)
+        : [];
+
     res.json({
         sucesso: true,
         usuario: {
-            nome: req.session.usuario.nome,
-            cpf: req.session.usuario.cpf,
-            perfis: req.session.usuario.perfis,
-            cargo: req.session.usuario.cargo
+            nome: usuario.nome,
+            cpf: usuario.cpf,
+            perfis: usuario.perfis,
+            cargo: usuario.cargo,
+            permissoes: permissoes
         }
     });
 
 };
-
 
 // Sair da conta
 exports.sair = (req, res) => {

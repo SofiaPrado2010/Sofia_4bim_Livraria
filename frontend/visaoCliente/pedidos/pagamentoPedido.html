@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento do pedido | Entre Páginas</title>
+
+    <link rel="stylesheet" href="pagamentoPedido.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Entre Páginas</h1>
+        <p>UM UNIVERSO DE HISTÓRIAS</p>
+    </header>
+
+    <main>
+
+        <section class="pagamento">
+
+            <h2>Pagamento do pedido</h2>
+
+            <p>Confira os valores e escolha como deseja realizar o pagamento.</p>
+
+            <!-- RESUMO DO PEDIDO -->
+            <div class="resumo">
+
+                <h3>Resumo do pedido 📚</h3>
+
+                <div id="informacoesPedido">
+                    Carregando pedido...
+                </div>
+
+                <div id="listaLivros"></div>
+
+                <h3 class="total">
+                    Total: <span id="valorTotal">R$ 0,00</span>
+                </h3>
+
+            </div>
+
+            <!-- FORMAS DE PAGAMENTO -->
+            <div class="formas-pagamento">
+
+                <div class="titulo-formas">
+                    <h3>Formas de pagamento 💳</h3>
+
+                    <span id="contadorFormas">0/3</span>
+                </div>
+
+                <div id="listaPagamentos"></div>
+
+                <button type="button" id="btAdicionar">
+                    + Adicionar forma de pagamento
+                </button>
+
+            </div>
+
+            <!-- TOTAL DOS PAGAMENTOS -->
+            <div class="resumo-pagamento">
+
+                <h3>Conferência dos valores</h3>
+
+                <p>
+                    Valor do pedido:
+                    <span id="totalPedido">R$ 0,00</span>
+                </p>
+
+                <p>
+                    Valor informado:
+                    <span id="totalPago">R$ 0,00</span>
+                </p>
+
+                <p id="diferenca">
+                    Informe as formas de pagamento.
+                </p>
+
+            </div>
+
+            <!-- BOTÕES -->
+            <button type="button" id="btFinalizar">
+                Finalizar pagamento
+            </button>
+
+            <button type="button" id="btVoltar">
+                Voltar aos pedidos
+            </button>
+
+            <p id="mensagem"></p>
+
+        </section>
+
+    </main>
+
+    <script src="pagamentoPedido.js"></script>
+
+</body>
+
+</html>

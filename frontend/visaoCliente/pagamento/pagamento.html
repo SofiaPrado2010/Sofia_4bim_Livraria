@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalizar compra | Entre Páginas</title>
+    <title>Confirmar pedido | Entre Páginas</title>
     <link rel="stylesheet" href="pagamento.css">
 </head>
 
@@ -17,8 +17,8 @@
     <main>
         <section class="pagamento">
 
-            <h2>Finalizar compra</h2>
-            <p>Estamos quase terminando! Confira seu pedido.</p>
+            <h2>Confirmar pedido</h2>
+            <p>Confira seus livros e os dados de entrega antes de confirmar.</p>
 
             <div class="resumo">
                 <h3>Resumo do pedido 📚</h3>
@@ -53,43 +53,12 @@
 
             </div>
 
-            <div id="formasPagamento">
+            <p>
+                Após confirmar, seu pedido ficará pendente.
+                Você terá 24 horas para realizar o pagamento.
+            </p>
 
-                <div class="pagamento-item">
-
-                    <div class="campo">
-                        <label>Forma de pagamento</label>
-
-                        <select class="formaPagamento">
-                            <option value="">Escolha uma opção</option>
-                            <option value="PIX">PIX</option>
-                            <option value="CREDITO">Cartão de crédito</option>
-                            <option value="DEBITO">Cartão de débito</option>
-                        </select>
-                    </div>
-
-                    <div class="campo">
-                        <label>Valor a pagar</label>
-                        <input type="number" class="valorPagamento" placeholder="Digite o valor" min="0.01" step="0.01">
-                    </div>
-
-                    <div class="detalhesForma"></div>
-
-                </div>
-
-            </div>
-
-            <button type="button" id="btAdicionarForma">
-                + Adicionar outra forma de pagamento
-            </button>
-
-            <p>Valor restante: <strong id="valorRestante">R$ 0,00</strong></p>
-
-
-            <!-- ÁREA DOS DADOS DE PAGAMENTO -->
-            <div id="detalhesPagamentos"></div>
-
-            <button id="btFinalizar">Confirmar compra</button>
+            <button id="btFinalizar">Confirmar pedido</button>
             <button id="btVoltar">Voltar à loja</button>
 
             <p id="mensagem"></p>

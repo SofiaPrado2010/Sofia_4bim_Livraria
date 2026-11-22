@@ -73,6 +73,11 @@ button {
     transition: 0.2s;
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 #btVoltar {
     background-color: #E91E91;
     color: white;
@@ -151,6 +156,25 @@ button {
 
 .btDetalhes:hover {
     background-color: #C91678;
+}
+
+/* PRAZO DE PAGAMENTO */
+.informacao-prazo {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #765968;
+}
+
+.tempo-restante {
+    font-weight: bold;
+}
+
+.prazo-valido {
+    color: #39834b;
+}
+
+.prazo-encerrado {
+    color: #c0392b;
 }
 
 /* MENSAGENS */
@@ -241,6 +265,40 @@ button {
     color: #e91e87;
 }
 
+/* AÇÕES DO PEDIDO */
+.acoes-pedido {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+#btPagarPedido {
+    background-color: #39834b;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#btPagarPedido:hover {
+    background-color: #2d683c;
+}
+
+#btCancelarPedido {
+    background-color: #c0392b;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#btCancelarPedido:hover {
+    background-color: #962d22;
+}
+
 /* RODAPÉ */
 footer {
     background-color: #d8538f;
@@ -279,5 +337,13 @@ footer p {
     .pedido-card,
     .detalhes-pedido {
         padding: 18px;
+    }
+
+    .acoes-pedido {
+        flex-direction: column;
+    }
+
+    .acoes-pedido button {
+        width: 100%;
     }
 }
