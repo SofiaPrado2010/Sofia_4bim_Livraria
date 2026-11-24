@@ -1,117 +1,78 @@
-// Permissões de cada cargo
-const permissoesPorCargo = {
-    'Gerente': [
-        'livro:visualizar',
-        'livro:gerenciar',
-        'estoque:alterar',
-        'pedido:visualizar',
-        'pedido:alterar',
-        'pagamento:registrar',
-        'entrega:alterar',
-        'devolucao:visualizar',
-        'devolucao:gerenciar',
-        'pessoa:gerenciar',
-        'funcionario:gerenciar',
-        'cargo:gerenciar',
-        'genero:gerenciar',
-        'forma_pagamento:gerenciar'
-    ],
+const { query } = require('../database');
 
-    'Atendente': [
-        'livro:visualizar',
-        'pedido:visualizar',
-        'pedido:alterar',
-        'devolucao:visualizar',
-        'devolucao:gerenciar'
-    ],
+// Buscar as permissões de um cargo diretamente no banco de dados
+exports.obterPermissoes = async (cargo) => {
+    try {
+        if (!cargo) {
+            return [];
+        }
 
-    'Vendedor': [
-        'livro:visualizar',
-        'pedido:visualizar',
-        'pedido:alterar',
-        'devolucao:visualizar',
-        'devolucao:gerenciar'
-    ],
+        const sql = `
+            SELECT p.codigo_permissao
+            FROM cargo
+            INNER JOIN cargo_tem_permissao cp
+                ON cargo.id_cargo = cp.id_cargo
+            INNER JOIN permissao p
+                ON cp.id_permissao = p.id_permissao
+            WHERE LOWER(TRIM(cargo.nome_cargo)) = LOWER(TRIM($1))
+            ORDER BY p.codigo_permissao
+        `;
 
-    'Estoquista': [
-        'livro:visualizar',
-        'estoque:alterar'
-    ],
+        const resultado = await query(sql, [cargo]);
 
-    'Operador de Caixa': [
-        'pedido:visualizar',
-        'pagamento:registrar'
-    ],
+        return resultado.rows.map(
+            linha => linha.codigo_permissao
+        );
 
-    'Auxiliar Administrativo': [
-        'pessoa:consultar'
-    ],
-
-    'Assistente de Vendas': [
-        'livro:visualizar',
-        'pedido:visualizar',
-        'pedido:alterar',
-        'devolucao:visualizar',
-        'devolucao:gerenciar'
-    ],
-
-    'Auxiliar de Estoque': [
-        'livro:visualizar',
-        'estoque:alterar'
-    ],
-
-    'Comprador': [
-        'livro:visualizar'
-    ],
-
-    'Auxiliar de Logística': [
-        'pedido:visualizar',
-        'entrega:alterar'
-    ]
+    } catch (error) {
+        console.error('Erro ao buscar permissões do cargo:', error);
+        throw error;
+    }
 };
 
-
-// Retorna as permissões de determinado cargo
-exports.obterPermissoes = (cargo) => {
-    return permissoesPorCargo[cargo] || [];
-};
-
-
-// Verifica se o funcionário possui determinada permissão
+// Verificar se o funcionário possui determinada permissão
 exports.verificarPermissao = (permissao) => {
+    return async (req, res, next) => {
+        try {
+            if (!req.session.usuario) {
+                return res.status(401).json({
+                    sucesso: false,
+                    mensagem: 'Você precisa fazer login.'
+                });
+            }
 
-    return (req, res, next) => {
+            const usuario = req.session.usuario;
 
-        // Verifica se existe uma sessão
-        if (!req.session.usuario) {
-            return res.status(401).json({
+            if (
+                !Array.isArray(usuario.perfis) ||
+                !usuario.perfis.includes('FUNCIONARIO')
+            ) {
+                return res.status(403).json({
+                    sucesso: false,
+                    mensagem: 'Acesso permitido somente para funcionários.'
+                });
+            }
+
+            const permissoes = await exports.obterPermissoes(
+                usuario.cargo
+            );
+
+            if (!permissoes.includes(permissao)) {
+                return res.status(403).json({
+                    sucesso: false,
+                    mensagem: 'Você não possui autorização para realizar esta operação.'
+                });
+            }
+
+            next();
+
+        } catch (error) {
+            console.error('Erro ao verificar permissão:', error);
+
+            return res.status(500).json({
                 sucesso: false,
-                mensagem: 'Você precisa fazer login.'
+                mensagem: 'Erro ao verificar as permissões do usuário.'
             });
         }
-
-        const usuario = req.session.usuario;
-
-        // Verifica se o usuário é funcionário
-        if (!usuario.perfis.includes('FUNCIONARIO')) {
-            return res.status(403).json({
-                sucesso: false,
-                mensagem: 'Acesso permitido somente para funcionários.'
-            });
-        }
-
-        // Busca as permissões do cargo
-        const permissoes = exports.obterPermissoes(usuario.cargo);
-
-        // Verifica se possui a permissão solicitada
-        if (!permissoes.includes(permissao)) {
-            return res.status(403).json({
-                sucesso: false,
-                mensagem: 'Você não possui autorização para realizar esta operação.'
-            });
-        }
-
-        // Permissão concedida
-        next();
     };
 };

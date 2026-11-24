@@ -1,22 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const pessoaController = require('../controllers/pessoaController');
+const { verificarPermissao } = require('../middlewares/verificarPermissao');
 
-// CRUD de Pessoas
-
-router.get('/abrirCrudPessoa', pessoaController.abrirCrudPessoa);
-router.get('/', pessoaController.listarPessoas);
-
-router.post('/', pessoaController.criarPessoa);
+// Rotas administrativas
+router.get('/abrirCrudPessoa', verificarPermissao('pessoa:consultar'), pessoaController.abrirCrudPessoa);
+router.get('/', verificarPermissao('pessoa:consultar'), pessoaController.listarPessoas);
+router.post('/', verificarPermissao('pessoa:gerenciar'), pessoaController.criarPessoa);
+router.get('/:id', verificarPermissao('pessoa:consultar'),pessoaController.obterPessoa);
+router.put('/:id', verificarPermissao('pessoa:gerenciar'), pessoaController.atualizarPessoa);
+router.delete('/:id', verificarPermissao('pessoa:gerenciar'), pessoaController.deletarPessoa);
+// Cadastro público de clientes
 router.post('/cadastroCliente', pessoaController.cadastrarCliente);
-
-// Informações da pessoa conectada
+// Informações da própria conta
 router.get('/minhasInformacoes', pessoaController.minhasInformacoes);
 router.put('/minhasInformacoes', pessoaController.atualizarMinhasInformacoes);
-
-// Rotas que utilizam parâmetros devem ficar depois
-router.get('/:id', pessoaController.obterPessoa);
-router.put('/:id', pessoaController.atualizarPessoa);
-router.delete('/:id', pessoaController.deletarPessoa);
 
 module.exports = router;

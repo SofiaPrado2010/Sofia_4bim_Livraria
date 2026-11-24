@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const generoController = require('../controllers/generoController');
+const { verificarPermissao } = require('../middlewares/verificarPermissao');
 
-// Rotas do CRUD de Generos
+// Consultas públicas
 router.get('/listar', generoController.listarGeneros);
 router.get('/:id', generoController.obterGenero);
-router.post('/', generoController.criarGenero);
-router.put('/:id', generoController.atualizarGenero);
-router.delete('/:id', generoController.deletarGenero);
+// Operações administrativas
+router.post('/', verificarPermissao('genero:gerenciar'), generoController.criarGenero);
+router.put('/:id', verificarPermissao('genero:gerenciar'), generoController.atualizarGenero);
+router.delete('/:id', verificarPermissao('genero:gerenciar'), generoController.deletarGenero);
 
 module.exports = router;

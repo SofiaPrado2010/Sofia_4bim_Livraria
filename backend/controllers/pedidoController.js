@@ -306,17 +306,27 @@ exports.criarPedido = async (req, res) => {
 
                 // Buscar o livro e bloquear seu registro
                 const livro = await conexao.query(
-                    `SELECT preco_unitario, quantidade_estoque
-                     FROM livro
-                     WHERE id_livro = $1
-                     FOR UPDATE`,
+                    `SELECT preco_unitario, quantidade_estoque, ativo
+                    FROM livro
+                    WHERE id_livro = $1
+                    FOR UPDATE`,
                     [item.idLivro]
                 );
 
                 // Verificar se o livro existe
                 if (livro.rows.length === 0) {
-
                     const erro = new Error('Livro não encontrado.');
+                    erro.status = 400;
+
+                    throw erro;
+                }
+
+                // Verificar se o livro está disponível para venda
+                if (!livro.rows[0].ativo) {
+                    const erro = new Error(
+                        `O livro ${item.idLivro} não está disponível para venda.`
+                    );
+
                     erro.status = 400;
 
                     throw erro;
@@ -696,30 +706,40 @@ exports.pagarPedido = async (req, res) => {
 
                 // Buscar o ID da forma de pagamento
                 const forma = await conexao.query(
-                    `SELECT id_forma_pagamento
-                     FROM forma_pagamento
-                     WHERE UPPER(nome_forma_pagamento) =
+                    `SELECT id_forma_pagamento, max_parcelas
+                    FROM forma_pagamento
+                    WHERE UPPER(nome_forma_pagamento) = 
                         CASE $1
                             WHEN 'CREDITO' THEN 'CRÉDITO'
                             WHEN 'DEBITO' THEN 'DÉBITO'
                             WHEN 'PIX' THEN 'PIX'
-                        END`,
+                        END
+                    AND ativo = TRUE`,
                     [pagamento.formaPagamento]
                 );
 
                 if (forma.rows.length === 0) {
-
                     const erro = new Error(
-                        'Forma de pagamento não encontrada no banco de dados.'
+                        'Forma de pagamento não encontrada ou desativada.'
                     );
 
                     erro.status = 400;
-
                     throw erro;
                 }
 
-                const idFormaPagamento =
-                    forma.rows[0].id_forma_pagamento;
+                const limiteParcelas = Number(forma.rows[0].max_parcelas);
+
+                // Verificar o limite configurado pelo gerente
+                if (pagamento.parcelas > limiteParcelas) {
+                    const erro = new Error(
+                        `A forma de pagamento escolhida permite no máximo ${limiteParcelas} parcela(s).`
+                    );
+
+                    erro.status = 400;
+                    throw erro;
+                }
+
+                const idFormaPagamento = forma.rows[0].id_forma_pagamento;
 
                 // Registrar o valor e a quantidade de parcelas
                 await conexao.query(
@@ -783,7 +803,6 @@ exports.pagarPedido = async (req, res) => {
 
 // Cancelar um pedido
 exports.cancelarPedido = async (req, res) => {
-
     const cliente = req.session.usuario;
 
     try {

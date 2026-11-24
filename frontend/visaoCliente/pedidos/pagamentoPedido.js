@@ -21,11 +21,11 @@ const mensagem = document.getElementById('mensagem');
 
 let valorPedido = 0;
 let pagamentos = [];
+let formasDisponiveis = [];
 
 
 // Formatar valores em reais
 function formatarMoeda(valor) {
-
     return Number(valor).toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -35,26 +35,89 @@ function formatarMoeda(valor) {
 
 // Exibir mensagem
 function exibirMensagem(texto, cor = 'red') {
-
     mensagem.textContent = texto;
     mensagem.style.color = cor;
 }
 
 
+// Identificar as formas de pagamento cadastradas
+function identificarFormaPagamento(nome) {
+    const nomeNormalizado = String(nome)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toUpperCase();
+
+    if (nomeNormalizado === 'PIX') {
+        return 'PIX';
+    }
+
+    if (nomeNormalizado === 'CREDITO') {
+        return 'CREDITO';
+    }
+
+    if (nomeNormalizado === 'DEBITO') {
+        return 'DEBITO';
+    }
+
+    return null;
+}
+
+
+// Carregar somente as formas de pagamento ativas
+async function carregarFormasPagamento() {
+    const resposta = await fetch(`${URL_API}/forma_pagamento/ativas`, {
+        credentials: 'include',
+        cache: 'no-store'
+    });
+
+    const dados = await resposta.json();
+
+    if (!resposta.ok || !dados.sucesso) {
+        throw new Error(
+            dados.mensagem || 'Não foi possível carregar as formas de pagamento.'
+        );
+    }
+
+    const formasBanco = Array.isArray(dados.forma_pagamento)
+        ? dados.forma_pagamento
+        : [];
+
+    // O sistema trabalha com PIX, crédito e débito.
+    // Outras formas cadastradas não são exibidas porque ainda não possuem
+    // tratamento próprio no processo de pagamento.
+    formasDisponiveis = formasBanco
+        .filter(forma => forma.ativo === true)
+        .map(forma => ({
+            codigo: identificarFormaPagamento(forma.nome_forma_pagamento),
+            nome: forma.nome_forma_pagamento,
+            max_parcelas: Number(forma.max_parcelas) || 1
+        }))
+        .filter(forma => forma.codigo !== null);
+
+    // Evitar opções duplicadas caso existam cadastros repetidos no banco.
+    formasDisponiveis = formasDisponiveis.filter((forma, indice, lista) =>
+        lista.findIndex(item => item.codigo === forma.codigo) === indice
+    );
+
+    if (formasDisponiveis.length === 0) {
+        throw new Error('Não há formas de pagamento disponíveis no momento.');
+    }
+}
+
+
 // Carregar detalhes do pedido
 async function carregarPedido() {
-
     if (!idPedido || !Number.isInteger(Number(idPedido)) || Number(idPedido) <= 0) {
-
         exibirMensagem('Número do pedido inválido.');
-
         btFinalizar.disabled = true;
         btAdicionar.disabled = true;
-
         return;
     }
 
     try {
+        // Primeiro carregar as formas ativas e depois os dados do pedido.
+        await carregarFormasPagamento();
 
         const resposta = await fetch(`${URL_API}/pedido/${idPedido}`, {
             credentials: 'include'
@@ -66,7 +129,7 @@ async function carregarPedido() {
             throw new Error(dados.mensagem || 'Não foi possível carregar o pedido.');
         }
 
-        if (dados.pedido.status_pedido !== 'Pendente') {
+        if (!dados.pedido || dados.pedido.status_pedido !== 'Pendente') {
             throw new Error('Este pedido não está disponível para pagamento.');
         }
 
@@ -89,7 +152,6 @@ async function carregarPedido() {
         listaLivros.innerHTML = '';
 
         dados.itens.forEach(item => {
-
             const subtotal = Number(item.preco_unitario) * Number(item.quantidade);
 
             const div = document.createElement('div');
@@ -108,23 +170,19 @@ async function carregarPedido() {
             sub.textContent = `Subtotal: ${formatarMoeda(subtotal)}`;
 
             div.append(nome, quantidade, preco, sub);
-
             listaLivros.appendChild(div);
         });
 
         adicionarPagamento();
-
         atualizarResumo();
 
-        // Liberar o botão depois de carregar o pedido
         btFinalizar.disabled = false;
+        btAdicionar.disabled = false;
 
     } catch (error) {
-
         console.error('Erro ao carregar pedido:', error);
 
         informacoesPedido.textContent = 'Não foi possível carregar os dados do pedido.';
-
         exibirMensagem(error.message);
 
         btFinalizar.disabled = true;
@@ -135,9 +193,10 @@ async function carregarPedido() {
 
 // Adicionar uma forma de pagamento
 function adicionarPagamento() {
+    const limite = Math.min(3, formasDisponiveis.length);
 
-    if (pagamentos.length >= 3) {
-        exibirMensagem('Você pode utilizar no máximo três formas de pagamento.');
+    if (pagamentos.length >= limite) {
+        exibirMensagem('Você pode utilizar somente as formas de pagamento ativas, até o limite de três.');
         return;
     }
 
@@ -152,29 +211,22 @@ function adicionarPagamento() {
     });
 
     renderizarPagamentos();
-
     exibirMensagem('');
 }
 
 
 // Excluir uma forma de pagamento
 function removerPagamento(indice) {
-
     pagamentos.splice(indice, 1);
-
     renderizarPagamentos();
-
     atualizarResumo();
 }
 
-
 // Criar os cartões de pagamento
 function renderizarPagamentos() {
-
     listaPagamentos.innerHTML = '';
 
     pagamentos.forEach((pagamento, indice) => {
-
         const cartao = document.createElement('div');
         cartao.classList.add('cartao-pagamento');
 
@@ -187,15 +239,11 @@ function renderizarPagamentos() {
         cabecalho.appendChild(titulo);
 
         if (pagamentos.length > 1) {
-
             const btRemover = document.createElement('button');
-
             btRemover.type = 'button';
             btRemover.classList.add('btRemover');
             btRemover.textContent = 'Remover';
-
             btRemover.onclick = () => removerPagamento(indice);
-
             cabecalho.appendChild(btRemover);
         }
 
@@ -208,17 +256,26 @@ function renderizarPagamentos() {
 
         const selectForma = document.createElement('select');
 
-        selectForma.innerHTML = `
-            <option value="">Selecione uma forma</option>
-            <option value="PIX">PIX</option>
-            <option value="CREDITO">Cartão de crédito</option>
-            <option value="DEBITO">Cartão de débito</option>
-        `;
+        const opcaoInicial = document.createElement('option');
+        opcaoInicial.value = '';
+        opcaoInicial.textContent = 'Selecione uma forma';
+        selectForma.appendChild(opcaoInicial);
+
+        const formasJaEscolhidas = pagamentos
+            .filter((item, posicao) => posicao !== indice)
+            .map(item => item.formaPagamento);
+
+        formasDisponiveis.forEach(forma => {
+            const opcao = document.createElement('option');
+            opcao.value = forma.codigo;
+            opcao.textContent = forma.nome;
+            opcao.disabled = formasJaEscolhidas.includes(forma.codigo);
+            selectForma.appendChild(opcao);
+        });
 
         selectForma.value = pagamento.formaPagamento;
 
         selectForma.onchange = () => {
-
             pagamento.formaPagamento = selectForma.value;
 
             if (pagamento.formaPagamento !== 'CREDITO') {
@@ -239,7 +296,6 @@ function renderizarPagamentos() {
         labelValor.textContent = 'Valor do pagamento';
 
         const inputValor = document.createElement('input');
-
         inputValor.type = 'number';
         inputValor.min = '0.01';
         inputValor.step = '0.01';
@@ -247,19 +303,15 @@ function renderizarPagamentos() {
         inputValor.value = pagamento.valor;
 
         inputValor.oninput = () => {
-
             pagamento.valor = inputValor.value;
-
             atualizarResumo();
         };
 
         campoValor.append(labelValor, inputValor);
-
         cartao.append(cabecalho, campoForma, campoValor);
 
         // Informações do PIX
         if (pagamento.formaPagamento === 'PIX') {
-
             const areaPix = document.createElement('div');
             areaPix.classList.add('dados-pix');
 
@@ -274,8 +326,7 @@ function renderizarPagamentos() {
             qrCode.classList.add('imagem-qrcode');
             qrCode.alt = 'QR Code ilustrativo do pagamento';
 
-            const codigoPix =
-                `PIX-SIMULADO-ENTREPAGINAS-PEDIDO-${idPedido}`;
+            const codigoPix = `PIX-SIMULADO-ENTREPAGINAS-PEDIDO-${idPedido}`;
 
             // QR Code demonstrativo com conteúdo fictício
             qrCode.src =
@@ -296,15 +347,10 @@ function renderizarPagamentos() {
             btCopiar.textContent = 'Copiar código';
 
             btCopiar.onclick = async () => {
-
                 try {
-
                     await navigator.clipboard.writeText(codigoPix);
-
                     btCopiar.textContent = 'Código copiado!';
-
                 } catch (error) {
-
                     exibirMensagem('Não foi possível copiar o código.');
                 }
             };
@@ -326,7 +372,6 @@ function renderizarPagamentos() {
             pagamento.formaPagamento === 'CREDITO' ||
             pagamento.formaPagamento === 'DEBITO'
         ) {
-
             const areaCartao = document.createElement('div');
             areaCartao.classList.add('dados-cartao');
 
@@ -336,7 +381,6 @@ function renderizarPagamentos() {
             const avisoCartao = document.createElement('p');
             avisoCartao.textContent =
                 'Utilize somente informações fictícias para esta simulação.';
-
 
             // Nome do titular
             const campoNome = criarCampoCartao(
@@ -360,13 +404,11 @@ function renderizarPagamentos() {
             campoNumero.input.inputMode = 'numeric';
 
             campoNumero.input.oninput = () => {
-
                 const numeros = campoNumero.input.value
                     .replace(/\D/g, '')
                     .slice(0, 16);
 
                 pagamento.numeroCartao = numeros.replace(/(\d{4})(?=\d)/g, '$1 ');
-
                 campoNumero.input.value = pagamento.numeroCartao;
             };
 
@@ -383,7 +425,6 @@ function renderizarPagamentos() {
             campoValidade.input.inputMode = 'numeric';
 
             campoValidade.input.oninput = () => {
-
                 const numeros = campoValidade.input.value
                     .replace(/\D/g, '')
                     .slice(0, 4);
@@ -410,14 +451,12 @@ function renderizarPagamentos() {
             campoCVV.input.inputMode = 'numeric';
 
             campoCVV.input.oninput = () => {
-
                 pagamento.cvv = campoCVV.input.value
                     .replace(/\D/g, '')
                     .slice(0, 4);
 
                 campoCVV.input.value = pagamento.cvv;
             };
-
 
             areaCartao.append(
                 tituloCartao,
@@ -432,7 +471,6 @@ function renderizarPagamentos() {
 
             // Parcelas somente no crédito
             if (pagamento.formaPagamento === 'CREDITO') {
-
                 const campoParcelas = document.createElement('div');
                 campoParcelas.classList.add('campo');
 
@@ -441,24 +479,28 @@ function renderizarPagamentos() {
 
                 const selectParcelas = document.createElement('select');
 
-                for (let i = 1; i <= 12; i++) {
+                const formaSelecionada = formasDisponiveis.find(
+                    forma => forma.codigo === pagamento.formaPagamento
+                );
 
+                const limiteParcelas = Math.min(12, Math.max(1, Number(formaSelecionada?.max_parcelas) || 1));
+
+                // Criar somente as opções permitidas
+                for (let i = 1; i <= limiteParcelas; i++) {
                     const opcao = document.createElement('option');
-
                     opcao.value = i;
                     opcao.textContent = `${i}x`;
-
                     selectParcelas.appendChild(opcao);
+                }
+
+                // Garantir que a quantidade selecionada continue válida
+                if (pagamento.parcelas > limiteParcelas) {
+                    pagamento.parcelas = limiteParcelas;
                 }
 
                 selectParcelas.value = pagamento.parcelas;
 
-                selectParcelas.onchange = () => {
-                    pagamento.parcelas = Number(selectParcelas.value);
-                };
-
                 campoParcelas.append(labelParcelas, selectParcelas);
-
                 cartao.appendChild(campoParcelas);
             }
         }
@@ -468,13 +510,13 @@ function renderizarPagamentos() {
 
     contadorFormas.textContent = `${pagamentos.length}/3`;
 
-    btAdicionar.disabled = pagamentos.length >= 3;
+    const limite = Math.min(3, formasDisponiveis.length);
+    btAdicionar.disabled = pagamentos.length >= limite;
 }
 
 
 // Criar campos dos dados fictícios do cartão
 function criarCampoCartao(titulo, tipo, exemplo, valor, aoAlterar) {
-
     const div = document.createElement('div');
     div.classList.add('campo');
 
@@ -482,7 +524,6 @@ function criarCampoCartao(titulo, tipo, exemplo, valor, aoAlterar) {
     label.textContent = titulo;
 
     const input = document.createElement('input');
-
     input.type = tipo;
     input.placeholder = exemplo;
     input.value = valor;
@@ -499,15 +540,11 @@ function criarCampoCartao(titulo, tipo, exemplo, valor, aoAlterar) {
         input
     };
 }
-
-
 // Atualizar os valores da conferência
 function atualizarResumo() {
-
     let soma = 0;
 
     pagamentos.forEach(pagamento => {
-
         const valor = Number(pagamento.valor);
 
         if (Number.isFinite(valor) && valor > 0) {
@@ -521,31 +558,23 @@ function atualizarResumo() {
     totalPago.textContent = formatarMoeda(soma / 100);
 
     if (diferencaCentavos === 0 && totalCentavos > 0) {
-
         diferenca.textContent = 'Os valores estão corretos!';
         diferenca.className = 'valor-correto';
 
     } else if (diferencaCentavos > 0) {
-
         diferenca.textContent =
             `Faltam ${formatarMoeda(diferencaCentavos / 100)}.`;
-
         diferenca.className = 'valor-incorreto';
 
     } else {
-
         diferenca.textContent =
             `O valor ultrapassa o total em ${formatarMoeda(Math.abs(diferencaCentavos) / 100)}.`;
-
         diferenca.className = 'valor-incorreto';
     }
 }
 
-
 // Validar os dados fictícios do cartão
-
 function validarCartao(pagamento) {
-
     const numero = pagamento.numeroCartao.replace(/\s/g, '');
 
     if (!pagamento.nomeCartao.trim()) {
@@ -561,7 +590,6 @@ function validarCartao(pagamento) {
     }
 
     const partes = pagamento.validade.split('/');
-
     const mes = Number(partes[0]);
     const ano = 2000 + Number(partes[1]);
 
@@ -570,7 +598,6 @@ function validarCartao(pagamento) {
     }
 
     const agora = new Date();
-
     const anoAtual = agora.getFullYear();
     const mesAtual = agora.getMonth() + 1;
 
@@ -588,22 +615,25 @@ function validarCartao(pagamento) {
     return '';
 }
 
+
 // Finalizar pagamento
 async function finalizarPagamento() {
-
     exibirMensagem('');
 
     if (pagamentos.length === 0) {
-
         exibirMensagem('Adicione uma forma de pagamento.');
         return;
     }
 
     for (const pagamento of pagamentos) {
-
         if (!pagamento.formaPagamento) {
-
             exibirMensagem('Selecione todas as formas de pagamento.');
+            return;
+        }
+
+        // Conferir novamente se a forma continua ativa na lista carregada.
+        if (!formasDisponiveis.some(forma => forma.codigo === pagamento.formaPagamento)) {
+            exibirMensagem('Uma das formas de pagamento não está mais disponível.');
             return;
         }
 
@@ -612,7 +642,6 @@ async function finalizarPagamento() {
             !Number.isFinite(Number(pagamento.valor)) ||
             Number(pagamento.valor) <= 0
         ) {
-
             exibirMensagem('Informe um valor válido para cada pagamento.');
             return;
         }
@@ -621,13 +650,10 @@ async function finalizarPagamento() {
             pagamento.formaPagamento === 'CREDITO' ||
             pagamento.formaPagamento === 'DEBITO'
         ) {
-
             const erroCartao = validarCartao(pagamento);
 
             if (erroCartao) {
-
                 exibirMensagem(erroCartao);
-
                 return;
             }
         }
@@ -637,41 +663,32 @@ async function finalizarPagamento() {
     const formas = pagamentos.map(pagamento => pagamento.formaPagamento);
 
     if (new Set(formas).size !== formas.length) {
-
         exibirMensagem('Não repita a mesma forma de pagamento.');
         return;
     }
 
     // Conferir o total em centavos
     const soma = pagamentos.reduce((total, pagamento) => {
-
         return total + Math.round(Number(pagamento.valor) * 100);
-
     }, 0);
 
     if (soma !== Math.round(valorPedido * 100)) {
-
         exibirMensagem('A soma dos pagamentos precisa ser igual ao total do pedido.');
         return;
     }
 
     try {
-
         btFinalizar.disabled = true;
-
         exibirMensagem('Registrando pagamento...', '#80665e');
 
         const resposta = await fetch(`${URL_API}/pedido/${idPedido}/pagar`, {
-
             method: 'POST',
-
             headers: {
                 'Content-Type': 'application/json'
             },
-
             credentials: 'include',
 
-            // Os dados do cartão não são enviados ao servidor
+            // Os dados do cartão não são enviados ao servidor.
             body: JSON.stringify({
                 pagamentos: pagamentos.map(pagamento => ({
                     formaPagamento: pagamento.formaPagamento,
@@ -684,28 +701,21 @@ async function finalizarPagamento() {
         const dados = await resposta.json();
 
         if (!resposta.ok) {
-
             throw new Error(
                 dados.mensagem || 'Não foi possível realizar o pagamento.'
             );
         }
 
         exibirMensagem('Pagamento simulado realizado com sucesso!', 'green');
-
         btAdicionar.disabled = true;
 
         setTimeout(() => {
-
             window.location.href = 'pedidos.html';
-
         }, 2000);
 
     } catch (error) {
-
         console.error('Erro ao finalizar pagamento:', error);
-
         exibirMensagem(error.message);
-
         btFinalizar.disabled = false;
     }
 }
@@ -713,14 +723,12 @@ async function finalizarPagamento() {
 
 // Voltar para os pedidos
 btVoltar.onclick = () => {
-
     window.location.href = 'pedidos.html';
 };
 
 
 // Eventos
 btAdicionar.onclick = adicionarPagamento;
-
 btFinalizar.onclick = finalizarPagamento;
 
 
@@ -729,4 +737,3 @@ btFinalizar.disabled = true;
 btAdicionar.disabled = true;
 
 carregarPedido();
-btFinalizar.disabled = false;

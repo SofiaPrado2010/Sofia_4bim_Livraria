@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -11,17 +12,20 @@
 <body onload="listar()">
     <header>
         <h1>Cadastro de Cargos</h1>
-        <p>Gerencie os cargos do sistema.</p>
+        <p>Gerencie os cargos e suas permissões no sistema.</p>
     </header>
 
     <main class="container-master">
         <div class="conteudo-principal">
             <section class="form-esquerda">
+
                 <h2>Dados do cargo</h2>
-                
+
                 <label for="inputId_cargo">ID do cargo</label>
+
                 <div class="linha-id">
                     <input type="text" name="inputId_cargo" id="inputId_cargo">
+
                     <input type="button" value="Procure" id="btProcure" onclick="procure()">
                     <input type="button" value="Inserir" id="btInserir" onclick="inserir()" style="display:none;">
                     <input type="button" value="Alterar" id="btAlterar" onclick="alterar()" style="display:none;">
@@ -29,7 +33,26 @@
                 </div>
 
                 <label for="inputNome_cargo">Nome do cargo</label>
-                <input type="text" name="inputNome_cargo" id="inputNome_cargo" placeholder="Ex: Secretário">
+
+                <input
+                    type="text"
+                    name="inputNome_cargo"
+                    id="inputNome_cargo"
+                    placeholder="Ex: Secretário"
+                >
+
+                <section class="area-permissoes">
+
+                    <div class="titulo-permissoes">
+                        <h3>Permissões do cargo</h3>
+                        <p>Selecione as funcionalidades que este cargo poderá acessar.</p>
+                    </div>
+
+                    <div id="listaPermissoes">
+                        <p class="carregando-permissoes">Carregando permissões...</p>
+                    </div>
+
+                </section>
 
                 <div id="divAviso">Informe o ID e clique em Procure</div>
 
@@ -37,6 +60,7 @@
                     <input type="button" value="Salvar" id="btSalvar" onclick="salvar()" style="display:none;">
                     <input type="button" value="Cancelar" id="btCancelar" onclick="cancelarOperacao()" style="display:none;">
                 </div>
+
             </section>
         </div>
 

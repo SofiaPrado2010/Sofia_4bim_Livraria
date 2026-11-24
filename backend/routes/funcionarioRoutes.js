@@ -1,23 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const funcionarioController = require('./../controllers/funcionarioController');
+const { verificarPermissao } = require('../middlewares/verificarPermissao');
 
-// CRUD de Funcionários
+// Todas as operações administrativas exigem permissão para gerenciar funcionários
 
-router.get('/abrirCrudFuncionario', funcionarioController.abrirCrudFuncionario);
-
-// Consultar uma pessoa pelo CPF, mesmo que ainda não seja funcionário
-router.get('/pessoa/:cpf', funcionarioController.obterPessoa);
-
-// Listar funcionários
-router.get('/', funcionarioController.listarFuncionarios);
-
-// Cadastrar funcionário
-router.post('/', funcionarioController.criarFuncionario);
-
-// Consultar, alterar e excluir funcionário
-router.get('/:id', funcionarioController.obterFuncionario);
-router.put('/:id', funcionarioController.atualizarFuncionario);
-router.delete('/:id', funcionarioController.deletarFuncionario);
+router.get('/abrirCrudFuncionario', verificarPermissao('funcionario:gerenciar'), funcionarioController.abrirCrudFuncionario);
+router.get('/pessoa/:cpf', verificarPermissao('funcionario:gerenciar'), funcionarioController.obterPessoa);
+router.get('/', verificarPermissao('funcionario:gerenciar'), funcionarioController.listarFuncionarios);
+router.post('/', verificarPermissao('funcionario:gerenciar'), funcionarioController.criarFuncionario);
+router.get('/:id', verificarPermissao('funcionario:gerenciar'), funcionarioController.obterFuncionario);
+router.put('/:id', verificarPermissao('funcionario:gerenciar'), funcionarioController.atualizarFuncionario);
+router.delete('/:id', verificarPermissao('funcionario:gerenciar'), funcionarioController.deletarFuncionario);
 
 module.exports = router;

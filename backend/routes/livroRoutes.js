@@ -10,17 +10,28 @@ const upload = multer({
     storage: multer.memoryStorage()
 });
 
-// Rotas de consulta dos livros
-// Permanecem disponíveis para os clientes e funcionários
+// Rotas de consulta
 router.get('/listar', livroController.listarLivros);
+router.get('/catalogo', livroController.listarLivrosCatalogo);
 router.get('/:id', livroController.obterLivro);
 
-// Rotas de gerenciamento de livros
-// Somente funcionários com permissão podem executar
+// Rotas de gerenciamento
 router.post(
     '/',
     verificarPermissao('livro:gerenciar'),
     livroController.criarLivro
+);
+
+router.put(
+    '/:id/desativar',
+    verificarPermissao('livro:gerenciar'),
+    livroController.desativarLivro
+);
+
+router.put(
+    '/:id/reativar',
+    verificarPermissao('livro:gerenciar'),
+    livroController.reativarLivro
 );
 
 router.put(

@@ -179,6 +179,8 @@ async function listar() {
                             <th>Páginas</th>
                             <th>Estoque</th>
                             <th>Capa</th>
+                            <th>Status</th>
+                            <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -195,6 +197,24 @@ async function listar() {
                         <td>${linha.numero_paginas}</td>
                         <td>${linha.quantidade_estoque}</td>
                         <td>${linha.tipo_capa}</td>
+                        <td>
+                            <span class="${linha.ativo ? 'status-ativo' : 'status-inativo'}">
+                                ${linha.ativo ? 'Ativo' : 'Inativo'}
+                            </span>
+                        </td>
+                        <td>
+                            ${
+                                linha.ativo
+                                    ? `<button class="bt-status bt-desativar"
+                                        onclick="alterarStatusLivro(${linha.id_livro}, false)">
+                                        Desativar
+                                      </button>`
+                                    : `<button class="bt-status bt-reativar"
+                                        onclick="alterarStatusLivro(${linha.id_livro}, true)">
+                                        Reativar
+                                      </button>`
+                            }
+                        </td>
                     </tr>
                 `;
             }
@@ -207,11 +227,40 @@ async function listar() {
             document.getElementById("outputSaida").innerHTML =
                 data.livros.length > 0 ? texto : "Nenhum livro cadastrado.";
         }
+
     } catch (erro) {
         document.getElementById("outputSaida").innerHTML = "Servidor offline.";
     }
 }
 
+async function alterarStatusLivro(id, reativar) {
+    const acao = reativar ? 'reativar' : 'desativar';
+
+    try {
+        const resposta = await fetch(
+            `${URL_API}/livro/${id}/${acao}`,
+            {
+                method: 'PUT',
+                credentials: 'include'
+            }
+        );
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok || !dados.sucesso) {
+            mostrarAviso(dados.mensagem || 'Não foi possível alterar o status.');
+            return;
+        }
+
+        mostrarAviso(dados.mensagem);
+
+        await listar();
+
+    } catch (erro) {
+        console.error('Erro ao alterar status:', erro);
+        mostrarAviso('Erro ao comunicar com o servidor.');
+    }
+}
 
 function cancelarOperacao() {
     limparAtributos();

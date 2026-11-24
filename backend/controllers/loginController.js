@@ -119,33 +119,41 @@ exports.realizarLogin = async (req, res) => {
 };
 
 // Verificar sessão
-exports.verificarSessao = (req, res) => {
+exports.verificarSessao = async (req, res) => {
+    try {
+        if (!req.session.usuario) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: 'Nenhum usuário está conectado.'
+            });
+        }
 
-    if (!req.session.usuario) {
-        return res.status(401).json({
+        const usuario = req.session.usuario;
+
+        // Buscar as permissões atuais caso seja funcionário
+        const permissoes = usuario.perfis.includes('FUNCIONARIO')
+            ? await permissaoController.obterPermissoes(usuario.cargo)
+            : [];
+
+        res.json({
+            sucesso: true,
+            usuario: {
+                nome: usuario.nome,
+                cpf: usuario.cpf,
+                perfis: usuario.perfis,
+                cargo: usuario.cargo,
+                permissoes: permissoes
+            }
+        });
+
+    } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+
+        res.status(500).json({
             sucesso: false,
-            mensagem: 'Nenhum usuário está conectado.'
+            mensagem: 'Erro ao verificar sessão.'
         });
     }
-
-    const usuario = req.session.usuario;
-
-    // Busca as permissões caso seja funcionário
-    const permissoes = usuario.perfis.includes('FUNCIONARIO')
-        ? permissaoController.obterPermissoes(usuario.cargo)
-        : [];
-
-    res.json({
-        sucesso: true,
-        usuario: {
-            nome: usuario.nome,
-            cpf: usuario.cpf,
-            perfis: usuario.perfis,
-            cargo: usuario.cargo,
-            permissoes: permissoes
-        }
-    });
-
 };
 
 // Sair da conta

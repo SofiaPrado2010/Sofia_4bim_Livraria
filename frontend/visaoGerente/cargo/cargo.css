@@ -115,6 +115,107 @@ main.container-master {
     min-width: 100px;
 }
 
+/* --- Área de permissões --- */
+.area-permissoes {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #fffafd;
+    border: 1px solid var(--rosinha);
+    border-radius: 8px;
+}
+
+.titulo-permissoes {
+    margin-bottom: 1.5rem;
+}
+
+.titulo-permissoes h3 {
+    color: var(--rosa-escuro);
+    font-size: 1.2rem;
+    margin-bottom: .4rem;
+}
+
+.titulo-permissoes p {
+    font-size: .9rem;
+    color: var(--vinho);
+    line-height: 1.5;
+}
+
+#listaPermissoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+/* Cartões das categorias */
+.grupo-permissoes {
+    background-color: var(--branco);
+    border: 1px solid var(--rosinha);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: border-color .3s, box-shadow .3s;
+}
+
+.grupo-permissoes:hover {
+    border-color: var(--rosa-claro);
+    box-shadow: 0 2px 8px rgba(228, 79, 156, .12);
+}
+
+.grupo-permissoes h4 {
+    color: var(--rosa-escuro);
+    font-size: 1rem;
+    padding-bottom: .6rem;
+    margin-bottom: .7rem;
+    border-bottom: 2px solid var(--laranja);
+}
+
+/* Opções individuais */
+.opcao-permissao {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .55rem .4rem;
+    margin: .2rem 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 500;
+    transition: background-color .2s;
+}
+
+.opcao-permissao:hover {
+    background-color: #fff0f7;
+}
+
+.opcao-permissao input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    accent-color: var(--rosa-escuro);
+    cursor: pointer;
+}
+
+.opcao-permissao input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
+.opcao-permissao:has(input:checked) {
+    background-color: #fff0f7;
+    color: var(--rosa-escuro);
+    font-weight: bold;
+}
+
+.carregando-permissoes {
+    color: var(--vinho);
+    font-size: .9rem;
+    padding: .5rem 0;
+}
+
+.sem-permissoes {
+    color: #927d89;
+    font-size: .9rem;
+    padding: .5rem 0;
+}
+
 /* --- Botões --- */
 input[type="button"] {
     background-color: var(--laranja);
@@ -184,7 +285,7 @@ input[type="button"]:hover {
     font-size: .9rem;
 }
 
-/* --- Lista de gêneros --- */
+/* --- Lista de cargos --- */
 .lista-filmes {
     background-color: var(--branco);
     width: 100%;
@@ -249,6 +350,14 @@ footer {
     .form-esquerda,
     .lista-filmes {
         padding: 1.2rem;
+    }
+
+    .area-permissoes {
+        padding: 1rem;
+    }
+
+    #listaPermissoes {
+        grid-template-columns: 1fr;
     }
 
     .linha-id {

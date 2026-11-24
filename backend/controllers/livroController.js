@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
-// Listar todos os livros
+// Listar todos os livros para o gerenciamento
 exports.listarLivros = async (req, res) => {
     try {
         const result = await query(
@@ -17,6 +17,26 @@ exports.listarLivros = async (req, res) => {
         res.status(500).json({
             sucesso: false,
             mensagem: 'Erro ao listar livros.'
+        });
+    }
+};
+
+// Listar somente livros ativos para o catálogo do cliente
+exports.listarLivrosCatalogo = async (req, res) => {
+    try {
+        const result = await query(
+            `SELECT * FROM livro
+             WHERE ativo = TRUE
+             ORDER BY id_livro`
+        );
+
+        res.json({ sucesso: true, livros: result.rows });
+
+    } catch (error) {
+        console.error('Erro ao listar catálogo:', error);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao carregar os livros disponíveis.'
         });
     }
 };
@@ -209,6 +229,90 @@ exports.atualizarLivro = async (req, res) => {
         res.status(500).json({
             sucesso: false,
             mensagem: 'Erro ao atualizar livro.'
+        });
+    }
+};
+
+// Desativar livro
+exports.desativarLivro = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'ID inválido.'
+            });
+        }
+
+        const result = await query(
+            `UPDATE livro
+             SET ativo = FALSE
+             WHERE id_livro = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Livro não encontrado.'
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            mensagem: 'Livro desativado com sucesso!',
+            livro: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Erro ao desativar livro:', error);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao desativar livro.'
+        });
+    }
+};
+
+// Reativar livro
+exports.reativarLivro = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'ID inválido.'
+            });
+        }
+
+        const result = await query(
+            `UPDATE livro
+             SET ativo = TRUE
+             WHERE id_livro = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Livro não encontrado.'
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            mensagem: 'Livro reativado com sucesso!',
+            livro: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Erro ao reativar livro:', error);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao reativar livro.'
         });
     }
 };

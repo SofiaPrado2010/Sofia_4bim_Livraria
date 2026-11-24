@@ -68,7 +68,7 @@ function listarTiposCapa() {
 
 // Buscar os livros no banco de dados
 async function listarLivros() {
-    const resposta = await fetch(`${URL_API}/livro/listar`);
+    const resposta = await fetch(`${URL_API}/livro/catalogo`);
     const dados = await resposta.json();
 
     listaLivros = dados.livros;
