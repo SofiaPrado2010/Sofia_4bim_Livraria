@@ -32,10 +32,50 @@ exports.listarFuncionarios = async (req, res) => {
   }
 };
 
-// Criar Funcionário
+// Obter Pessoa pelo CPF
+exports.obterPessoa = async (req, res) => {
+  try {
+    const cpf = req.params.cpf;
 
+    if (!cpf || cpf.length !== 11) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'CPF inválido'
+      });
+    }
+
+    const result = await query(
+      `SELECT cpf_pessoa, nome_pessoa, data_nascimento_pessoa,
+              endereco_pessoa, usuario_pessoa, email_pessoa
+       FROM pessoa
+       WHERE cpf_pessoa = $1`,
+      [cpf]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: 'Pessoa não encontrada'
+      });
+    }
+
+    res.json({
+      sucesso: true,
+      pessoa: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Erro ao obter pessoa:', error);
+    res.status(500).json({
+      sucesso: false,
+      mensagem: 'Erro interno do servidor'
+    });
+  }
+};
+
+// Criar Funcionário
 exports.criarFuncionario = async (req, res) => {
-  const conexao = await pool.connect();
+  let conexao;
 
   try {
     const {
@@ -54,48 +94,89 @@ exports.criarFuncionario = async (req, res) => {
 
     if (
       !cpf_pessoa ||
-      !nome_pessoa ||
-      !data_nascimento_pessoa ||
-      !endereco_pessoa ||
-      !usuario_pessoa ||
-      !senha_pessoa ||
-      !email_pessoa ||
+      cpf_pessoa.length !== 11 ||
       !id_cargo ||
       !data_contratacao ||
-      !salario
+      salario === undefined ||
+      salario === null ||
+      salario === ''
     ) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'Preencha todos os campos obrigatórios'
+        mensagem: 'Preencha todos os campos profissionais obrigatórios'
       });
     }
 
-    const senhaCriptografada = await bcrypt.hash(senha_pessoa, 10);
+    conexao = await pool.connect();
 
     await conexao.query('BEGIN');
 
-    await conexao.query(
-      `INSERT INTO pessoa
-            (cpf_pessoa, nome_pessoa, data_nascimento_pessoa,
-            endereco_pessoa, usuario_pessoa, senha_pessoa, email_pessoa)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [
-        cpf_pessoa,
-        nome_pessoa,
-        data_nascimento_pessoa,
-        endereco_pessoa,
-        usuario_pessoa,
-        senhaCriptografada,
-        email_pessoa
-      ]
+    // Verificar se a pessoa já está cadastrada
+    const pessoaExistente = await conexao.query(
+      'SELECT cpf_pessoa FROM pessoa WHERE cpf_pessoa = $1 FOR UPDATE',
+      [cpf_pessoa]
     );
 
+    // Se não existir, cadastrar os dados pessoais
+    if (pessoaExistente.rows.length === 0) {
+
+      if (
+        !nome_pessoa ||
+        !data_nascimento_pessoa ||
+        !endereco_pessoa ||
+        !usuario_pessoa ||
+        !senha_pessoa ||
+        !email_pessoa
+      ) {
+        await conexao.query('ROLLBACK');
+
+        return res.status(400).json({
+          sucesso: false,
+          mensagem: 'Preencha todos os dados pessoais para cadastrar uma nova pessoa'
+        });
+      }
+
+      const senhaCriptografada = await bcrypt.hash(senha_pessoa, 10);
+
+      await conexao.query(
+        `INSERT INTO pessoa
+          (cpf_pessoa, nome_pessoa, data_nascimento_pessoa,
+           endereco_pessoa, usuario_pessoa, senha_pessoa, email_pessoa)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          cpf_pessoa,
+          nome_pessoa,
+          data_nascimento_pessoa,
+          endereco_pessoa,
+          usuario_pessoa,
+          senhaCriptografada,
+          email_pessoa
+        ]
+      );
+    }
+
+    // Verificar se já existe um cadastro de funcionário
+    const funcionarioExistente = await conexao.query(
+      'SELECT cpf_funcionario FROM funcionario WHERE cpf_funcionario = $1',
+      [cpf_pessoa]
+    );
+
+    if (funcionarioExistente.rows.length > 0) {
+      await conexao.query('ROLLBACK');
+
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'Esta pessoa já está cadastrada como funcionário'
+      });
+    }
+
+    // Cadastrar os dados profissionais
     const result = await conexao.query(
       `INSERT INTO funcionario
-            (cpf_funcionario, id_cargo, data_contratacao,
-            salario, porcentagem_comissao_funcionario)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *`,
+        (cpf_funcionario, id_cargo, data_contratacao,
+         salario, porcentagem_comissao_funcionario)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
       [
         cpf_pessoa,
         id_cargo,
@@ -114,7 +195,9 @@ exports.criarFuncionario = async (req, res) => {
     });
 
   } catch (error) {
-    await conexao.query('ROLLBACK');
+    if (conexao) {
+      await conexao.query('ROLLBACK');
+    }
 
     console.error('Erro ao criar funcionário:', error);
 
@@ -138,7 +221,9 @@ exports.criarFuncionario = async (req, res) => {
     });
 
   } finally {
-    conexao.release();
+    if (conexao) {
+      conexao.release();
+    }
   }
 };
 
@@ -180,7 +265,6 @@ exports.obterFuncionario = async (req, res) => {
 };
 
 // Atualizar Funcionário
-
 exports.atualizarFuncionario = async (req, res) => {
   try {
     const cpf = req.params.id;

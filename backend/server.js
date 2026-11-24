@@ -17,6 +17,8 @@ const funcionarioRoutes = require('./routes/funcionarioRoutes');
 const forma_pagamentoRoutes = require('./routes/forma_pagamentoRoutes');
 const loginRoutes = require('./routes/loginRoutes');
 const pedidoRoutes = require('./routes/pedidoRoutes');
+const estoqueRoutes = require('./routes/estoqueRoutes');
+const devolucaoRoutes = require('./routes/devolucaoRoutes');
 
 // Importa o controller de pedidos
 const pedidoController = require('./controllers/pedidoController');
@@ -56,6 +58,8 @@ app.use('/funcionario', funcionarioRoutes);
 app.use('/forma_pagamento', forma_pagamentoRoutes);
 app.use('/login', loginRoutes);
 app.use('/pedido', pedidoRoutes);
+app.use('/estoque', estoqueRoutes);
+app.use('/devolucao', devolucaoRoutes);
 
 const PORT = process.env.PORT || 3001;
 

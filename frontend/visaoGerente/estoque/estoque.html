@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Estoque - Entre Páginas</title>
+    <link rel="stylesheet" href="estoque.css">
+</head>
+
+<body onload="inicializar()">
+
+    <header>
+        <div>
+            <h1>Gerenciamento de Estoque</h1>
+            <p>Controle de entradas, saídas e disponibilidade dos livros.</p>
+        </div>
+        <a href="../menu/menu.html" class="btn-voltar"> ← Voltar</a>
+    </header>
+
+    <main class="container-principal">
+
+        <!-- RESUMO DO ESTOQUE -->
+        <section class="resumo-estoque">
+
+            <div class="card-resumo">
+                <h3>Total de Livros</h3>
+                <p id="total-produtos">0</p>
+            </div>
+
+            <div class="card-resumo">
+                <h3>Estoque Baixo</h3>
+                <p id="produtos-estoque-baixo">0</p>
+            </div>
+
+            <div class="card-resumo">
+                <h3>Sem Estoque</h3>
+                <p id="produtos-sem-estoque">0</p>
+            </div>
+
+        </section>
+
+
+        <!-- MOVIMENTAÇÕES DE ESTOQUE -->
+        <section class="area-movimentacoes">
+
+            <h2 class="titulo-secao">Movimentações de Estoque</h2>
+
+            <div class="formularios-movimentacao">
+
+                <!-- FORMULÁRIO DE ENTRADA -->
+                <form id="form-entrada" class="form-movimentacao">
+
+                    <h3>Registrar Entrada</h3>
+
+                    <label for="produto-entrada">Livro:</label>
+                    <select id="produto-entrada" required>
+                        <option value="">Selecione um livro</option>
+                    </select>
+
+                    <label for="quantidade-entrada">Quantidade:</label>
+                    <input type="number" id="quantidade-entrada" min="1" step="1" required>
+
+                    <label for="observacao-entrada">Observação:</label>
+                    <textarea id="observacao-entrada" placeholder="Ex.: Reposição de livros"></textarea>
+
+                    <button type="submit" class="btn-entrada"> Registrar Entrada</button>
+
+                </form>
+
+
+                <!-- FORMULÁRIO DE SAÍDA -->
+                <form id="form-saida" class="form-movimentacao">
+
+                    <h3>Registrar Saída</h3>
+
+                    <label for="produto-saida">Livro:</label>
+                    <select id="produto-saida" required>
+                        <option value="">Selecione um livro</option>
+                    </select>
+
+                    <label for="quantidade-saida">Quantidade:</label>
+                    <input type="number" id="quantidade-saida" min="1" step="1" required>
+
+                    <label for="observacao-saida">Observação:</label>
+                    <textarea id="observacao-saida" placeholder="Ex.: Livro danificado"></textarea>
+
+                    <button type="submit" class="btn-saida">Registrar Saída</button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- LISTAGEM DO ESTOQUE -->
+        <section class="area-estoque">
+
+            <h2 class="titulo-secao">Livros em Estoque</h2>
+
+            <div class="filtros-estoque">
+
+                <input type="text" id="pesquisa-produto" placeholder="Pesquisar livro pelo nome ou ID...">
+
+                <select id="filtro-estoque">
+                    <option value="todos">Todos os livros</option>
+                    <option value="baixo">Estoque baixo</option>
+                    <option value="zerado">Sem estoque</option>
+                </select>
+
+            </div>
+
+            <div id="lista-produtos" class="lista-produtos">
+                <p class="mensagem-vazia">Carregando livros...</p>
+            </div>
+
+        </section>
+
+
+        <!-- HISTÓRICO DE MOVIMENTAÇÕES -->
+        <section class="area-historico">
+
+            <h2 class="titulo-secao">Histórico de Movimentações</h2>
+
+            <div class="tabela-responsiva">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Livro</th>
+                            <th>Tipo</th>
+                            <th>Quantidade</th>
+                            <th>Data</th>
+                            <th>Responsável</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-movimentacoes">
+                        <tr>
+                            <td colspan="6">Carregando histórico...</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>Entre Páginas &copy; 2026 - Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="estoque.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD - Clientes</title>
+    <link rel="stylesheet" href="./cliente.css">
+</head>
+
+<body onload="listar()">
+
+    <header>
+        <div class="titulo">
+            <h1>Cadastro de Clientes</h1>
+            <p>Gerencie os clientes da livraria</p>
+        </div>
+        <button onclick="history.back()" class="btnVoltar"> ← Voltar </button>
+    </header>
+
+    <main>
+
+        <section class="form-section">
+            <h2>Dados do Cliente</h2>
+
+            <div class="linha-busca">
+                <label for="inputCpf">Buscar por CPF:</label>
+                <input type="text" id="inputCpf" maxlength="11">
+                <button id="btBuscar">Procurar</button>
+                <button id="btIncluir">Incluir</button>
+                <button id="btAlterar">Alterar</button>
+                <button id="btExcluir">Excluir</button>
+                <button id="btSalvar">Salvar</button>
+                <button id="btCancelar">Cancelar</button>
+
+                <div id="divAviso">Informe o CPF e clique em Procurar.</div>
+            </div>
+
+            <fieldset>
+                <legend>Dados pessoais</legend>
+
+                <div class="form-group">
+                    <label for="inputNome">Nome:</label>
+                    <input type="text" id="inputNome">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDataNascimento">Data de nascimento:</label>
+                    <input type="date" id="inputDataNascimento">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEndereco">Endereço:</label>
+                    <input type="text" id="inputEndereco">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputCidade">Cidade:</label>
+                    <input type="text" id="inputCidade">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEstado">Estado:</label>
+                    <input type="text" id="inputEstado" maxlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputUsuario">Usuário:</label>
+                    <input type="text" id="inputUsuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputSenha">Senha:</label>
+                    <input type="password" id="inputSenha">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">E-mail:</label>
+                    <input type="email" id="inputEmail">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Dados do cliente</legend>
+
+                <div class="form-group">
+                    <label for="inputRenda">Renda mensal (R$):</label>
+                    <input type="number" id="inputRenda" min="0" step="0.01">
+                </div>
+
+            </fieldset>
+
+        </section>
+
+        <section class="list-section">
+            <h2>Clientes cadastrados</h2>
+
+            <div id="outputSaida">
+                <!-- A lista será carregada pelo JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Livraria Virtual</p>
+    </footer>
+
+    <script src="./cliente.js"></script>
+
+</body>
+
+</html>

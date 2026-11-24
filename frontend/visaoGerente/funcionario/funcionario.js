@@ -2,6 +2,7 @@ const URL_API = 'http://127.0.0.1:3001';
 
 let oQueEstaFazendo = '';
 let funcionario = null;
+let pessoaExistente = false;
 
 bloquearAtributos(true);
 visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
@@ -20,7 +21,21 @@ async function procurePorChavePrimaria(chave) {
     }
 }
 
-// Buscar funcionário pelo CPF
+// Procurar pessoa pelo CPF
+async function procurePorPessoa(cpf) {
+    try {
+        const resposta = await fetch(`${URL_API}/funcionario/pessoa/${cpf}`);
+        const data = await resposta.json();
+
+        return data.sucesso ? data.pessoa : null;
+
+    } catch (erro) {
+        console.error('Erro ao procurar pessoa:', erro);
+        return null;
+    }
+}
+
+// Buscar funcionário ou pessoa pelo CPF
 async function buscar() {
     const cpf = document.getElementById('inputCpf').value.trim();
 
@@ -33,30 +48,69 @@ async function buscar() {
 
     funcionario = await procurePorChavePrimaria(cpf);
     oQueEstaFazendo = '';
+    pessoaExistente = false;
 
+    // Verificar se já é funcionário
     if (funcionario) {
         await listarCargos();
         mostrarDadosFuncionario(funcionario);
+
         visibilidadeDosBotoes('inline', 'none', 'inline', 'inline', 'none');
         mostrarAviso('Funcionário encontrado! Pode alterar ou excluir.');
-
-    } else {
-        limparAtributos();
-        document.getElementById('inputCpf').value = cpf;
-        visibilidadeDosBotoes('inline', 'inline', 'none', 'none', 'none');
-        mostrarAviso('Funcionário não encontrado. Pode inserir.');
+        return;
     }
+
+    // Verificar se já existe como pessoa
+    const pessoa = await procurePorPessoa(cpf);
+
+    if (pessoa) {
+        pessoaExistente = true;
+
+        await listarCargos();
+        mostrarDadosPessoa(pessoa);
+
+        bloquearAtributos(true);
+        liberarDadosProfissionais();
+
+        visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
+        oQueEstaFazendo = 'inserindo';
+
+        mostrarAviso('Pessoa encontrada! Preencha os dados profissionais e clique em salvar.');
+        return;
+    }
+
+    // CPF ainda não cadastrado
+    limparAtributos();
+    document.getElementById('inputCpf').value = cpf;
+
+    visibilidadeDosBotoes('inline', 'inline', 'none', 'none', 'none');
+    mostrarAviso('Pessoa não encontrada. Clique em incluir para cadastrar.');
 }
 
 // Preparar inclusão
-function incluir() {
-    const cpf = document.getElementById('inputCpf').value;
+async function incluir() {
+    const cpf = document.getElementById('inputCpf').value.trim();
+
     limparAtributos();
     document.getElementById('inputCpf').value = cpf;
+
+    await listarCargos();
+
     bloquearAtributos(false);
+    document.getElementById('inputCpf').readOnly = true;
+
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'inserindo';
-    mostrarAviso('INSERINDO - Preencha os dados e clique em salvar.');
+
+    mostrarAviso('INSERINDO - Preencha os dados pessoais e profissionais.');
+}
+
+// Liberar somente os campos profissionais
+function liberarDadosProfissionais() {
+    document.getElementById('selectCargo').disabled = false;
+    document.getElementById('inputDataContratacao').readOnly = false;
+    document.getElementById('inputSalario').readOnly = false;
+    document.getElementById('inputComissao').readOnly = false;
 }
 
 // Preparar alteração
@@ -67,14 +121,11 @@ function alterar() {
     }
 
     bloquearAtributos(true, true);
-
-    document.getElementById('selectCargo').disabled = false;
-    document.getElementById('inputDataContratacao').readOnly = false;
-    document.getElementById('inputSalario').readOnly = false;
-    document.getElementById('inputComissao').readOnly = false;
+    liberarDadosProfissionais();
 
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'alterando';
+
     mostrarAviso('ALTERANDO - Modifique os dados profissionais e clique em salvar.');
 }
 
@@ -86,29 +137,30 @@ function excluir() {
     }
 
     bloquearAtributos(true, true);
+
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'excluindo';
+
     mostrarAviso('EXCLUINDO - Clique em salvar para confirmar a exclusão.');
 }
 
 // Salvar operação
 async function salvar() {
     try {
-        const cpf_pessoa = document.getElementById("inputCpf").value.trim();
-        const nome_pessoa = document.getElementById("inputNome").value.trim();
-        const data_nascimento_pessoa = document.getElementById("inputDataNascimento").value;
-        const endereco_pessoa = document.getElementById("inputEndereco").value.trim();
-        const usuario_pessoa = document.getElementById("inputUsuario").value.trim();
-        const senha_pessoa = document.getElementById("inputSenha").value;
-        const email_pessoa = document.getElementById("inputEmail").value.trim();
-        const id_cargo = document.getElementById("selectCargo").value;
-        const data_contratacao = document.getElementById("inputDataContratacao").value;
-        const salario = document.getElementById("inputSalario").value;
-        const porcentagem_comissao_funcionario = document.getElementById("inputComissao").value || 0;
+        const cpf_pessoa = document.getElementById('inputCpf').value.trim();
+        const nome_pessoa = document.getElementById('inputNome').value.trim();
+        const data_nascimento_pessoa = document.getElementById('inputDataNascimento').value;
+        const endereco_pessoa = document.getElementById('inputEndereco').value.trim();
+        const usuario_pessoa = document.getElementById('inputUsuario').value.trim();
+        const senha_pessoa = document.getElementById('inputSenha').value;
+        const email_pessoa = document.getElementById('inputEmail').value.trim();
+        const id_cargo = document.getElementById('selectCargo').value;
+        const data_contratacao = document.getElementById('inputDataContratacao').value;
+        const salario = document.getElementById('inputSalario').value;
+        const porcentagem_comissao_funcionario = document.getElementById('inputComissao').value || 0;
 
         const dadosFuncionario = {
             cpf_pessoa,
-            cpf_funcionario: cpf_pessoa,
             nome_pessoa,
             data_nascimento_pessoa,
             endereco_pessoa,
@@ -129,17 +181,27 @@ async function salvar() {
             if (
                 !cpf_pessoa ||
                 !/^\d{11}$/.test(cpf_pessoa) ||
-                !nome_pessoa ||
-                !data_nascimento_pessoa ||
-                !endereco_pessoa ||
-                !usuario_pessoa ||
-                !senha_pessoa ||
-                !email_pessoa ||
                 !id_cargo ||
                 !data_contratacao ||
                 salario === ''
             ) {
-                mostrarAviso('Preencha todos os campos obrigatórios corretamente.');
+                mostrarAviso('Preencha os campos profissionais obrigatórios.');
+                return;
+            }
+
+            // Se a pessoa ainda não existe, exigir os dados pessoais
+            if (
+                !pessoaExistente &&
+                (
+                    !nome_pessoa ||
+                    !data_nascimento_pessoa ||
+                    !endereco_pessoa ||
+                    !usuario_pessoa ||
+                    !senha_pessoa ||
+                    !email_pessoa
+                )
+            ) {
+                mostrarAviso('Preencha todos os dados pessoais obrigatórios.');
                 return;
             }
 
@@ -163,17 +225,12 @@ async function salvar() {
                 },
                 body: JSON.stringify(dadosFuncionario)
             });
-
         }
 
         // Alteração
         else if (oQueEstaFazendo === 'alterando') {
 
-            if (
-                !id_cargo ||
-                !data_contratacao ||
-                salario === ''
-            ) {
+            if (!id_cargo || !data_contratacao || salario === '') {
                 mostrarAviso('Preencha os campos profissionais obrigatórios.');
                 return;
             }
@@ -203,7 +260,6 @@ async function salvar() {
                     porcentagem_comissao_funcionario
                 })
             });
-
         }
 
         // Exclusão
@@ -219,6 +275,7 @@ async function salvar() {
         }
 
         const data = await resposta.json();
+
         if (!resposta.ok || !data.sucesso) {
             mostrarAviso(data.mensagem || 'Erro ao efetuar operação.');
             return;
@@ -226,10 +283,8 @@ async function salvar() {
 
         if (oQueEstaFazendo === 'inserindo') {
             mostrarAviso('Funcionário cadastrado com sucesso!');
-
         } else if (oQueEstaFazendo === 'alterando') {
             mostrarAviso('Funcionário alterado com sucesso!');
-
         } else if (oQueEstaFazendo === 'excluindo') {
             mostrarAviso('Funcionário excluído com sucesso!');
         }
@@ -237,9 +292,13 @@ async function salvar() {
         // Finalizar operação
         limparAtributos();
         document.getElementById('inputCpf').value = '';
+
         bloquearAtributos(true);
         visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
+
         oQueEstaFazendo = '';
+        pessoaExistente = false;
+
         await listar();
 
     } catch (erro) {
@@ -341,9 +400,13 @@ async function listarCargos() {
 function cancelar() {
     limparAtributos();
     document.getElementById('inputCpf').value = '';
+
     bloquearAtributos(true);
     visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
+
     oQueEstaFazendo = '';
+    pessoaExistente = false;
+
     mostrarAviso('Operação cancelada.');
 }
 
@@ -358,24 +421,44 @@ function mostrarDadosFuncionario(f) {
         f.cpf_funcionario || f.cpf_pessoa;
 
     document.getElementById('inputNome').value = f.nome_pessoa;
-    document.getElementById('inputDataNascimento').value = (f.data_nascimento_pessoa || '').substring(0, 10);
+    document.getElementById('inputDataNascimento').value =
+        (f.data_nascimento_pessoa || '').substring(0, 10);
 
     document.getElementById('inputEndereco').value = f.endereco_pessoa;
     document.getElementById('inputUsuario').value = f.usuario_pessoa;
     document.getElementById('inputSenha').value = '';
     document.getElementById('inputEmail').value = f.email_pessoa;
+
     document.getElementById('selectCargo').value = f.id_cargo;
-    document.getElementById('inputDataContratacao').value = (f.data_contratacao || '').substring(0, 10);
+    document.getElementById('inputDataContratacao').value =
+        (f.data_contratacao || '').substring(0, 10);
+
     document.getElementById('inputSalario').value = f.salario;
-    document.getElementById('inputComissao').value = f.porcentagem_comissao_funcionario;
+    document.getElementById('inputComissao').value =
+        f.porcentagem_comissao_funcionario;
 
     bloquearAtributos(true, true);
+}
+
+// Mostrar dados de uma pessoa que ainda não é funcionário
+function mostrarDadosPessoa(p) {
+    document.getElementById('inputCpf').value = p.cpf_pessoa;
+    document.getElementById('inputNome').value = p.nome_pessoa;
+
+    document.getElementById('inputDataNascimento').value =
+        (p.data_nascimento_pessoa || '').substring(0, 10);
+
+    document.getElementById('inputEndereco').value = p.endereco_pessoa;
+    document.getElementById('inputUsuario').value = p.usuario_pessoa;
+    document.getElementById('inputSenha').value = '';
+    document.getElementById('inputEmail').value = p.email_pessoa;
 }
 
 // Limpar campos
 function limparAtributos() {
     funcionario = null;
     oQueEstaFazendo = '';
+    pessoaExistente = false;
 
     document.getElementById('inputNome').value = '';
     document.getElementById('inputDataNascimento').value = '';
@@ -383,6 +466,7 @@ function limparAtributos() {
     document.getElementById('inputUsuario').value = '';
     document.getElementById('inputSenha').value = '';
     document.getElementById('inputEmail').value = '';
+
     document.getElementById('selectCargo').value = '';
     document.getElementById('inputDataContratacao').value = '';
     document.getElementById('inputSalario').value = '';
@@ -401,6 +485,7 @@ function bloquearAtributos(soLeitura, cpfSomenteLeitura = false) {
     document.getElementById('inputUsuario').readOnly = soLeitura;
     document.getElementById('inputSenha').readOnly = soLeitura;
     document.getElementById('inputEmail').readOnly = soLeitura;
+
     document.getElementById('selectCargo').disabled = soLeitura;
     document.getElementById('inputDataContratacao').readOnly = soLeitura;
     document.getElementById('inputSalario').readOnly = soLeitura;

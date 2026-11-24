@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const clienteController = require('./../controllers/clienteController');
+const clienteController = require('../controllers/clienteController');
 
-// CRUD de Clientes
+// Consultar uma pessoa pelo CPF
+router.get('/pessoa/:cpf', clienteController.obterPessoa);
 
-router.get('/abrirCrudCliente', clienteController.abrirCrudCliente);
+// Listar clientes
 router.get('/', clienteController.listarClientes);
+
+// Cadastrar cliente
 router.post('/', clienteController.criarCliente);
+
+// Consultar, alterar e excluir cliente
 router.get('/:id', clienteController.obterCliente);
 router.put('/:id', clienteController.atualizarCliente);
 router.delete('/:id', clienteController.deletarCliente);

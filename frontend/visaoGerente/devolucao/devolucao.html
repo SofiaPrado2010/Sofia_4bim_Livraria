@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Devoluções - Entre Páginas</title>
+    <link rel="stylesheet" href="devolucao.css">
+</head>
+
+<body onload="inicializar()">
+
+    <header>
+        <div>
+            <h1>Gerenciamento de Devoluções</h1>
+            <p>Registre e consulte as devoluções de livros.</p>
+        </div>
+
+        <a href="../menu/menu.html" class="btn-voltar">← Voltar</a>
+    </header>
+
+    <main class="container-principal">
+
+        <!-- REGISTRAR DEVOLUÇÃO -->
+        <section class="area-devolucao">
+
+            <h2 class="titulo-secao">Registrar Devolução</h2>
+
+            <form id="form-devolucao">
+
+                <div class="campo-pedido">
+
+                    <label for="select-pedido">Pedido:</label>
+
+                    <select id="select-pedido" required>
+                        <option value="">Selecione um pedido</option>
+                    </select>
+
+                </div>
+
+                <!-- INFORMAÇÕES DOS LIVROS -->
+                <div class="area-livros">
+
+                    <h3>Livros do Pedido</h3>
+
+                    <div id="lista-livros">
+                        <p class="mensagem-vazia">
+                            Selecione um pedido para visualizar os livros.
+                        </p>
+                    </div>
+
+                </div>
+
+                <button type="submit" id="btn-registrar" class="btn-registrar">
+                    Registrar Devolução
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- HISTÓRICO DE DEVOLUÇÕES -->
+        <section class="area-historico">
+
+            <h2 class="titulo-secao">Histórico de Devoluções</h2>
+
+            <div class="filtros-devolucao">
+
+                <input type="text" id="pesquisa-devolucao" placeholder="Pesquisar por pedido, livro ou funcionário...">
+
+            </div>
+
+            <div class="tabela-responsiva">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Nº Devolução</th>
+                            <th>Pedido</th>
+                            <th>Livro</th>
+                            <th>Quantidade</th>
+                            <th>Motivo</th>
+                            <th>Data</th>
+                            <th>Responsável</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-devolucoes">
+
+                        <tr>
+                            <td colspan="7">
+                                Carregando histórico...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>Entre Páginas &copy; 2026 - Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="devolucao.js"></script>
+
+</body>
+
+</html>
