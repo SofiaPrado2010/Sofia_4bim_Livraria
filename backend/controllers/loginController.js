@@ -2,9 +2,13 @@ const { query } = require('../database');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+
 const permissaoController = require('../middlewares/verificarPermissao');
 
-// Configuração do envio de e-mails
+// ========================================
+// CONFIGURAÇÃO DO ENVIO DE E-MAILS
+// ========================================
+
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: Number(process.env.EMAIL_PORT) || 465,
@@ -15,8 +19,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// ========================================
+// REALIZAR LOGIN
+// ========================================
 
-// Realizar login
 exports.realizarLogin = async (req, res) => {
     try {
         const { usuario_pessoa, senha_pessoa } = req.body;
@@ -28,7 +34,6 @@ exports.realizarLogin = async (req, res) => {
             });
         }
 
-        // Busca a pessoa pelo nome de usuário
         const resultado = await query(
             `SELECT cpf_pessoa, nome_pessoa, usuario_pessoa, senha_pessoa
              FROM pessoa
@@ -45,7 +50,6 @@ exports.realizarLogin = async (req, res) => {
 
         const pessoa = resultado.rows[0];
 
-        // Compara a senha informada com a senha criptografada
         const senhaCorreta = await bcrypt.compare(
             senha_pessoa,
             pessoa.senha_pessoa
@@ -58,7 +62,6 @@ exports.realizarLogin = async (req, res) => {
             });
         }
 
-        // Verifica se a pessoa é cliente
         const cliente = await query(
             `SELECT cpf_cliente
              FROM cliente
@@ -66,7 +69,6 @@ exports.realizarLogin = async (req, res) => {
             [pessoa.cpf_pessoa]
         );
 
-        // Verifica se a pessoa é funcionário e qual é seu cargo
         const funcionario = await query(
             `SELECT cargo.nome_cargo
              FROM funcionario
@@ -86,7 +88,6 @@ exports.realizarLogin = async (req, res) => {
             perfis.push('FUNCIONARIO');
         }
 
-        // Cria a sessão do usuário
         req.session.usuario = {
             cpf: pessoa.cpf_pessoa,
             nome: pessoa.nome_pessoa,
@@ -118,7 +119,10 @@ exports.realizarLogin = async (req, res) => {
     }
 };
 
-// Verificar sessão
+// ========================================
+// VERIFICAR SESSÃO
+// ========================================
+
 exports.verificarSessao = async (req, res) => {
     try {
         if (!req.session.usuario) {
@@ -130,7 +134,6 @@ exports.verificarSessao = async (req, res) => {
 
         const usuario = req.session.usuario;
 
-        // Buscar as permissões atuais caso seja funcionário
         const permissoes = usuario.perfis.includes('FUNCIONARIO')
             ? await permissaoController.obterPermissoes(usuario.cargo)
             : [];
@@ -156,11 +159,12 @@ exports.verificarSessao = async (req, res) => {
     }
 };
 
-// Sair da conta
+// ========================================
+// SAIR DA CONTA
+// ========================================
+
 exports.sair = (req, res) => {
-
     req.session.destroy((error) => {
-
         if (error) {
             return res.status(500).json({
                 sucesso: false,
@@ -174,22 +178,22 @@ exports.sair = (req, res) => {
             sucesso: true,
             mensagem: 'Logout realizado com sucesso!'
         });
-
     });
-
 };
 
+// ========================================
+// SOLICITAR RECUPERAÇÃO DE SENHA
+// ========================================
 
-// Solicitar recuperação de senha
 exports.solicitarRecuperacao = async (req, res) => {
-
     try {
         const { email_pessoa } = req.body;
 
         if (
             !email_pessoa ||
             typeof email_pessoa !== 'string' ||
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email_pessoa)
+            email_pessoa.length > 75 ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email_pessoa.trim())
         ) {
             return res.status(400).json({
                 sucesso: false,
@@ -197,34 +201,51 @@ exports.solicitarRecuperacao = async (req, res) => {
             });
         }
 
-        // Busca a pessoa pelo e-mail
+        const email = email_pessoa.trim();
+
         const resultado = await query(
             `SELECT cpf_pessoa, nome_pessoa, email_pessoa
              FROM pessoa
              WHERE LOWER(email_pessoa) = LOWER($1)`,
-            [email_pessoa.trim()]
+            [email]
         );
 
-        // A resposta é a mesma mesmo se o e-mail não estiver cadastrado
+        // Resposta igual para e-mails cadastrados ou não cadastrados.
+        const mensagemPadrao =
+            'Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.';
+
         if (resultado.rows.length === 0) {
             return res.json({
                 sucesso: true,
-                mensagem: 'Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.'
+                mensagem: mensagemPadrao
             });
         }
 
         const pessoa = resultado.rows[0];
 
-        // Gera um token aleatório
+        // Verifica se as configurações de e-mail existem.
+        if (
+            !process.env.EMAIL_USER ||
+            !process.env.EMAIL_APP_PASSWORD
+        ) {
+            console.error('Configurações de e-mail não encontradas no .env.');
+
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: 'O envio de e-mails está temporariamente indisponível.'
+            });
+        }
+
+        // Gera um token aleatório.
         const token = crypto.randomBytes(32).toString('hex');
 
-        // Guarda somente o hash do token
+        // Armazena somente o hash do token.
         const tokenHash = crypto
             .createHash('sha256')
             .update(token)
             .digest('hex');
 
-        // Define a validade de 15 minutos
+        // Define a validade de 15 minutos.
         await query(
             `UPDATE pessoa
              SET token_recuperacao_hash = $1,
@@ -233,52 +254,70 @@ exports.solicitarRecuperacao = async (req, res) => {
             [tokenHash, pessoa.cpf_pessoa]
         );
 
-        // Monta o link de recuperação
-        const urlFrontend = process.env.URL_FRONTEND ||
-            'http://127.0.0.1:5500';
+        // Monta o link de recuperação.
+        const urlFrontend = (
+            process.env.URL_FRONTEND ||
+            'http://127.0.0.1:5500'
+        ).replace(/\/+$/, '');
 
         const linkRecuperacao =
             `${urlFrontend}/visaoCliente/login/redefinirSenha.html?token=${token}`;
 
         try {
-
-            // Envia o e-mail
             await transporter.sendMail({
                 from: `"Entre Páginas" <${process.env.EMAIL_USER}>`,
                 to: pessoa.email_pessoa,
                 subject: 'Recuperação de senha | Entre Páginas',
-                text: `Você solicitou a recuperação da sua senha.
 
-Acesse o link abaixo para cadastrar uma nova senha:
+                text: `Olá, ${pessoa.nome_pessoa}!
+                Você solicitou a recuperação da sua senha no Entre Páginas.
+                Acesse o link abaixo para cadastrar uma nova senha:
+                ${linkRecuperacao}
+                Este link é válido por 15 minutos.
+                Se você não solicitou essa alteração, ignore este e-mail.`,
 
-${linkRecuperacao}
-
-Este link é válido por 15 minutos.
-
-Se você não solicitou essa alteração, ignore este e-mail.`,
                 html: `
-                    <h2>Recuperação de senha</h2>
-                    <p>Você solicitou a recuperação da sua senha no Entre Páginas.</p>
-                    <p>Clique no botão abaixo para cadastrar uma nova senha:</p>
-                    <p>
-                        <a href="${linkRecuperacao}"
-                           style="background-color:#E91E91;
-                                  color:white;
-                                  padding:12px 20px;
-                                  text-decoration:none;
-                                  border-radius:20px;
-                                  display:inline-block;">
-                            Redefinir minha senha
-                        </a>
-                    </p>
-                    <p>Este link é válido por 15 minutos.</p>
-                    <p>Se você não solicitou essa alteração, ignore este e-mail.</p>
+                    <div style="font-family: Arial, sans-serif; color: #674257; padding: 20px;">
+                        <h2>Recuperação de senha</h2>
+
+                        <p>Olá, ${pessoa.nome_pessoa}!</p>
+
+                        <p>
+                            Você solicitou a recuperação da sua senha
+                            no Entre Páginas.
+                        </p>
+
+                        <p>
+                            Clique no botão abaixo para cadastrar uma nova senha:
+                        </p>
+
+                        <p>
+                            <a href="${linkRecuperacao}"
+                               style="
+                                   background-color: #d8538f;
+                                   color: white;
+                                   padding: 12px 20px;
+                                   text-decoration: none;
+                                   border-radius: 20px;
+                                   display: inline-block;
+                               ">
+                                Redefinir minha senha
+                            </a>
+                        </p>
+
+                        <p>Este link é válido por 15 minutos.</p>
+
+                        <p>
+                            Se você não solicitou essa alteração,
+                            ignore este e-mail.
+                        </p>
+                    </div>
                 `
             });
 
         } catch (erroEmail) {
 
-            // Invalida o token caso o envio falhe
+            // Invalida o token caso o envio falhe.
             await query(
                 `UPDATE pessoa
                  SET token_recuperacao_hash = NULL,
@@ -292,11 +331,16 @@ Se você não solicitou essa alteração, ignore este e-mail.`,
                 'Erro ao enviar e-mail de recuperação:',
                 erroEmail.message
             );
+
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: 'Não foi possível enviar o e-mail de recuperação. Verifique a configuração do serviço de e-mail.'
+            });
         }
 
-        res.json({
+        return res.json({
             sucesso: true,
-            mensagem: 'Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.'
+            mensagem: mensagemPadrao
         });
 
     } catch (error) {
@@ -307,13 +351,13 @@ Se você não solicitou essa alteração, ignore este e-mail.`,
             mensagem: 'Não foi possível solicitar a recuperação de senha.'
         });
     }
-
 };
 
+// ========================================
+// REDEFINIR SENHA
+// ========================================
 
-// Redefinir senha
 exports.redefinirSenha = async (req, res) => {
-
     try {
         const { token, novaSenha } = req.body;
 
@@ -331,25 +375,24 @@ exports.redefinirSenha = async (req, res) => {
         if (
             !novaSenha ||
             typeof novaSenha !== 'string' ||
-            novaSenha.length < 8
+            novaSenha.length < 8 ||
+            novaSenha.length > 72
         ) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: 'A senha deve possuir pelo menos 8 caracteres.'
+                mensagem: 'A senha deve possuir entre 8 e 72 caracteres.'
             });
         }
 
-        // Criptografa o token recebido
         const tokenHash = crypto
             .createHash('sha256')
             .update(token)
             .digest('hex');
 
-        // Criptografa a nova senha
         const senhaHash = await bcrypt.hash(novaSenha, 10);
 
-        // Atualiza a senha somente se o token for válido e não estiver expirado
-        // O token é apagado no mesmo comando, impedindo seu uso novamente
+        // Atualiza a senha somente se o token for válido e não expirado.
+        // O token é apagado no mesmo comando para impedir reutilização.
         const resultado = await query(
             `UPDATE pessoa
              SET senha_pessoa = $1,
@@ -381,5 +424,4 @@ exports.redefinirSenha = async (req, res) => {
             mensagem: 'Não foi possível redefinir sua senha.'
         });
     }
-
 };

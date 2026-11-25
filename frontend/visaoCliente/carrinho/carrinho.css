@@ -1,4 +1,3 @@
-
 /* CARRINHO */
 .carrinho {
     position: fixed;
@@ -7,10 +6,18 @@
     width: 400px;
     max-width: 100%;
     height: 100vh;
-    background-color: #ffffff;
+    background: linear-gradient(
+        145deg,
+        var(--branco),
+        var(--bege),
+        #fff9e9
+    );
     z-index: 1000;
     padding: 25px;
-    box-shadow: -3px 0 15px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid var(--laranja-claro);
+    box-shadow:
+        -5px 0 20px rgba(103, 66, 87, 0.15),
+        -3px 0 15px rgba(229, 169, 0, 0.12);
     transition: right 0.4s ease;
     display: flex;
     flex-direction: column;
@@ -26,19 +33,39 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 20px;
-    border-bottom: 1px solid #f0c5d8;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        var(--laranja-claro),
+        var(--rosa-escuro),
+        var(--laranja-escuro)
+    ) 1;
 }
 
 .cabecalho-carrinho h2 {
     font-family: Georgia, serif;
-    color: #593B4B;
+    background: linear-gradient(
+        90deg,
+        var(--rosa-escuro),
+        var(--marrom)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
 .cabecalho-carrinho button {
     border: none;
     background: none;
+    color: var(--vinho);
     font-size: 22px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.cabecalho-carrinho button:hover {
+    color: var(--rosa-escuro);
+    transform: scale(1.15);
 }
 
 /* ITENS */
@@ -48,43 +75,93 @@
     padding: 20px 0;
 }
 
+/* BARRA DE ROLAGEM */
+#itensCarrinho::-webkit-scrollbar {
+    width: 6px;
+}
+
+#itensCarrinho::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        var(--rosa-escuro),
+        var(--laranja-claro)
+    );
+    border-radius: 10px;
+}
+
+#itensCarrinho::-webkit-scrollbar-track {
+    background: #f8eaf0;
+    border-radius: 10px;
+}
+
 .item-carrinho {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0c5d8;
+    padding: 15px 10px;
+    margin-bottom: 10px;
+    background: linear-gradient(
+        120deg,
+        var(--branco),
+        #fffaf0
+    );
+    border: 1px solid rgba(229, 169, 0, 0.25);
+    border-radius: 12px;
+    transition: 0.25s;
+}
+
+.item-carrinho:hover {
+    border-color: var(--rosa-escuro);
+    box-shadow:
+        0 4px 12px rgba(216, 83, 143, 0.10),
+        0 0 10px rgba(252, 203, 66, 0.15);
 }
 
 .item-carrinho img {
     width: 65px;
     height: 90px;
     object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 3px 8px rgba(103, 66, 87, 0.15);
 }
 
 .info-item {
     flex: 1;
+    min-width: 0;
 }
 
 .info-item h3 {
     font-size: 15px;
     margin-bottom: 8px;
+    color: var(--vinho);
 }
 
 .info-item p {
     font-size: 13px;
     margin-bottom: 8px;
+    color: #887482;
 }
 
 .info-item input {
     width: 55px;
-    padding: 5px;
+    padding: 6px;
+    border: 1px solid var(--laranja-claro);
+    border-radius: 6px;
+    background-color: var(--branco);
+    color: var(--vinho);
+    outline: none;
+    transition: 0.2s;
 }
 
+.info-item input:focus {
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 0 7px rgba(216, 83, 143, 0.20);
+}
+
+/* REMOVER ITEM */
 .btRemover {
-    background-color: transparent;
-    color: #C05B8B;
-    border: 1px solid #E8A9C5;
+    background: transparent;
+    color: var(--rosa-escuro);
+    border: 1px solid var(--rosinha);
     border-radius: 15px;
     padding: 6px 12px;
     font-size: 12px;
@@ -96,13 +173,25 @@
 }
 
 .btRemover:hover {
-    background-color: #FCE4EF;
-    color: #A51B60;
+    background: linear-gradient(
+        110deg,
+        var(--rosa-escuro),
+        var(--laranja-escuro)
+    );
+    border-color: transparent;
+    color: var(--branco);
+    box-shadow: var(--brilho-rosa);
 }
 
 /* RODAPÉ */
 .rodape-carrinho {
-    border-top: 1px solid #f0c5d8;
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        var(--laranja-claro),
+        var(--rosa-escuro),
+        var(--laranja-claro)
+    ) 1;
     padding-top: 20px;
 }
 
@@ -110,24 +199,98 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    color: var(--vinho);
+    font-family: Georgia, serif;
 }
 
-.rodape-carrinho button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 20px;
-    margin-top: 10px;
-    cursor: pointer;
+#totalCarrinho {
+    color: var(--marrom);
     font-weight: bold;
 }
 
-#btComprar {
-    background-color: #E91E91;
-    color: white;
+/* BOTÕES DO CARRINHO */
+.rodape-carrinho button {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease;
 }
 
+/* AVANÇAR */
+#btComprar {
+    background: linear-gradient(
+        110deg,
+        var(--rosa-escuro),
+        #f15098,
+        var(--laranja-escuro)
+    );
+    background-size: 200% 200%;
+    color: var(--branco);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+        0 4px 12px rgba(216, 83, 143, 0.30),
+        0 0 12px rgba(252, 203, 66, 0.20);
+}
+
+/* REFLEXO DO BOTÃO AVANÇAR */
+#btComprar::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -80%;
+    width: 45%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.30);
+    transform: rotate(25deg);
+    transition: left 0.6s ease;
+}
+
+#btComprar:hover {
+    background-position: 100% 50%;
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 15px rgba(216, 83, 143, 0.45),
+        0 0 22px rgba(252, 203, 66, 0.35);
+}
+
+#btComprar:hover::before {
+    left: 130%;
+}
+
+/* CANCELAR */
 #btCancelar {
-    background-color: #FCE4EF;
-    color: #593B4B;
+    background: linear-gradient(
+        110deg,
+        #fff1c2,
+        var(--rosinha),
+        #f7d9a0
+    );
+    color: var(--vinho);
+    border: 1px solid rgba(229, 169, 0, 0.35);
+    box-shadow: 0 3px 9px rgba(103, 66, 87, 0.07);
+}
+
+#btCancelar:hover {
+    background: linear-gradient(
+        110deg,
+        var(--laranja-claro),
+        var(--rosinha)
+    );
+    transform: translateY(-2px);
+    box-shadow: var(--brilho-laranja);
+}
+
+/* TELAS MENORES */
+@media (max-width: 450px) {
+
+    .carrinho {
+        padding: 20px;
+    }
+
 }

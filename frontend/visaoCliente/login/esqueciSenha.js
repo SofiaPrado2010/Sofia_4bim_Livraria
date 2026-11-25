@@ -4,7 +4,8 @@ document.getElementById('formRecuperacao').onsubmit = async function (event) {
 
     event.preventDefault();
 
-    const email = document.getElementById('email').value;
+    const campoEmail = document.getElementById('email');
+    const email = campoEmail.value.trim();
     const mensagem = document.getElementById('mensagem');
     const botao = document.getElementById('btEntrar');
 
@@ -27,31 +28,26 @@ document.getElementById('formRecuperacao').onsubmit = async function (event) {
 
         const dados = await resposta.json();
 
-        if (resposta.ok) {
-
+        if (resposta.ok && dados.sucesso) {
             mensagem.textContent = dados.mensagem;
             mensagem.style.color = '#39834b';
 
-            document.getElementById('email').value = '';
+            campoEmail.value = '';
 
         } else {
-
-            mensagem.textContent = dados.mensagem;
+            mensagem.textContent = dados.mensagem || 'Não foi possível solicitar a recuperação de senha.';
             mensagem.style.color = 'red';
 
         }
 
     } catch (error) {
-
         console.error('Erro ao solicitar recuperação:', error);
 
-        mensagem.textContent = 'Não foi possível enviar a solicitação.';
+        mensagem.textContent = 'Não foi possível conectar ao servidor.';
         mensagem.style.color = 'red';
 
     } finally {
-
         botao.disabled = false;
-
     }
 
 };

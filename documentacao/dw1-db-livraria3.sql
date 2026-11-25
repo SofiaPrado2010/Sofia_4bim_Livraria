@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS ITEM_DEVOLUCAO, DEVOLUCAO, PAGAMENTO_TEM_FORMA_PAGAMENTO, PAGAMENTO, ITEM_PEDIDO, PEDIDO, FORMA_PAGAMENTO, LIVRO, GENERO, FUNCIONARIO, CARGO, CLIENTE, PESSOA;
+DROP TABLE IF EXISTS ITEM_DEVOLUCAO, DEVOLUCAO, PAGAMENTO_TEM_FORMA_PAGAMENTO, PAGAMENTO, ITEM_PEDIDO, PEDIDO, 
+FORMA_PAGAMENTO, LIVRO, GENERO, FUNCIONARIO, CARGO, CLIENTE, PESSOA;
 CREATE TABLE PESSOA(
        cpf_pessoa VARCHAR(11) PRIMARY KEY,
 	   nome_pessoa VARCHAR(100) NOT NULL,
@@ -19,6 +20,26 @@ CREATE TABLE CLIENTE(
 CREATE TABLE CARGO(
        id_cargo INTEGER PRIMARY KEY,
 	   nome_cargo VARCHAR(100)
+);
+
+CREATE TABLE PERMISSAO (
+    id_permissao SERIAL PRIMARY KEY,
+    codigo_permissao VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE CARGO_TEM_PERMISSAO (
+    id_cargo INTEGER NOT NULL,
+    id_permissao INTEGER NOT NULL,
+
+    PRIMARY KEY (id_cargo, id_permissao),
+
+    FOREIGN KEY (id_cargo)
+        REFERENCES CARGO(id_cargo)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_permissao)
+        REFERENCES PERMISSAO(id_permissao)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE FUNCIONARIO(
@@ -88,22 +109,47 @@ CREATE TABLE PAGAMENTO_TEM_FORMA_PAGAMENTO(
 );
 
 CREATE TABLE DEVOLUCAO(
-       id_devolucao INTEGER PRIMARY KEY,
-	   id_pedido INTEGER,
-	   data_devolucao TIMESTAMP,
-	   UNIQUE(id_devolucao, id_pedido),
-	   FOREIGN KEY(id_pedido) REFERENCES PEDIDO(id_pedido)
+    id_devolucao SERIAL PRIMARY KEY,
+    id_pedido INTEGER NOT NULL,
+    funcionario_cpf VARCHAR(11) NOT NULL,
+    data_devolucao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(id_devolucao, id_pedido),
+
+    FOREIGN KEY(id_pedido) REFERENCES PEDIDO(id_pedido),
+    FOREIGN KEY(funcionario_cpf) REFERENCES PESSOA(cpf_pessoa)
 );
 
 CREATE TABLE ITEM_DEVOLUCAO(
-       id_item_devolucao INTEGER PRIMARY KEY,
-	   id_devolucao INTEGER,
-	   id_pedido INTEGER,
-	   id_livro INTEGER,
-	   quantidade_devolvida INTEGER CHECK(quantidade_devolvida > 0),
-	   retorna_estoque BOOLEAN,
-	   FOREIGN KEY(id_devolucao, id_pedido) REFERENCES DEVOLUCAO(id_devolucao, id_pedido),
-	   FOREIGN KEY(id_pedido, id_livro) REFERENCES ITEM_PEDIDO(id_pedido, id_livro)
+    id_item_devolucao SERIAL PRIMARY KEY,
+    id_devolucao INTEGER NOT NULL,
+    id_pedido INTEGER NOT NULL,
+    id_livro INTEGER NOT NULL,
+    quantidade_devolvida INTEGER NOT NULL,
+    motivo_devolucao VARCHAR(20) NOT NULL,
+
+    CHECK(quantidade_devolvida > 0),
+    CHECK(motivo_devolucao IN ('Pessoal', 'Defeito')),
+
+    FOREIGN KEY(id_devolucao, id_pedido)
+        REFERENCES DEVOLUCAO(id_devolucao, id_pedido),
+
+    FOREIGN KEY(id_pedido, id_livro)
+        REFERENCES ITEM_PEDIDO(id_pedido, id_livro)
+);
+
+CREATE TABLE movimentacao_estoque (
+    id_movimentacao SERIAL PRIMARY KEY,
+    livro_id INTEGER NOT NULL,
+    funcionario_cpf VARCHAR(11) NOT NULL,
+    tipo_movimentacao VARCHAR(10) NOT NULL,
+    quantidade_movimentacao INTEGER NOT NULL,
+    data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    observacao_movimentacao VARCHAR(255),
+    FOREIGN KEY (livro_id) REFERENCES livro(id_livro),
+    FOREIGN KEY (funcionario_cpf) REFERENCES pessoa(cpf_pessoa),
+    CHECK (tipo_movimentacao IN ('Entrada', 'Saída')),
+    CHECK (quantidade_movimentacao > 0)
 );
 
 INSERT INTO PESSOA (cpf_pessoa, nome_pessoa, data_nascimento_pessoa, endereco_pessoa, usuario_pessoa, senha_pessoa, email_pessoa) 
@@ -326,32 +372,6 @@ VALUES
 (9, 2, 50.00),
 (10, 3, 80.00);
 
-INSERT INTO DEVOLUCAO 
-VALUES
-(1, 1, '2026-02-12 10:00:00'),
-(2, 2, '2026-02-13 11:30:00'),
-(3, 3, '2026-02-14 14:00:00'),
-(4, 4, '2026-02-15 09:20:00'),
-(5, 5, '2026-02-16 16:40:00'),
-(6, 6, '2026-02-17 13:15:00'),
-(7, 7, '2026-02-18 15:30:00'),
-(8, 8, '2026-02-19 10:45:00'),
-(9, 9, '2026-02-20 12:10:00'),
-(10, 10, '2026-02-21 17:00:00');
-
-INSERT INTO ITEM_DEVOLUCAO 
-VALUES
-(1, 1, 1, 1, 1, TRUE),
-(2, 2, 2, 2, 1, FALSE),
-(3, 3, 3, 3, 1, TRUE),
-(4, 4, 4, 4, 1, TRUE),
-(5, 5, 5, 5, 1, FALSE),
-(6, 6, 6, 6, 1, TRUE),
-(7, 7, 7, 7, 1, TRUE),
-(8, 8, 8, 8, 1, FALSE),
-(9, 9, 9, 9, 1, TRUE),
-(10, 10, 10, 10, 1, FALSE);
-
 ALTER TABLE pessoa
 ADD COLUMN cidade_pessoa VARCHAR(100);
 
@@ -422,3 +442,167 @@ ADD COLUMN hash_idempotencia CHAR(64);
 ALTER TABLE pessoa
 ADD COLUMN token_recuperacao_hash CHAR(64),
 ADD COLUMN token_recuperacao_expira TIMESTAMP;
+
+-- Prazo para pagamento do pedido
+ALTER TABLE PEDIDO
+ADD COLUMN prazo_pagamento TIMESTAMP;
+
+-- Quantidade de parcelas de cada forma de pagamento
+ALTER TABLE PAGAMENTO_TEM_FORMA_PAGAMENTO
+ADD COLUMN quantidade_parcelas INTEGER NOT NULL DEFAULT 1;
+
+-- Limite de parcelas
+ALTER TABLE PAGAMENTO_TEM_FORMA_PAGAMENTO
+ADD CONSTRAINT chk_quantidade_parcelas
+CHECK (quantidade_parcelas BETWEEN 1 AND 12);
+
+ALTER TABLE FORMA_PAGAMENTO
+ADD COLUMN max_parcelas INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE LIVRO
+ADD COLUMN ativo BOOLEAN DEFAULT TRUE NOT NULL;
+
+ALTER TABLE FORMA_PAGAMENTO
+ADD COLUMN ativo BOOLEAN DEFAULT TRUE NOT NULL;
+
+
+-- 1. Tabela que armazena as permissões disponíveis
+CREATE TABLE IF NOT EXISTS permissao (
+    id_permissao SERIAL PRIMARY KEY,
+    codigo_permissao VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- 2. Tabela que relaciona cargos e permissões
+CREATE TABLE IF NOT EXISTS cargo_tem_permissao (
+    id_cargo INTEGER NOT NULL,
+    id_permissao INTEGER NOT NULL,
+
+    PRIMARY KEY (id_cargo, id_permissao),
+
+    FOREIGN KEY (id_cargo)
+        REFERENCES cargo(id_cargo)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_permissao)
+        REFERENCES permissao(id_permissao)
+        ON DELETE CASCADE
+);
+
+-- 3. Cadastrar todas as permissões disponíveis
+INSERT INTO permissao (codigo_permissao)
+VALUES
+    ('livro:visualizar'),
+    ('livro:gerenciar'),
+    ('estoque:alterar'),
+    ('pedido:visualizar'),
+    ('pedido:alterar'),
+    ('pagamento:registrar'),
+    ('entrega:alterar'),
+    ('devolucao:visualizar'),
+    ('devolucao:gerenciar'),
+    ('pessoa:gerenciar'),
+    ('pessoa:consultar'),
+    ('funcionario:gerenciar'),
+    ('cargo:gerenciar'),
+    ('genero:gerenciar'),
+    ('forma_pagamento:gerenciar')
+ON CONFLICT (codigo_permissao) DO NOTHING;
+
+-- 4. Migrar as permissões atuais dos cargos
+WITH permissoes_atuais (nome_cargo, codigo_permissao) AS (
+    VALUES
+        -- Gerente
+        ('Gerente', 'livro:visualizar'),
+        ('Gerente', 'livro:gerenciar'),
+        ('Gerente', 'estoque:alterar'),
+        ('Gerente', 'pedido:visualizar'),
+        ('Gerente', 'pedido:alterar'),
+        ('Gerente', 'pagamento:registrar'),
+        ('Gerente', 'entrega:alterar'),
+        ('Gerente', 'devolucao:visualizar'),
+        ('Gerente', 'devolucao:gerenciar'),
+        ('Gerente', 'pessoa:gerenciar'),
+        ('Gerente', 'pessoa:consultar'),
+        ('Gerente', 'funcionario:gerenciar'),
+        ('Gerente', 'cargo:gerenciar'),
+        ('Gerente', 'genero:gerenciar'),
+        ('Gerente', 'forma_pagamento:gerenciar'),
+
+        -- Atendente
+        ('Atendente', 'livro:visualizar'),
+        ('Atendente', 'pedido:visualizar'),
+        ('Atendente', 'pedido:alterar'),
+        ('Atendente', 'devolucao:visualizar'),
+        ('Atendente', 'devolucao:gerenciar'),
+
+        -- Vendedor
+        ('Vendedor', 'livro:visualizar'),
+        ('Vendedor', 'pedido:visualizar'),
+        ('Vendedor', 'pedido:alterar'),
+        ('Vendedor', 'devolucao:visualizar'),
+        ('Vendedor', 'devolucao:gerenciar'),
+
+        -- Estoquista
+        ('Estoquista', 'livro:visualizar'),
+        ('Estoquista', 'estoque:alterar'),
+
+        -- Operador de Caixa
+        ('Operador de Caixa', 'pedido:visualizar'),
+        ('Operador de Caixa', 'pagamento:registrar'),
+
+        -- Auxiliar Administrativo
+        ('Auxiliar Administrativo', 'pessoa:consultar'),
+
+        -- Assistente de Vendas
+        ('Assistente de Vendas', 'livro:visualizar'),
+        ('Assistente de Vendas', 'pedido:visualizar'),
+        ('Assistente de Vendas', 'pedido:alterar'),
+        ('Assistente de Vendas', 'devolucao:visualizar'),
+        ('Assistente de Vendas', 'devolucao:gerenciar'),
+
+        -- Auxiliar de Estoque
+        ('Auxiliar de Estoque', 'livro:visualizar'),
+        ('Auxiliar de Estoque', 'estoque:alterar'),
+
+        -- Comprador
+        ('Comprador', 'livro:visualizar'),
+
+        -- Auxiliar de Logística
+        ('Auxiliar de Logística', 'pedido:visualizar'),
+        ('Auxiliar de Logística', 'entrega:alterar')
+)
+
+INSERT INTO cargo_tem_permissao (id_cargo, id_permissao)
+SELECT c.id_cargo, p.id_permissao
+FROM permissoes_atuais pa
+INNER JOIN cargo c
+    ON LOWER(TRIM(c.nome_cargo)) = LOWER(TRIM(pa.nome_cargo))
+INNER JOIN permissao p
+    ON p.codigo_permissao = pa.codigo_permissao
+ON CONFLICT (id_cargo, id_permissao) DO NOTHING;
+
+COMMIT;
+
+INSERT INTO permissao (codigo_permissao)
+VALUES ('cliente:gerenciar')
+ON CONFLICT (codigo_permissao) DO NOTHING;
+
+INSERT INTO cargo_tem_permissao (id_cargo, id_permissao)
+SELECT c.id_cargo, p.id_permissao
+FROM cargo c
+CROSS JOIN permissao p
+WHERE LOWER(TRIM(c.nome_cargo)) = 'gerente'
+AND p.codigo_permissao = 'cliente:gerenciar'
+ON CONFLICT DO NOTHING;
+
+-- Remover as associações entre cargos e a permissão de entregas
+DELETE FROM cargo_tem_permissao
+WHERE id_permissao IN (
+    SELECT id_permissao
+    FROM permissao
+    WHERE codigo_permissao = 'entrega:alterar'
+);
+
+-- Remover a permissão de entregas
+DELETE FROM permissao
+WHERE codigo_permissao = 'entrega:alterar';

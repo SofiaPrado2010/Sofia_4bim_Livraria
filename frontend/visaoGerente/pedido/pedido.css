@@ -51,17 +51,18 @@ header {
     top: 50%;
     transform: translateY(-50%);
     padding: 10px 20px;
-    border: 2px solid white;
     border-radius: 25px;
-    background-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    background-color: #f8f8f88b;
+    color: #ff78b0;
+    border: 2px solid #ffffff9e;
+    font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
 }
 
 .btnVoltar:hover {
-    background-color: white;
-    color: var(--rosa-escuro);
+    background-color: #fcfafa;
+    color: rgb(255, 113, 193);
 }
 
 /* Conteúdo principal */

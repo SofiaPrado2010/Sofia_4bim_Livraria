@@ -10,18 +10,21 @@
 
 <body onload="listar()">
     <header>
-        <h1>Cadastro de Gêneros</h1>
-        <p>Gerencie os gêneros do sistema.</p>
+        <div>
+            <h1>Cadastro de Gêneros</h1>
+            <p>Gerencie os gêneros do sistema.</p>
+        </div>
+        <a href="../menu/menu.html" class="btn-voltar">← Voltar</a>
     </header>
 
     <main class="container-master">
         <div class="conteudo-principal">
             <section class="form-esquerda">
                 <h2>Dados do Gênero</h2>
-                
+
                 <label for="inputId_genero">ID do gênero</label>
                 <div class="linha-id">
-                    <input type="text" name="inputId_genero" id="inputId_genero"  style="text-transform: uppercase;">
+                    <input type="text" name="inputId_genero" id="inputId_genero" style="text-transform: uppercase;">
                     <input type="button" value="Procure" id="btProcure" onclick="procure()">
                     <input type="button" value="Inserir" id="btInserir" onclick="inserir()" style="display:none;">
                     <input type="button" value="Alterar" id="btAlterar" onclick="alterar()" style="display:none;">
@@ -35,7 +38,8 @@
 
                 <div class="botoes-acao">
                     <input type="button" value="Salvar" id="btSalvar" onclick="salvar()" style="display:none;">
-                    <input type="button" value="Cancelar" id="btCancelar" onclick="cancelarOperacao()" style="display:none;">
+                    <input type="button" value="Cancelar" id="btCancelar" onclick="cancelarOperacao()"
+                        style="display:none;">
                 </div>
             </section>
         </div>

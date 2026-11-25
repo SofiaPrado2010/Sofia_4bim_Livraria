@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,80 +12,108 @@
 
 <body>
     <div class="pagina">
-        <!-- BARRA LATERAL -->
-        <aside class="barra-lateral">
-            <h2>Categorias</h2>
+        <!-- CABEÇALHO -->
+        <header class="cabecalho">
+            <!-- LOGO -->
+            <div class="titulo">
+                <h1> <i class="fa-solid fa-book-open"></i> Entre Páginas</h1>
+                <p>Toda página guarda um novo universo</p>
+            </div>
 
-            <section>
-                <h3>Gêneros</h3>
-                <div id="filtroGenero"></div>
-            </section>
+            <!-- PESQUISA -->
+            <div class="pesquisa pesquisa-cabecalho">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="inputPesquisa" placeholder="Pesquise por livro ou autor..." aria-label="Pesquisar livros por nome ou autor">
+            </div>
 
-            <section>
-                <h3>Tipo de capa</h3>
-                <div id="filtroCapa"></div>
-            </section>
-        </aside>
+            <!-- BOTÕES -->
+            <div class="botoes-cabecalho">
+                <div id="areaUsuario">
+                    <button id="btLogin">Entrar</button>
+                </div>
+                <button id="btCarrinho" title="Carrinho" aria-label="Abrir carrinho">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </button>
+            </div>
+        </header>
 
         <!-- CONTEÚDO PRINCIPAL -->
         <main>
-
-            <!-- CABEÇALHO -->
-            <header>
-                <div class="titulo">
-                    <h1>Entre Páginas</h1>
-                    <p>Toda página guarda um novo universo</p>
-                </div>
-
-                <div class="botoes-cabecalho">
-                    <div id="areaUsuario">
-                        <button id="btLogin">Login</button>
-                    </div>
-                    <button id="btCarrinho" title="Carrinho">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- TELA INICIAL -->
+            <!-- BANNER PRINCIPAL -->
             <section id="telaInicial">
                 <section class="apresentacao">
 
-                    <!-- IMAGENS DO CARROSSEL -->
+                    <!-- CARROSSEL -->
                     <div class="carrossel">
-                        <img src="http://localhost:3001/fundos/fundo1.png" class="imagem ativa">
-                        <img src="http://localhost:3001/fundos/fundo2.png" class="imagem">
+                        <img src="http://127.0.0.1:3001/fundos/fundo1.png" class="imagem ativa" alt="Livros e decoração da Entre Páginas">
+                        <img src="http://127.0.0.1:3001/fundos/fundo2.png" class="imagem" alt="Outro cenário de livros da livraria">
                     </div>
 
-                    <!-- CONTEÚDO DA APRESENTAÇÃO -->
+                    <!-- TEXTO DO BANNER -->
                     <div class="conteudo-apresentacao">
-                        <span>UM UNIVERSO DE HISTÓRIAS</span>
-                        <h2>Encontre sua próxima leitura</h2>
-                        <p>Explore histórias, descubra novos autores e encontre livros para todos os momentos.</p>
-                        <button id="btExplorar">Explore nossos livros</button>
+                        <span class="subtitulo-banner">UM UNIVERSO DE HISTÓRIAS</span>
+                        <h2>
+                            Em cada página,
+                            uma nova história para se viver.
+                        </h2>
+                        <p>
+                            Explore novos mundos, conheça histórias
+                            inesquecíveis e encontre sua próxima leitura.
+                        </p>
+                        <button id="btExplorar"> Explorar nosso catálogo <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
-
                 </section>
             </section>
 
-            <!-- TELA DO CATÁLOGO -->
-            <section id="telaCatalogo" style="display: none;">
+            <!-- GÊNEROS -->
+            <section class="secao-generos">
+                <div class="titulo-secao">
+                    <span>DESCUBRA NOVAS HISTÓRIAS</span>
+                    <h2>Encontre seu próximo universo</h2>
+                    <p>
+                        Explore nossos gêneros e descubra histórias
+                        que combinam com você.
+                    </p>
+                </div>
 
-                <section class="pesquisa">
-                    <input type="text" id="inputPesquisa" placeholder="Pesquise pelo nome do livro ou autor">
-                </section>
+                <!-- OS GÊNEROS SÃO CARREGADOS PELO JAVASCRIPT -->
+                <div id="filtroGenero" class="lista-generos"></div>
+            </section>
 
+            <!-- CATÁLOGO -->
+            <section id="telaCatalogo">
+                <div class="cabecalho-catalogo">
+                    <div class="titulo-secao">
+                        <span>UMA SELEÇÃO ESPECIAL PARA VOCÊ</span>
+                        <h2>Nossos livros</h2>
+                        <p>
+                            Cada livro é uma nova possibilidade.
+                            Escolha por onde começar!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FILTRO DE CAPA -->
+                <div class="area-filtros">
+                    <span>
+                        <i class="fa-solid fa-filter"></i>
+                        Filtrar por tipo de capa:
+                    </span>
+                    <div id="filtroCapa" class="lista-filtros"></div>
+                </div>
+
+                <!-- LIVROS -->
                 <section class="catalogo">
-                    <h2>Nossos livros</h2>
                     <div id="listaLivros"></div>
                 </section>
-
             </section>
 
             <!-- DETALHES DO LIVRO -->
             <section id="detalhesLivro" class="detalhes-livro">
                 <div class="janela-detalhes">
-                    <button id="btFecharDetalhes">✕</button>
+                    <button id="btFecharDetalhes" title="Fechar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                     <div id="conteudoDetalhes"></div>
                 </div>
             </section>
@@ -94,10 +121,11 @@
 
         <!-- CARRINHO -->
         <aside id="carrinho" class="carrinho">
-
             <div class="cabecalho-carrinho">
-                <h2>Meu carrinho 🛒</h2>
-                <button id="btFecharCarrinho">✕</button>
+                <h2><i class="fa-solid fa-bag-shopping"></i>Meu carrinho</h2>
+                <button id="btFecharCarrinho" title="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <div id="itensCarrinho">
@@ -105,25 +133,44 @@
             </div>
 
             <div class="rodape-carrinho">
-                <h3>Total: <span id="totalCarrinho">R$ 0,00</span></h3>
-
+                <h3>
+                    Total: 
+                    <span id="totalCarrinho">R$ 0,00</span>
+                </h3>
                 <button id="btComprar">Avançar</button>
                 <button id="btCancelar">Cancelar</button>
             </div>
-
         </aside>
     </div>
 
     <!-- RODAPÉ -->
     <footer>
-        <p>© 2026 Entre Páginas - Todos os direitos reservados.</p>
+        <div class="conteudo-rodape">
+            <div>
+                <h2>
+                    <i class="fa-solid fa-book-open"></i>
+                    Entre Páginas
+                </h2>
+                <p>
+                    Toda página guarda um novo universo.
+                    Descubra histórias, autores e novos mundos.
+                </p>
+            </div>
+
+            <div class="informacoes-rodape">
+                <p>© 2026 Entre Páginas</p>
+                <p>Todos os direitos reservados.</p>
+            </div>
+        </div>
     </footer>
 
-
+    <!-- AVISO DE COOKIES -->
     <div id="avisoCookies" class="aviso-cookies">
-
         <div class="texto-cookies">
-            <h3>🍪 Sua privacidade é importante!</h3>
+            <h3>
+                <i class="fa-solid fa-cookie-bite"></i>
+                Sua privacidade é importante!
+            </h3>
 
             <p>
                 Este site utiliza cookies para manter sua sessão de login
@@ -132,12 +179,9 @@
         </div>
 
         <button id="btAceitarCookies">Entendi</button>
-
     </div>
-
 
     <script type="module" src="index.js"></script>
 
 </body>
-
 </html>

@@ -66,7 +66,7 @@ header p {
     left: 30px;
 }
 
-.btnVoltar:hover {
+.btn-voltar:hover {
     background-color: #fcfafa;
     color: rgb(255, 113, 193);
     border-color: #ffffff;
