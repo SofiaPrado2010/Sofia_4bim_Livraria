@@ -606,3 +606,8 @@ WHERE id_permissao IN (
 -- Remover a permissão de entregas
 DELETE FROM permissao
 WHERE codigo_permissao = 'entrega:alterar';
+
+ALTER TABLE pessoa
+ADD COLUMN codigo_recuperacao_hash CHAR(64),
+ADD COLUMN codigo_recuperacao_expira TIMESTAMP,
+ADD COLUMN tentativas_codigo_recuperacao INTEGER DEFAULT 0;

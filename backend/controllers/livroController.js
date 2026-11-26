@@ -86,7 +86,6 @@ exports.criarLivro = async (req, res) => {
             preco_unitario,
             numero_paginas,
             id_genero,
-            quantidade_estoque,
             tipo_capa
         } = req.body;
 
@@ -119,7 +118,7 @@ exports.criarLivro = async (req, res) => {
             preco_unitario,
             numero_paginas,
             id_genero,
-            quantidade_estoque,
+            0,
             tipo_capa
         ];
 
@@ -173,7 +172,6 @@ exports.atualizarLivro = async (req, res) => {
             preco_unitario,
             numero_paginas,
             id_genero,
-            quantidade_estoque,
             tipo_capa
         } = req.body;
 
@@ -184,9 +182,8 @@ exports.atualizarLivro = async (req, res) => {
                 preco_unitario = $3,
                 numero_paginas = $4,
                 id_genero = $5,
-                quantidade_estoque = $6,
-                tipo_capa = $7
-            WHERE id_livro = $8
+                tipo_capa = $6
+            WHERE id_livro = $7
             RETURNING *
         `;
 
@@ -196,7 +193,6 @@ exports.atualizarLivro = async (req, res) => {
             preco_unitario,
             numero_paginas,
             id_genero,
-            quantidade_estoque,
             tipo_capa,
             id
         ];
