@@ -20,6 +20,17 @@ const transporter = nodemailer.createTransport({
 });
 
 // ========================================
+// FUNÇÃO AUXILIAR: GERAR HASH
+// ========================================
+
+const gerarHash = (valor) => {
+    return crypto
+        .createHash('sha256')
+        .update(valor)
+        .digest('hex');
+};
+
+// ========================================
 // REALIZAR LOGIN
 // ========================================
 
@@ -210,9 +221,8 @@ exports.solicitarRecuperacao = async (req, res) => {
             [email]
         );
 
-        // Resposta igual para e-mails cadastrados ou não cadastrados.
         const mensagemPadrao =
-            'Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.';
+            'Se o e-mail estiver cadastrado, você receberá um código de recuperação.';
 
         if (resultado.rows.length === 0) {
             return res.json({
@@ -221,9 +231,6 @@ exports.solicitarRecuperacao = async (req, res) => {
             });
         }
 
-        const pessoa = resultado.rows[0];
-
-        // Verifica se as configurações de e-mail existem.
         if (
             !process.env.EMAIL_USER ||
             !process.env.EMAIL_APP_PASSWORD
@@ -236,45 +243,40 @@ exports.solicitarRecuperacao = async (req, res) => {
             });
         }
 
-        // Gera um token aleatório.
-        const token = crypto.randomBytes(32).toString('hex');
+        const pessoa = resultado.rows[0];
 
-        // Armazena somente o hash do token.
-        const tokenHash = crypto
-            .createHash('sha256')
-            .update(token)
-            .digest('hex');
+        // Gera um código numérico de seis dígitos.
+        const codigo = crypto.randomInt(100000, 1000000).toString();
 
-        // Define a validade de 15 minutos.
+        const codigoHash = gerarHash(codigo);
+
+        // Salva o código e invalida qualquer token anterior.
         await query(
             `UPDATE pessoa
-             SET token_recuperacao_hash = $1,
-                 token_recuperacao_expira = CURRENT_TIMESTAMP + INTERVAL '15 minutes'
+             SET codigo_recuperacao_hash = $1,
+                 codigo_recuperacao_expira = CURRENT_TIMESTAMP + INTERVAL '15 minutes',
+                 tentativas_codigo_recuperacao = 0,
+                 token_recuperacao_hash = NULL,
+                 token_recuperacao_expira = NULL
              WHERE cpf_pessoa = $2`,
-            [tokenHash, pessoa.cpf_pessoa]
+            [codigoHash, pessoa.cpf_pessoa]
         );
-
-        // Monta o link de recuperação.
-        const urlFrontend = (
-            process.env.URL_FRONTEND ||
-            'http://127.0.0.1:5500'
-        ).replace(/\/+$/, '');
-
-        const linkRecuperacao =
-            `${urlFrontend}/visaoCliente/login/redefinirSenha.html?token=${token}`;
 
         try {
             await transporter.sendMail({
                 from: `"Entre Páginas" <${process.env.EMAIL_USER}>`,
                 to: pessoa.email_pessoa,
-                subject: 'Recuperação de senha | Entre Páginas',
+                subject: 'Código de recuperação de senha | Entre Páginas',
 
                 text: `Olá, ${pessoa.nome_pessoa}!
-                Você solicitou a recuperação da sua senha no Entre Páginas.
-                Acesse o link abaixo para cadastrar uma nova senha:
-                ${linkRecuperacao}
-                Este link é válido por 15 minutos.
-                Se você não solicitou essa alteração, ignore este e-mail.`,
+
+Você solicitou a recuperação da sua senha no Entre Páginas.
+
+Seu código de recuperação é: ${codigo}
+
+Esse código é válido por 15 minutos.
+
+Se você não solicitou essa alteração, ignore este e-mail.`,
 
                 html: `
                     <div style="font-family: Arial, sans-serif; color: #674257; padding: 20px;">
@@ -287,25 +289,22 @@ exports.solicitarRecuperacao = async (req, res) => {
                             no Entre Páginas.
                         </p>
 
-                        <p>
-                            Clique no botão abaixo para cadastrar uma nova senha:
-                        </p>
+                        <p>Seu código de recuperação é:</p>
 
-                        <p>
-                            <a href="${linkRecuperacao}"
-                               style="
-                                   background-color: #d8538f;
-                                   color: white;
-                                   padding: 12px 20px;
-                                   text-decoration: none;
-                                   border-radius: 20px;
-                                   display: inline-block;
-                               ">
-                                Redefinir minha senha
-                            </a>
-                        </p>
+                        <div style="
+                            background-color: #fff0f6;
+                            color: #d8538f;
+                            font-size: 30px;
+                            font-weight: bold;
+                            letter-spacing: 8px;
+                            padding: 18px;
+                            text-align: center;
+                            border-radius: 12px;
+                        ">
+                            ${codigo}
+                        </div>
 
-                        <p>Este link é válido por 15 minutos.</p>
+                        <p>Este código é válido por 15 minutos.</p>
 
                         <p>
                             Se você não solicitou essa alteração,
@@ -317,14 +316,14 @@ exports.solicitarRecuperacao = async (req, res) => {
 
         } catch (erroEmail) {
 
-            // Invalida o token caso o envio falhe.
             await query(
                 `UPDATE pessoa
-                 SET token_recuperacao_hash = NULL,
-                     token_recuperacao_expira = NULL
+                 SET codigo_recuperacao_hash = NULL,
+                     codigo_recuperacao_expira = NULL,
+                     tentativas_codigo_recuperacao = 0
                  WHERE cpf_pessoa = $1
-                   AND token_recuperacao_hash = $2`,
-                [pessoa.cpf_pessoa, tokenHash]
+                   AND codigo_recuperacao_hash = $2`,
+                [pessoa.cpf_pessoa, codigoHash]
             );
 
             console.error(
@@ -334,7 +333,7 @@ exports.solicitarRecuperacao = async (req, res) => {
 
             return res.status(500).json({
                 sucesso: false,
-                mensagem: 'Não foi possível enviar o e-mail de recuperação. Verifique a configuração do serviço de e-mail.'
+                mensagem: 'Não foi possível enviar o código de recuperação.'
             });
         }
 
@@ -354,6 +353,102 @@ exports.solicitarRecuperacao = async (req, res) => {
 };
 
 // ========================================
+// VERIFICAR CÓDIGO DE RECUPERAÇÃO
+// ========================================
+
+exports.verificarCodigo = async (req, res) => {
+    try {
+        const { email_pessoa, codigo } = req.body;
+
+        if (
+            !email_pessoa ||
+            typeof email_pessoa !== 'string' ||
+            !codigo ||
+            typeof codigo !== 'string' ||
+            !/^\d{6}$/.test(codigo)
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Informe o e-mail e o código de seis dígitos.'
+            });
+        }
+
+        const resultado = await query(
+            `SELECT cpf_pessoa, codigo_recuperacao_hash,
+                    tentativas_codigo_recuperacao
+             FROM pessoa
+             WHERE LOWER(email_pessoa) = LOWER($1)
+               AND codigo_recuperacao_hash IS NOT NULL
+               AND codigo_recuperacao_expira > CURRENT_TIMESTAMP
+               AND tentativas_codigo_recuperacao < 5`,
+            [email_pessoa.trim()]
+        );
+
+        if (resultado.rows.length === 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Código inválido ou expirado. Solicite um novo código.'
+            });
+        }
+
+        const pessoa = resultado.rows[0];
+        const codigoHash = gerarHash(codigo);
+
+        const codigoCorreto = crypto.timingSafeEqual(
+            Buffer.from(codigoHash, 'hex'),
+            Buffer.from(pessoa.codigo_recuperacao_hash.trim(), 'hex')
+        );
+
+        if (!codigoCorreto) {
+            await query(
+                `UPDATE pessoa
+                 SET tentativas_codigo_recuperacao =
+                     tentativas_codigo_recuperacao + 1
+                 WHERE cpf_pessoa = $1`,
+                [pessoa.cpf_pessoa]
+            );
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Código incorreto. Confira e tente novamente.'
+            });
+        }
+
+        // Gera um token temporário para a etapa de redefinição.
+        const token = crypto.randomBytes(32).toString('hex');
+        const tokenHash = gerarHash(token);
+
+        await query(
+            `UPDATE pessoa
+             SET codigo_recuperacao_hash = NULL,
+                 codigo_recuperacao_expira = NULL,
+                 tentativas_codigo_recuperacao = 0,
+                 token_recuperacao_hash = $1,
+                 token_recuperacao_expira = CURRENT_TIMESTAMP + INTERVAL '10 minutes'
+             WHERE cpf_pessoa = $2
+               AND codigo_recuperacao_hash = $3
+               AND codigo_recuperacao_expira > CURRENT_TIMESTAMP
+               AND tentativas_codigo_recuperacao < 5`,
+            [tokenHash, pessoa.cpf_pessoa, pessoa.codigo_recuperacao_hash]
+        );
+
+        return res.json({
+            sucesso: true,
+            mensagem: 'Código confirmado! Agora você pode cadastrar uma nova senha.',
+            tokenRecuperacao: token
+        });
+
+    } catch (error) {
+        console.error('Erro ao verificar código:', error);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: 'Não foi possível verificar o código.'
+        });
+    }
+};
+
+// ========================================
 // REDEFINIR SENHA
 // ========================================
 
@@ -368,7 +463,7 @@ exports.redefinirSenha = async (req, res) => {
         ) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: 'Link de recuperação inválido ou expirado.'
+                mensagem: 'Autorização inválida ou expirada. Solicite um novo código.'
             });
         }
 
@@ -384,20 +479,17 @@ exports.redefinirSenha = async (req, res) => {
             });
         }
 
-        const tokenHash = crypto
-            .createHash('sha256')
-            .update(token)
-            .digest('hex');
-
+        const tokenHash = gerarHash(token);
         const senhaHash = await bcrypt.hash(novaSenha, 10);
 
-        // Atualiza a senha somente se o token for válido e não expirado.
-        // O token é apagado no mesmo comando para impedir reutilização.
         const resultado = await query(
             `UPDATE pessoa
              SET senha_pessoa = $1,
                  token_recuperacao_hash = NULL,
-                 token_recuperacao_expira = NULL
+                 token_recuperacao_expira = NULL,
+                 codigo_recuperacao_hash = NULL,
+                 codigo_recuperacao_expira = NULL,
+                 tentativas_codigo_recuperacao = 0
              WHERE token_recuperacao_hash = $2
                AND token_recuperacao_expira > CURRENT_TIMESTAMP
              RETURNING cpf_pessoa`,
@@ -407,7 +499,7 @@ exports.redefinirSenha = async (req, res) => {
         if (resultado.rows.length === 0) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: 'Link de recuperação inválido ou expirado.'
+                mensagem: 'Autorização inválida ou expirada. Solicite um novo código.'
             });
         }
 

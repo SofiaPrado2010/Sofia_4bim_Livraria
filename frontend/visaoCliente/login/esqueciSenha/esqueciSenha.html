@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar senha | Entre Páginas</title>
+    <link rel="stylesheet" href="esqueciSenha.css">
+</head>
+
+<body>
+    <div class="pagina-recuperacao">
+        <header>
+            <h1>Entre Páginas</h1>
+            <p>UM UNIVERSO DE HISTÓRIAS</p>
+        </header>
+
+        <main>
+            <section class="recuperacao">
+
+                <div class="icone">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+
+                <h2>Recuperação de senha</h2>
+
+                <p class="descricao">
+                    Não se preocupe! Vamos ajudar você a recuperar o acesso à sua conta.
+                </p>
+
+                <!-- ETAPA 1: E-MAIL -->
+                <form id="formEmail">
+
+                    <h3>1. Informe seu e-mail</h3>
+
+                    <p class="orientacao">
+                        Digite o e-mail cadastrado na sua conta para receber um código de recuperação.
+                    </p>
+
+                    <div class="campo">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" placeholder="Digite seu e-mail" maxlength="75" required>
+                    </div>
+
+                    <button type="submit" id="btEnviarCodigo">
+                        Enviar código
+                    </button>
+
+                </form>
+
+                <!-- ETAPA 2: CÓDIGO -->
+                <form id="formCodigo" hidden>
+
+                    <h3>2. Confirme seu código</h3>
+
+                    <p class="orientacao">
+                        Enviamos um código de seis dígitos para o e-mail informado.
+                        Digite-o abaixo.
+                    </p>
+
+                    <div class="campo">
+                        <label for="codigo">Código de recuperação</label>
+                        <input
+                            type="text"
+                            id="codigo"
+                            placeholder="000000"
+                            maxlength="6"
+                            inputmode="numeric"
+                            pattern="[0-9]{6}"
+                            autocomplete="one-time-code"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="btVerificarCodigo">
+                        Verificar código
+                    </button>
+
+                    <button type="button" class="botao-secundario" id="btVoltarEmail">
+                        Voltar
+                    </button>
+
+                </form>
+
+                <!-- ETAPA 3: NOVA SENHA -->
+                <form id="formSenha" hidden>
+
+                    <h3>3. Crie sua nova senha</h3>
+
+                    <p class="orientacao">
+                        Escolha uma nova senha para acessar sua conta.
+                    </p>
+
+                    <div class="campo">
+                        <label for="novaSenha">Nova senha</label>
+                        <input
+                            type="password"
+                            id="novaSenha"
+                            placeholder="Digite sua nova senha"
+                            minlength="8"
+                            maxlength="72"
+                            autocomplete="new-password"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="confirmarSenha">Confirmar nova senha</label>
+                        <input
+                            type="password"
+                            id="confirmarSenha"
+                            placeholder="Digite novamente sua senha"
+                            minlength="8"
+                            maxlength="72"
+                            autocomplete="new-password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="btRedefinirSenha">
+                        Redefinir senha
+                    </button>
+                </form>
+
+                <p id="mensagem" role="status" aria-live="polite"></p>
+
+                <p class="voltar-login">
+                    <a href="../login.html">Voltar para o login</a>
+                </p>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"
+        crossorigin="anonymous">
+    </script>
+
+    <script src="esqueciSenha.js"></script>
+
+</body>
+
+</html>

@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 
@@ -11,6 +10,7 @@ router.post('/sair', loginController.sair);
 
 // Recuperação de senha
 router.post('/recuperar-senha', loginController.solicitarRecuperacao);
+router.post('/verificar-codigo', loginController.verificarCodigo);
 router.post('/redefinir-senha', loginController.redefinirSenha);
 
 module.exports = router;

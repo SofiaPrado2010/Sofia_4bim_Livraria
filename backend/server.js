@@ -22,9 +22,9 @@ const devolucaoRoutes = require('./routes/devolucaoRoutes');
 
 // Importa o controller de pedidos
 const pedidoController = require('./controllers/pedidoController');
-
 const app = express();
 
+// Configuração do CORS
 app.use(cors({
     origin: 'http://127.0.0.1:5500',
     credentials: true
@@ -64,15 +64,12 @@ app.use('/devolucao', devolucaoRoutes);
 const PORT = process.env.PORT || 3001;
 
 // Inicializa o servidor e testa o PostgreSQL
-app.listen(PORT, async () => {
-
+app.listen(PORT, '127.0.0.1', async () => {
     console.log(`\n=================================`);
     console.log(`🚀 Servidor executando na porta ${PORT}`);
 
     try {
-
         await query('SELECT 1');
-
         console.log(`✅ Banco de Dados conectado com sucesso!`);
 
         // Verificar pedidos expirados ao iniciar o servidor
@@ -94,11 +91,9 @@ app.listen(PORT, async () => {
         console.log('⏰ Verificação automática de pedidos ativada!');
 
     } catch (error) {
-
         console.error(`❌ FALHA NA CONEXÃO COM O BANCO DE DADOS:`);
         console.error(`   Motivo: ${error.message}`);
         console.error(`👉 Ajuste o arquivo .env com a senha correta do seu PostgreSQL.`);
-
     }
 
     console.log(`=================================\n`);

@@ -1,0 +1,285 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CORES DO PROJETO */
+:root {
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;
+    --bege: #fff8f5;
+    --vinho: #674257;
+    --marrom: #a66b18;
+    --rosinha: #f2c6dc;
+    --branco: #fff;
+}
+
+/* CONFIGURAÇÕES GERAIS */
+body {
+    min-height: 100vh;
+    background-color: var(--bege);
+    font-family: Georgia, serif;
+    color: var(--vinho);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+}
+
+/* ÁREA PRINCIPAL */
+.pagina-recuperacao {
+    width: 100%;
+    max-width: 525px;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--branco);
+    border: 1px solid var(--rosinha);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(103, 66, 87, 0.08);
+}
+
+/* CABEÇALHO */
+header {
+    background: linear-gradient(to right,  #fff2ba, #fd94c4, #fff2ba);
+    text-align: center;
+    padding: 22px 15px;
+}
+
+header h1 {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: var(--vinho);
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+main {
+    flex: 1;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px 20px;
+    background-color: var(--branco);
+}
+
+/* CARTÃO DE RECUPERAÇÃO */
+.recuperacao {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 25px 20px;
+
+    background-color: var(--branco);
+    text-align: center;
+}
+
+/* ÍCONE */
+.icone {
+    width: 55px;
+    height: 55px;
+    margin: 0 auto 15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #fff0f6;
+    border-radius: 50%;
+
+    color: var(--rosa-escuro);
+    font-size: 22px;
+}
+
+/* TÍTULOS */
+.recuperacao h2 {
+    color: var(--rosa-escuro);
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.descricao {
+    color: var(--vinho);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.recuperacao h3 {
+    color: var(--vinho);
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.orientacao {
+    color: var(--vinho);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* CAMPOS */
+.campo {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--vinho);
+}
+
+.campo input {
+    width: 100%;
+    padding: 13px;
+
+    border: 1px solid var(--rosinha);
+    border-radius: 8px;
+
+    outline: none;
+    background-color: #fffdfd;
+    color: var(--vinho);
+
+    font-family: Georgia, serif;
+    font-size: 14px;
+
+    transition: 0.3s;
+}
+
+.campo input:focus {
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 0 6px rgba(216, 83, 143, 0.2);
+}
+
+/* CÓDIGO */
+#codigo {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 8px;
+}
+
+/* BOTÕES */
+button {
+    width: 100%;
+    padding: 14px;
+
+    border: none;
+    border-radius: 25px;
+
+    background-color: var(--rosa-escuro);
+    color: var(--branco);
+
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.3s;
+
+    box-shadow: 0 3px 8px rgba(216, 83, 143, 0.2);
+}
+
+button:hover {
+    background-color: #c43f7c;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* BOTÃO SECUNDÁRIO */
+.botao-secundario {
+    margin-top: 10px;
+
+    background-color: var(--laranja-claro);
+    color: var(--vinho);
+
+    box-shadow: none;
+}
+
+.botao-secundario:hover {
+    background-color: var(--laranja-escuro);
+}
+
+/* MENSAGEM */
+#mensagem {
+    min-height: 20px;
+    margin-top: 15px;
+
+    font-family: Georgia, serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* LINK */
+.voltar-login {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.voltar-login a {
+    color: var(--rosa-escuro);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.voltar-login a:hover {
+    text-decoration: underline;
+}
+
+/* ELEMENTOS OCULTOS */
+[hidden] {
+    display: none !important;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .pagina-recuperacao {
+        min-height: 60vh;
+    }
+
+    header {
+        padding: 22px 15px;
+    }
+
+    header h1 {
+        font-size: 27px;
+    }
+
+    main {
+        padding: 20px 12px;
+    }
+
+    .recuperacao {
+        padding: 20px 10px;
+    }
+
+    .recuperacao h2 {
+        font-size: 22px;
+    }
+
+}

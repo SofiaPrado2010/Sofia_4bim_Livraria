@@ -9,67 +9,67 @@
 </head>
 
 <body>
+    <div class="pagina-login">
+        <header>
+            <h1>Entre Páginas</h1>
+            <p>UM UNIVERSO DE HISTÓRIAS</p>
+        </header>
 
-    <header>
-        <h1>Entre Páginas</h1>
-        <p>UM UNIVERSO DE HISTÓRIAS</p>
-    </header>
+        <main>
+            <section class="login">
 
-    <main>
+                <h2>Bem-vindo de volta!</h2>
 
-        <section class="login">
+                <p class="descricao">
+                    Entre na sua conta para continuar explorando nossas histórias.
+                </p>
 
-            <h2>Bem-vindo de volta!</h2>
+                <form id="formLogin">
 
-            <p>Entre na sua conta para continuar explorando nossas histórias.</p>
+                    <div class="campo">
+                        <label for="usuario">Nome de usuário</label>
+                        <input type="text" id="usuario" placeholder="Digite seu nome de usuário" required>
+                    </div>
 
-            <form id="formLogin">
+                    <div class="campo">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" placeholder="Digite sua senha" required>
+                    </div>
 
-                <div class="campo">
-                    <label for="usuario">Nome de usuário</label>
-                    <input type="text" id="usuario" placeholder="Digite seu nome de usuário" required>
+                    <button type="submit" id="btEntrar">
+                        Entrar
+                    </button>
+
+                    <p id="mensagem"></p>
+
+                </form>
+
+                <div id="escolhaArea" class="escolha-area" hidden>
+
+                    <h2>Como deseja entrar no site?</h2>
+                    <p>Escolha a área que deseja acessar:</p>
+
+                    <button type="button" id="btFuncionario">
+                        Funcionário
+                    </button>
+
+                    <button type="button" id="btCliente">
+                        Cliente
+                    </button>
+
                 </div>
 
-                <div class="campo">
-                    <label for="senha">Senha</label>
-                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                <p class="cadastro">
+                    Não possui uma conta?
+                    <a href="../cadastro/cadastro.html">Cadastre-se</a>
+                </p>
+
+                <div class="esqueci-senha">
+                    <a href="esqueciSenha/esqueciSenha.html">Esqueci minha senha</a>
                 </div>
-
-                <button type="submit" id="btEntrar">
-                    Entrar
-                </button>
-
-                <p id="mensagem"></p>
-
-            </form>
-
-            <div id="escolhaArea" class="escolha-area" hidden>
-
-                <h2>Como deseja entrar no site?</h2>
-                <p>Escolha a área que deseja acessar:</p>
-
-                <button type="button" id="btFuncionario">
-                    Funcionário
-                </button>
-
-                <button type="button" id="btCliente">
-                    Cliente
-                </button>
-
-            </div>
-
-            <p class="cadastro">
-                Não possui uma conta?
-                <a href="../cadastro/cadastro.html">Cadastre-se</a>
-            </p>
-            
-            <div class="esqueci-senha">
-                <a href="esqueciSenha.html">Esqueci minha senha</a>
-            </div>
-
-        </section>
-
-    </main>
+            </section>
+        </main>
+    </div>
 
     <script src="login.js"></script>
 
