@@ -8,52 +8,107 @@ window.addEventListener('DOMContentLoaded', function () {
     iniciarLivros();
     iniciarCarrinho();
 
-    // BOTÃO EXPLORAR
-    const btExplorar = document.getElementById('btExplorar');
+    // ÁREA DO CATÁLOGO
     const telaCatalogo = document.getElementById('telaCatalogo');
-    btExplorar.onclick = function () {
-        telaCatalogo.scrollIntoView({
-            behavior: 'smooth'
-        });
-    };
 
-    // CARROSSEL
-    const imagens = document.querySelectorAll('.imagem');
-    let imagemAtual = 0;
-    function trocarImagem() {
-        if (imagens.length <= 1) {
+    // CARROSSEL DO BANNER
+    const slides = document.querySelectorAll('.banner-slide');
+    const indicadores = document.querySelectorAll('.banner-indicador');
+    const btAnterior = document.querySelector('.banner-anterior');
+    const btProximo = document.querySelector('.banner-proximo');
+    const botoesExplorar = document.querySelectorAll('.botao-banner');
+
+    let slideAtual = 0;
+    let intervaloCarrossel;
+
+    // MOSTRAR SLIDE
+    function mostrarSlide(indice) {
+
+        if (slides.length === 0) {
             return;
         }
-        let proximaImagem = imagemAtual + 1;
-        if (proximaImagem >= imagens.length) {
-            proximaImagem = 0;
-        }
 
-        imagens[proximaImagem].style.transition = 'left 1s ease';
-        imagens[imagemAtual].style.transition = 'left 1s ease';
-        imagens[proximaImagem].style.left = '0';
-        imagens[imagemAtual].style.left = '-100%';
-        imagens[imagemAtual].classList.remove('ativa');
-        imagens[proximaImagem].classList.add('ativa');
+        slideAtual = (indice + slides.length) % slides.length;
 
-        imagemAtual = proximaImagem;
+        slides.forEach(function (slide, i) {
 
-        setTimeout(function () {
+            const ativo = i === slideAtual;
 
-            imagens.forEach(function (imagem, i) {
+            slide.classList.toggle('ativo', ativo);
+            slide.setAttribute('aria-hidden', String(!ativo));
 
-                if (i !== imagemAtual) {
-                    imagem.style.transition = 'none';
-                    imagem.style.left = '100%';
-                }
+        });
 
-            });
 
-        }, 1000);
+        // ATUALIZAR INDICADORES
+        indicadores.forEach(function (indicador, i) {
+
+            const ativo = i === slideAtual;
+
+            indicador.classList.toggle('ativo', ativo);
+            indicador.setAttribute('aria-current', String(ativo));
+
+        });
+
     }
 
-    setInterval(trocarImagem, 5000);
+    // PRÓXIMO SLIDE
+    function proximoSlide() {
+        mostrarSlide(slideAtual + 1);
+    }
 
+    // SLIDE ANTERIOR
+    function slideAnterior() {
+        mostrarSlide(slideAtual - 1);
+    }
+
+    // REINICIAR TEMPO DO CARROSSEL
+    function reiniciarIntervalo() {
+        clearInterval(intervaloCarrossel);
+
+        if (slides.length > 1) {
+            intervaloCarrossel = setInterval(proximoSlide, 5000);
+        }
+    }
+
+    // INICIAR CARROSSEL
+    if (slides.length > 0) {
+        mostrarSlide(0);
+        reiniciarIntervalo();
+    }
+
+    // BOTÃO ANTERIOR
+    if (btAnterior) {
+        btAnterior.addEventListener('click', function () {
+            slideAnterior();
+            reiniciarIntervalo();
+        });
+    }
+
+    // BOTÃO PRÓXIMO
+    if (btProximo) {
+        btProximo.addEventListener('click', function () {
+            proximoSlide();
+            reiniciarIntervalo();
+        });
+    }
+
+    // INDICADORES
+    indicadores.forEach(function (indicador, indice) {
+        indicador.addEventListener('click', function () {
+            mostrarSlide(indice);
+            reiniciarIntervalo();
+        });
+    });
+
+    // TODOS OS BOTÕES DO BANNER LEVAM AO CATÁLOGO
+    botoesExplorar.forEach(function (botao) {
+        botao.addEventListener('click', function () {
+            telaCatalogo.scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
 });
 
 // AVISO DE COOKIES
@@ -67,23 +122,22 @@ if (localStorage.getItem('cookiesAceitos') === 'sim') {
 btAceitarCookies.onclick = function () {
     localStorage.setItem('cookiesAceitos', 'sim');
     avisoCookies.style.display = 'none';
-
 };
 
 // VERIFICAR LOGIN
 async function verificarLogin() {
-
     try {
-
         const resposta = await fetch(`${URL_API}/login/sessao`, {
             method: 'GET',
             credentials: 'include'
         });
 
+
         if (resposta.ok) {
             const dados = await resposta.json();
             console.log('Usuário conectado:', dados.usuario);
             const areaUsuario = document.getElementById('areaUsuario');
+
             areaUsuario.innerHTML = `
                 <div class="menu-usuario">
 
@@ -110,15 +164,17 @@ async function verificarLogin() {
                 </div>
             `;
 
-
+            // SAUDAÇÃO
             const saudacao = document.createElement('span');
             saudacao.className = 'saudacao-usuario';
-            saudacao.textContent = `Bem-vindo, ${dados.usuario.nome}!`;
+            saudacao.textContent = `Bem-vindo(a), ${dados.usuario.nome}!`;
             areaUsuario.prepend(saudacao);
+
 
             // ABRIR MENU DO USUÁRIO
             const btUsuario = document.getElementById('btUsuario');
             const opcoesUsuario = document.getElementById('opcoesUsuario');
+
             btUsuario.onclick = function () {
                 opcoesUsuario.classList.toggle('mostrar');
             };
@@ -135,10 +191,10 @@ async function verificarLogin() {
                 window.location.href = './pedidos/pedidos.html';
             };
 
+
             // SAIR
             const btSair = document.getElementById('btSair');
             btSair.onclick = async function () {
-
                 try {
                     const resposta = await fetch(`${URL_API}/login/sair`, {
                         method: 'POST',
@@ -150,7 +206,6 @@ async function verificarLogin() {
                     if (resposta.ok) {
                         alert(dados.mensagem);
                         window.location.reload();
-
                     } else {
                         alert(dados.mensagem);
                     }
@@ -164,6 +219,7 @@ async function verificarLogin() {
         } else {
             console.log('Nenhum usuário conectado.');
         }
+
 
     } catch (error) {
         console.error('Erro ao verificar login:', error);

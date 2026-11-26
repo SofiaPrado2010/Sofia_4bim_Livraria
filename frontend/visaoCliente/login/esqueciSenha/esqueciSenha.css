@@ -10,7 +10,7 @@
     --rosa-escuro: #d8538f;
     --laranja-claro: #fccb42;
     --laranja-escuro: #e5a900;
-    --bege: #fff8f5;
+    --bege: #f7faf9;
     --vinho: #674257;
     --marrom: #a66b18;
     --rosinha: #f2c6dc;
@@ -36,7 +36,7 @@ body {
     min-height: 60vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--branco);
+    background-color: #fff8f5;
     border: 1px solid var(--rosinha);
     border-radius: 18px;
     overflow: hidden;

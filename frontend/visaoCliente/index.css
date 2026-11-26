@@ -1,37 +1,35 @@
-/* CONFIGURAÇÕES GERAIS */
+/* FONTES EDITORIAIS (ESTILO BOUTIQUE / LIVRARIA) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+/* PALETA ROSA & AMARELO EMPOEIRADO (ESTILO EDITORIAL) */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 :root {
-    --rosa-escuro: #d8538f;
-    --rosa-medio: #f15098;
-    --laranja-claro: #fccb42;
-    --laranja-escuro: #e5a900;
-    --bege: #f7faf9;
-    --vinho: #674257;
-    --marrom: #a66b18;
-    --rosinha: #f2c6dc;
-    --branco: #fff;
-    --gradiente-principal: linear-gradient(
-        110deg,
-        #fff2ba 0%,
-        #fd94c4 48%,
-        #fff2ba 100%
-    );
-    --gradiente-botao: linear-gradient(
-        120deg,
-        #e94b91 0%,
-        #f15098 48%,
-        #ff9b45 100%
-    );
-    --gradiente-dourado: linear-gradient(
-        120deg,
-        #ffdf75,
-        #fccb42,
-        #f4a72c
-    );
+    /* Fundos Papel / Creme (Base 60%) */
+    --creme-fundo: #FAF7F2;
+    --creme-card: #F3EDE4;
+    --branco-puro: #FFFFFF;
+
+    /* Blocos de Rosa e Amarelo Pastel (30%) */
+    --rosa-blush: #F4D8DC;        /* Rosa empoeirado das faixas */
+    --rosa-suave: #FBECEF;        /* Rosa bem clarinho para hover/tags */
+    --amarelo-manteiga: #F7E8C3;  /* Amarelo creme acolhedor */
+    --amarelo-ouro-suave: #E6B85C;/* Amarelo queimado para detalhes */
+
+    /* Contraste Profundo (10% - substitui o verde escuro das referências) */
+    --borgonha-escuro: #542334;   /* Botões principais e títulos fortes */
+    --borgonha-hover: #3D1724;
+    --texto-principal: #332227;
+    --texto-suave: #756267;
+    --borda-fina: #E5DCD5;
+
+    /* Tipografia */
+    --fonte-serifa: 'Cormorant Garamond', Georgia, serif;
+    --fonte-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
 }
 
 html {
@@ -39,80 +37,88 @@ html {
 }
 
 body {
-    background-color: var(--bege);
-    color: var(--vinho);
-    font-family: Arial, sans-serif;
+    background-color: var(--creme-fundo);
+    color: var(--texto-principal);
+    font-family: var(--fonte-sans);
+    overflow-x: hidden;
+    line-height: 1.55;
 }
 
 button {
     font-family: inherit;
 }
 
-/* ORGANIZAÇÃO GERAL */
 .pagina {
     width: 100%;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 main {
     width: 100%;
-    padding: 25px 5% 70px;
+    flex: 1;
 }
 
-/* CABEÇALHO */
+/* =========================================
+   CABEÇALHO MINIMALISTA (ESTILO PAPER & PAGE)
+========================================= */
 .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 900;
     width: 100%;
-    min-height: 85px;
-    padding: 14px 5%;
+    min-height: 82px;
+    padding: 14px 6%;
     display: grid;
-    grid-template-columns: auto minmax(220px, 1fr) auto;
+    grid-template-columns: auto minmax(220px, 440px) auto;
+    justify-content: space-between;
     align-items: center;
-    gap: 35px;
-    background: var(--gradiente-principal);
-    border-bottom: 4px solid var(--laranja-claro);
-    box-shadow: 0 4px 15px rgba(103, 66, 87, 0.12);
-}
-
-.titulo {
-    text-align: left;
+    gap: 28px;
+    background-color: #fadff0;
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 .titulo h1 {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: Georgia, serif;
+    font-family: var(--fonte-serifa);
     font-size: 30px;
-    color: var(--vinho);
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--borgonha-escuro);
     white-space: nowrap;
 }
 
 .titulo h1 i {
-    color: var(--rosa-escuro);
-    font-size: 28px;
+    font-size: 20px;
+    color: var(--borgonha-escuro);
 }
 
 .titulo p {
-    font-size: 11px;
-    color: var(--vinho);
-    margin-top: 5px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--texto-suave);
+    margin-top: 2px;
 }
 
-/* PESQUISA */
+/* BARRA DE PESQUISA DISCRETA */
 .pesquisa {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 5px 18px;
-    background-color: var(--branco);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(103, 66, 87, 0.12);
-    transition: 0.25s;
+    padding: 3px 16px;
+    background-color: var(--branco-puro);
+    border: 1px solid var(--borda-fina);
+    border-radius: 999px;
+    transition: border-color 0.25s ease;
 }
 
 .pesquisa i {
-    color: var(--rosa-escuro);
+    color: var(--texto-suave);
+    font-size: 13px;
 }
 
 .pesquisa input {
@@ -121,25 +127,24 @@ main {
     border: none;
     outline: none;
     background: transparent;
-    padding: 13px;
-    font-size: 14px;
-    color: var(--vinho);
+    padding: 9px 10px;
+    font-size: 13.5px;
+    color: var(--texto-principal);
 }
 
 .pesquisa input::placeholder {
-    color: #a18b98;
+    color: #9E8E92;
 }
 
 .pesquisa:focus-within {
-    border-color: var(--rosa-escuro);
-    box-shadow: 0 0 0 3px rgba(216, 83, 143, 0.15);
+    border-color: var(--borgonha-escuro);
 }
 
 /* BOTÕES DO CABEÇALHO */
 .botoes-cabecalho {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
 }
 
 .botoes-cabecalho button {
@@ -154,94 +159,64 @@ main {
 }
 
 .saudacao-usuario {
-    color: var(--vinho);
+    color: var(--texto-principal);
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 .menu-usuario {
     position: relative;
 }
 
-/* BOTÕES COM GRADIENTE E BRILHO */
-#btExplorar,
+/* Botão Entrar / Aceitar Cookies (Sólido e Elegante, sem brilho neon) */
 #btLogin,
-.apresentacao button,
 #btAceitarCookies {
-    position: relative;
-    overflow: hidden;
-    background-color: var(--rosa-escuro);
-    color: var(--branco);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 10px var(--rosa-escuro);
-    font-size: 14px;
-    font-weight: bold;
-    padding: 12px 25px;
-    border-radius: 25px;
+    background-color: var(--borgonha-escuro);
+    color: var(--creme-fundo);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    padding: 10px 24px;
+    border-radius: 999px;
     cursor: pointer;
-    transition: 0.25s;
+    transition: background-color 0.25s ease, transform 0.2s ease;
 }
 
-/* Efeito de brilho */
-#btExplorar::before,
-#btLogin::before,
-.apresentacao button::before,
-#btAceitarCookies::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -120%;
-    width: 70%;
-    height: 100%;
-    background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-    transform: skewX(-20deg);
-    transition: 0.6s;
-}
-
-#btExplorar:hover::before,
-#btLogin:hover::before,
-.apresentacao button:hover::before,
-#btAceitarCookies:hover::before {
-    left: 140%;
-}
-
-#btExplorar:hover,
 #btLogin:hover,
-.apresentacao button:hover,
 #btAceitarCookies:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 18px rgba(216, 83, 143, 0.35), 0 4px 12px rgba(229, 169, 0, 0.30);
+    background-color: var(--borgonha-hover);
+    transform: translateY(-1px);
 }
 
-/* CARRINHO E USUÁRIO */
+/* Ícones minimalistas (igual ao topo das referências) */
 #btCarrinho,
 #btUsuario {
-    background: none;
-    border: none;
-    color: var(--vinho);
-    font-size: 25px;
+    background: transparent;
+    color: var(--texto-principal);
+    font-size: 19px;
+    padding: 6px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 #btCarrinho:hover,
 #btUsuario:hover {
-    color: var(--rosa-escuro);
-    transform: scale(1.12);
+    color: var(--borgonha-escuro);
+    transform: translateY(-1px);
 }
 
-/* MENU DO USUÁRIO */
+/* MENU DROPDOWN USUÁRIO */
 .opcoes-usuario {
     display: none;
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     right: 0;
-    background-color: var(--branco);
-    min-width: 170px;
-    box-shadow: 0 5px 18px rgba(103, 66, 87, 0.18);
-    border: 1px solid #f0dce5;
+    background-color: var(--branco-puro);
+    min-width: 180px;
+    border: 1px solid var(--borda-fina);
     border-radius: 12px;
-    padding: 8px;
+    padding: 6px;
+    box-shadow: 0 10px 25px rgba(51, 34, 39, 0.08);
     z-index: 1000;
 }
 
@@ -252,332 +227,415 @@ main {
 .opcoes-usuario button {
     display: block;
     width: 100%;
-    padding: 11px;
+    padding: 10px 14px;
     border: none;
     background: none;
     text-align: left;
+    font-size: 13px;
+    color: var(--texto-principal);
+    border-radius: 8px;
     cursor: pointer;
-    color: var(--vinho);
-    border-radius: 7px;
+    transition: background-color 0.2s;
 }
 
 .opcoes-usuario button:hover {
-    background: linear-gradient(
-        90deg,
-        #fff0f5,
-        #fff5df
-    );
+    background-color: var(--rosa-suave);
+    color: var(--borgonha-escuro);
 }
 
-/* BANNER PRINCIPAL */
-.apresentacao {
-    min-height: 340px;
+/* =========================================
+   BANNER PRINCIPAL (ESTILO LUNARA)
+========================================= */
+#telaInicial {
+    width: 100%;
+}
+
+.banner-carrossel {
     position: relative;
+    width: 100%;
+    min-height: 490px;
+    overflow: hidden;
+    isolation: isolate;
+    background-color: var(--rosa-blush);
+}
+
+.banner-slide {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
-    text-align: left;
-    overflow: hidden;
-    border-radius: 20px;
-    background: linear-gradient(120deg, #fdede6, #fecec4, #faaeb3);
-    box-shadow: 0 6px 18px rgba(103, 66, 87, 0.10), 0 3px 10px rgba(229, 169, 0, 0.10);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
-.carrossel {
+.banner-slide.ativo {
+    position: relative;
+    min-height: 490px;
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+}
+
+.banner-imagem {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-}
-
-.imagem {
-    position: absolute;
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    top: 0;
-    left: 100%;
+    object-position: center;
+    z-index: -2;
 }
 
-.imagem.ativa {
-    left: 0;
-}
-
-/* Camada para facilitar a leitura do texto */
-.apresentacao::after {
+/* Filtro suave em tom vinho/ameixa translúcido para manter o clima editorial */
+.banner-slide::before {
     content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(
         90deg,
-        rgba(255, 247, 240, 0.96) 0%,
-        rgba(252, 231, 222, 0.88) 38%,
-        rgba(255, 220, 211, 0.45) 65%,
-        rgba(255, 211, 199, 0.05) 100%
+        rgba(64, 28, 48, 0.78) 0%,
+        rgba(64, 28, 40, 0.48) 50%,
+        rgba(64, 28, 40, 0.12) 100%
     );
-    z-index: 1;
+    z-index: -1;
 }
 
-.conteudo-apresentacao {
+.banner-conteudo {
     position: relative;
     z-index: 2;
-    max-width: 620px;
-    padding: 45px 55px;
+    width: 100%;
+    max-width: 660px;
+    padding: 60px 6%;
+    color: var(--creme-fundo);
 }
 
 .subtitulo-banner {
-    display: inline-block;
-    color: var(--rosa-escuro);
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
-/* Título principal */
-.apresentacao h2 {
-    font-family: Georgia, serif;
-    color: var(--vinho);
-    font-size: 43px;
-    line-height: 1.15;
-    margin: 18px 0;
-}
-
-/* Destaque em gradiente */
-.destaque-banner {
     display: block;
-    background: linear-gradient(
-        100deg,
-        #e85a91,
-        #f27a45,
-        #d8538f
-    );
-
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--amarelo-manteiga);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.8px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
 }
 
-.apresentacao p {
-    color: var(--vinho);
-    line-height: 1.7;
-    margin-bottom: 25px;
+.banner-conteudo h2 {
+    color: var(--branco-puro);
+    font-family: var(--fonte-serifa);
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1.08;
+    margin-bottom: 18px;
+}
+
+.banner-conteudo p {
+    color: rgba(255, 250, 245, 0.92);
     font-size: 15px;
+    font-weight: 400;
+    line-height: 1.65;
+    margin-bottom: 30px;
     max-width: 440px;
 }
 
-.apresentacao button {
+/* Botão Pílula Pastel (igual ao "Shop skincare ->" da imagem 1) */
+.botao-banner {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    background-color: var(--amarelo-manteiga);
+    color: var(--borgonha-escuro);
+    border: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 13px 28px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
-.apresentacao button i {
+.botao-banner:hover {
+    background-color: var(--rosa-blush);
+    color: var(--borgonha-escuro);
+    transform: translateY(-2px);
+}
+
+.botao-banner i {
+    font-size: 12px;
+    transition: transform 0.25s ease;
+}
+
+.botao-banner:hover i {
+    transform: translateX(4px);
+}
+
+/* Setas sutis do carrossel */
+.banner-seta {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    color: var(--branco-puro);
     font-size: 13px;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.25s ease;
 }
 
+.banner-seta:hover {
+    background-color: var(--creme-fundo);
+    color: var(--borgonha-escuro);
+}
 
-/* TÍTULOS DAS SEÇÕES */
+.banner-anterior {
+    left: 22px;
+}
+
+.banner-proximo {
+    right: 22px;
+}
+
+.banner-indicadores {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 5;
+}
+
+.banner-indicador {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.banner-indicador.ativo {
+    width: 24px;
+    background-color: var(--amarelo-manteiga);
+}
+
+/* =========================================
+   TÍTULOS DAS SEÇÕES (CENTRALIZADO EDITORIAL)
+========================================= */
 .titulo-secao {
-    margin-bottom: 25px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 36px;
 }
 
 .titulo-secao > span {
-    color: var(--rosa-escuro);
+    display: block;
+    color: var(--borgonha-escuro);
     font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 2px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
 .titulo-secao h2 {
-    font-family: Georgia, serif;
-    font-size: 30px;
-    color: var(--vinho);
-    margin: 8px 0;
+    font-family: var(--fonte-serifa);
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--texto-principal);
+    line-height: 1.15;
+    margin-bottom: 10px;
 }
 
 .titulo-secao p {
-    color: #887482;
+    color: var(--texto-suave);
     font-size: 14px;
     line-height: 1.6;
 }
 
-/* GÊNEROS */
+/* =========================================
+   SEÇÃO DE GÊNEROS (FAIXA AMARELO MANTEIGA + ÍCONES REDONDOS EM 1 LINHA)
+========================================= */
 .secao-generos {
-    padding: 55px 0 60px;
+    width: 100%;
+    margin-top: 32px; /* Respiro entre o banner e a faixa amarela */
+    padding: 55px 6%;
+    background-color: var(--amarelo-manteiga);
+    border-top: 1px solid var(--borda-fina);
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 .lista-generos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-    gap: 12px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
 }
 
-/* Cartões */
+/* Cartões de Gênero */
 .cartao-genero {
+    flex: 1 1 0;
+    min-width: 95px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
-
-    min-height: 105px;
-    padding: 15px 10px;
-
-    background: linear-gradient(
-        145deg,
-        #fffbfd,
-        #fff1f9
-    );
-
-    border: 1px solid #f5d5c5;
-    border-radius: 13px;
-
-    color: var(--vinho);
+    padding: 8px 4px;
+    background: transparent;
+    border: none;
+    color: var(--texto-principal);
     cursor: pointer;
-    transition: 0.25s;
-
-    box-shadow: 0 3px 9px rgba(103, 66, 87, 0.05);
+    transition: transform 0.25s ease;
 }
 
 .cartao-genero i {
-    font-size: 24px;
-    color: var(--rosa-escuro);
-    transition: 0.25s;
+    width: 68px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--rosa-blush);
+    border: 1px solid rgba(84, 35, 52, 0.12);
+    font-size: 22px;
+    color: var(--borgonha-escuro);
+    transition: all 0.25s ease;
 }
 
 .cartao-genero span {
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 12.5px;
+    font-weight: 500;
     text-align: center;
+    line-height: 1.3;
+    color: var(--texto-principal);
 }
 
 .cartao-genero:hover {
-    transform: translateY(-5px);
-
-    background: linear-gradient(
-        145deg,
-        #fff0f5,
-        #fff0d5
-    );
-
-    border-color: var(--laranja-claro);
-
-    box-shadow:
-        0 6px 14px rgba(216, 83, 143, 0.12),
-        0 3px 10px rgba(229, 169, 0, 0.12);
+    transform: translateY(-4px);
 }
 
 .cartao-genero:hover i {
-    color: #f4a865;
-    transform: scale(1.12);
+    background-color: var(--creme-fundo);
+    border-color: var(--borgonha-escuro);
 }
 
-/* Gênero selecionado */
-.cartao-genero.selecionado {
-    background: linear-gradient(
-        135deg,
-        #f9c4d9,
-        #ffdf9c
-    );
-
-    border-color: var(--rosa-escuro);
-
-    box-shadow:
-        0 4px 12px rgba(216, 83, 143, 0.16);
-}
-
+/* Gênero Selecionado */
 .cartao-genero.selecionado i {
-    color: #a9346b;
+    background-color: var(--borgonha-escuro);
+    color: var(--amarelo-manteiga);
+    border-color: var(--borgonha-escuro);
+    box-shadow: 0 6px 16px rgba(84, 35, 52, 0.22);
 }
 
+.cartao-genero.selecionado span {
+    font-weight: 700;
+    color: var(--borgonha-escuro);
+}
 
-/* CATÁLOGO */
+/* =========================================
+   CATÁLOGO DE LIVROS
+========================================= */
 #telaCatalogo {
-    padding-top: 15px;
-    scroll-margin-top: 25px;
+    padding: 65px 6% 80px;
+    background-color: var(--creme-fundo);
+    scroll-margin-top: 80px;
 }
 
 .cabecalho-catalogo {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
-
-/* FILTROS */
+/* FILTRO DE TIPO DE CAPA (MINIMALISTA) */
 .area-filtros {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 40px;
 }
 
 .area-filtros > span {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--vinho);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-suave);
+    margin-right: 6px;
 }
 
 .area-filtros > span i {
-    color: var(--rosa-escuro);
+    color: var(--borgonha-escuro);
     margin-right: 5px;
 }
 
 .lista-filtros {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
 }
 
 .lista-filtros button {
-    background-color: var(--branco);
-    color: var(--vinho);
-
-    border: 1px solid #f0d5c8;
-    border-radius: 20px;
-
-    padding: 9px 17px;
-    font-size: 12px;
-    font-weight: bold;
-
+    background-color: var(--branco-puro);
+    color: var(--texto-principal);
+    border: 1px solid var(--borda-fina);
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 12.5px;
+    font-weight: 500;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 .lista-filtros button:hover {
-    border-color: var(--laranja-claro);
-    background-color: #fff5e5;
+    background-color: var(--rosa-blush);
+    border-color: var(--rosa-blush);
 }
 
 .lista-filtros button.selecionado {
-    background: var(--rosa-escuro);
-    box-shadow: 0 0 10px var(--rosa-escuro);
-    color: var(--branco);
-    border-color: transparent;
+    background-color: var(--borgonha-escuro);
+    color: var(--creme-fundo);
+    border-color: var(--borgonha-escuro);
 }
 
-/* AVISO DE COOKIES */
+/* =========================================
+   AVISO DE COOKIES
+========================================= */
 .aviso-cookies {
     position: fixed;
-    bottom: 20px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
-
-    width: 90%;
-    max-width: 600px;
-
-    background-color: var(--branco);
-    border: 1px solid var(--rosinha);
-    border-left: 5px solid var(--laranja-claro);
-    border-radius: 15px;
-
-    padding: 22px;
-
-    box-shadow: 0 5px 18px rgba(103, 66, 87, 0.17);
-
+    width: 92%;
+    max-width: 620px;
+    background-color: var(--branco-puro);
+    border: 1px solid var(--borda-fina);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 12px 30px rgba(51, 34, 39, 0.12);
     z-index: 1000;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -585,24 +643,33 @@ main {
 }
 
 .texto-cookies h3 {
-    color: var(--rosa-escuro);
-    margin-bottom: 8px;
+    font-family: var(--fonte-serifa);
+    color: var(--borgonha-escuro);
+    margin-bottom: 4px;
+    font-size: 19px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.texto-cookies h3 i {
+    color: var(--amarelo-ouro-suave);
     font-size: 16px;
 }
 
 .texto-cookies p {
-    color: var(--vinho);
+    color: var(--texto-suave);
     font-size: 13px;
     line-height: 1.5;
 }
 
-
-/* RODAPÉ */
+/* =========================================
+   RODAPÉ (BLOCO ESCURO CONTRASTANTE COMO NA IMAGEM 2)
+========================================= */
 footer {
-    background: var(--gradiente-principal);
-    color: var(--vinho);
-    padding: 40px 5%;
-    border-top: 4px solid var(--laranja-escuro);
+    background-color: var(--borgonha-escuro);
+    color: var(--creme-fundo);
+    padding: 55px 6%;
 }
 
 .conteudo-rodape {
@@ -610,36 +677,38 @@ footer {
     justify-content: space-between;
     align-items: center;
     gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
 }
 
 footer h2 {
-    font-family: Georgia, serif;
-    margin-bottom: 12px;
-    font-size: 25px;
+    font-family: var(--fonte-serifa);
+    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--amarelo-manteiga);
 }
 
 footer h2 i {
-    color: var(--rosa-escuro);
-    margin-right: 6px;
+    margin-right: 8px;
+    font-size: 22px;
 }
 
 footer p {
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 13.5px;
+    color: rgba(250, 247, 242, 0.8);
+    line-height: 1.65;
 }
 
 .informacoes-rodape {
     text-align: right;
 }
 
-/* RESPONSIVIDADE */
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
 @media (max-width: 950px) {
-
     .cabecalho {
         grid-template-columns: 1fr auto;
-        gap: 18px;
+        gap: 16px;
     }
 
     .pesquisa-cabecalho {
@@ -647,129 +716,84 @@ footer p {
         grid-row: 2;
     }
 
-    .titulo h1 {
-        font-size: 28px;
+    .banner-carrossel,
+    .banner-slide.ativo {
+        min-height: 430px;
     }
 
-    .apresentacao {
-        min-height: 320px;
-    }
-
-    .conteudo-apresentacao {
-        padding: 35px;
-    }
-
-    .apresentacao h2 {
-        font-size: 37px;
-    }
-
-    .lista-generos {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    .banner-conteudo h2 {
+        font-size: 40px;
     }
 }
 
-
 @media (max-width: 600px) {
-
     .cabecalho {
-        grid-template-columns: 1fr auto;
-        gap: 13px;
-        padding: 15px 5%;
+        padding: 14px 5%;
     }
 
     .titulo h1 {
-        font-size: 23px;
+        font-size: 24px;
     }
 
-    .titulo h1 i {
-        font-size: 21px;
-    }
-
-    .titulo p {
-        font-size: 9px;
-    }
-
-    .botoes-cabecalho {
-        gap: 12px;
-    }
-
-    #btLogin {
-        padding: 10px 15px;
-        font-size: 12px;
-    }
-
-    #btCarrinho,
-    #btUsuario {
-        font-size: 21px;
-    }
-
+    .titulo p,
     .saudacao-usuario {
         display: none;
     }
 
-    .pesquisa-cabecalho {
-        grid-column: 1 / -1;
-        grid-row: 2;
+    .banner-carrossel,
+    .banner-slide.ativo {
+        min-height: 390px;
     }
 
-    main {
-        padding: 20px 5% 45px;
+    .banner-conteudo {
+        padding: 36px 24px 58px;
     }
 
-    .apresentacao {
-        min-height: 340px;
-        border-radius: 13px;
+    .banner-conteudo h2 {
+        font-size: 32px;
     }
 
-    .apresentacao::after {
-        background: linear-gradient(
-            90deg,
-            rgba(255, 239, 225, 0.94),
-            rgba(255, 226, 213, 0.78)
-        );
+    .banner-seta {
+        top: auto;
+        bottom: 14px;
+        transform: none;
+        width: 34px;
+        height: 34px;
     }
 
-    .conteudo-apresentacao {
-        padding: 25px;
+    .banner-anterior {
+        left: 16px;
     }
 
-    .apresentacao h2 {
-        font-size: 31px;
+    .banner-proximo {
+        right: 16px;
     }
 
-    .apresentacao p {
-        font-size: 13px;
-    }
-
-    .apresentacao button {
-        padding: 12px 18px;
-        font-size: 12px;
-    }
-
-    .secao-generos {
-        padding: 42px 0;
+    .banner-indicadores {
+        bottom: 26px;
     }
 
     .titulo-secao h2 {
-        font-size: 25px;
-    }
-
-    .titulo-secao p {
-        font-size: 13px;
+        font-size: 30px;
     }
 
     .lista-generos {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        gap: 16px;
+    }
+
+    .secao-generos {
+        margin-top: 20px;
+        padding: 40px 5%;
+    }
+
+    .lista-generos {
+        justify-content: flex-start;
+        gap: 12px;
     }
 
     .cartao-genero {
-        min-height: 95px;
-    }
-
-    .area-filtros {
-        align-items: flex-start;
-        flex-direction: column;
+        flex: 0 0 92px;
     }
 
     .conteudo-rodape {
@@ -789,36 +813,4 @@ footer p {
     #btAceitarCookies {
         width: 100%;
     }
-
-}
-
-
-@media (max-width: 380px) {
-
-    .titulo h1 {
-        font-size: 20px;
-    }
-
-    .titulo h1 i {
-        font-size: 18px;
-    }
-
-    .botoes-cabecalho {
-        gap: 8px;
-    }
-
-    #btLogin {
-        padding: 9px 12px;
-        font-size: 11px;
-    }
-
-    #btCarrinho,
-    #btUsuario {
-        font-size: 19px;
-    }
-
-    .apresentacao h2 {
-        font-size: 27px;
-    }
-
 }
