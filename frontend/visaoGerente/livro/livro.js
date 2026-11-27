@@ -314,17 +314,16 @@ async function listar() {
                         </span>
                     </td>
                     <td>
-                        ${
-                            linha.ativo
-                                ? `<button class="bt-status bt-desativar"
+                        ${linha.ativo
+                    ? `<button class="bt-status bt-desativar"
                                     onclick="alterarStatusLivro(${linha.id_livro}, false)">
                                     Desativar
                                   </button>`
-                                : `<button class="bt-status bt-reativar"
+                    : `<button class="bt-status bt-reativar"
                                     onclick="alterarStatusLivro(${linha.id_livro}, true)">
                                     Reativar
                                   </button>`
-                        }
+                }
                     </td>
                 </tr>
             `;
@@ -398,7 +397,16 @@ function mostrarDadosLivro(l) {
     document.getElementById("inputAutor").value = l.autor;
     document.getElementById("inputPreco").value = l.preco_unitario;
     document.getElementById("inputPaginas").value = l.numero_paginas;
-    document.getElementById("selectTipoCapa").value = l.tipo_capa;
+
+    const tipoCapa = String(l.tipo_capa || '').trim().toLowerCase();
+
+    if (tipoCapa === 'dura' || tipoCapa === 'capa dura') {
+        document.getElementById("selectTipoCapa").value = "Capa dura";
+    } else if (tipoCapa === 'comum' || tipoCapa === 'capa comum') {
+        document.getElementById("selectTipoCapa").value = "Capa comum";
+    } else {
+        document.getElementById("selectTipoCapa").value = "";
+    }
 
     bloquearAtributos(true);
 }
