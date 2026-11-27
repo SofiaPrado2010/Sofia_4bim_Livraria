@@ -1,87 +1,147 @@
+/* FONTES EDITORIAIS (ESTILO BOUTIQUE / LIVRARIA) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* CONFIGURAÇÕES GERAIS E VARIÁVEIS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    background-color: #fffaf3;
-    font-family: Georgia, serif;
-    color: #4e342e;
+:root {
+    --creme-fundo: #FAF7F2;
+    --creme-card: #F3EDE4;
+    --branco-puro: #FFFFFF;
+
+    --rosa-blush: #F4D8DC;
+    --rosa-suave: #FBECEF;
+    --amarelo-manteiga: #F7E8C3;
+    --amarelo-ouro-suave: #E6B85C;
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;
+
+    --vinho: #674257;
+    --vinho-hover: #3D1724;
+    --texto-principal: #332227;
+    --texto-suave: #756267;
+    --borda-fina: #E5DCD5;
+
+    --fonte-serifa: 'Cormorant Garamond', Georgia, serif;
+    --fonte-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
 }
 
-/* CABEÇALHO */
+html {
+    scroll-behavior: smooth;
+}
 
+body {
+    background-color: var(--creme-fundo);
+    color: var(--texto-principal);
+    font-family: var(--fonte-sans);
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    font-family: inherit;
+    transition: all 0.25s ease;
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* =========================================
+   CABEÇALHO MINIMALISTA
+========================================= */
 header {
-    background: linear-gradient(to right, #ffed9e, #ffc8e1, #ffed9e);
+    padding: 24px 6%;
     text-align: center;
-    padding: 20px;
+    background: linear-gradient(to right, #f0a8c9, #F7E8C3);
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 header h1 {
-    color: #ed1685;
-    font-size: 32px;
-    margin-bottom: 5px;
+    font-family: var(--fonte-serifa);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--vinho);
+    margin-bottom: 4px;
 }
 
 header p {
-    color: #80665e;
-    font-size: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--texto-suave);
 }
 
-/* CONTEÚDO PRINCIPAL */
-
+/* =========================================
+   CONTEÚDO PRINCIPAL
+========================================= */
 main {
+    flex: 1;
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 45px 5% 75px;
 }
 
 .pagamento {
-    background-color: white;
+    background-color: var(--branco-puro);
     width: 100%;
-    max-width: 1000px;
-    padding: 35px;
-    border: 1px solid #f7dce8;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(78, 52, 46, 0.08);
+    max-width: 960px;
+    padding: 44px 48px;
+    border: 1px solid var(--borda-fina);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(51, 34, 39, 0.05);
 }
 
 .pagamento > h2 {
     text-align: center;
-    color: #ed1685;
-    font-size: 27px;
-    margin-bottom: 10px;
+    font-family: var(--fonte-serifa);
+    color: var(--vinho);
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .pagamento > p {
     text-align: center;
-    color: #80665e;
-    margin-bottom: 25px;
+    color: var(--texto-suave);
+    font-size: 14.5px;
+    margin-bottom: 32px;
 }
 
-/* SEÇÕES */
-
+/* =========================================
+   SEÇÕES (RESUMO, ENTREGA E FORMA DE PAGAMENTO)
+========================================= */
 .resumo,
 .dados-entrega,
 .forma-pagamento {
-    background-color: #fffdfd;
-    border: 1px solid #f7dce8;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 22px;
+    background-color: var(--creme-fundo);
+    border: 1px solid var(--borda-fina);
+    border-radius: 18px;
+    padding: 26px 28px;
+    margin-bottom: 24px;
 }
 
 .resumo h3,
 .dados-entrega h3,
 .forma-pagamento h3 {
-    color: #ed1685;
+    font-family: var(--fonte-serifa);
+    color: var(--vinho);
+    font-size: 24px;
+    font-weight: 700;
     margin-bottom: 18px;
-    font-size: 19px;
 }
 
-/* LIVROS */
-
+/* LIVROS NO RESUMO */
 #listaLivros {
     display: flex;
     flex-direction: column;
@@ -89,112 +149,159 @@ main {
 }
 
 .item-resumo {
-    padding: 12px;
-    background-color: #fff5f9;
-    border-radius: 8px;
-    border: 1px solid #f7dce8;
+    padding: 15px 18px;
+    background-color: var(--branco-puro);
+    border-radius: 14px;
+    border: 1px solid var(--borda-fina);
 }
 
 .item-resumo p {
     margin-bottom: 5px;
     font-size: 14px;
+    color: var(--texto-principal);
+}
+
+.item-resumo p:last-child {
+    margin-bottom: 0;
 }
 
 .total {
     text-align: right;
     margin-top: 20px;
-    color: #4e342e !important;
+    padding-top: 16px;
+    border-top: 1px solid var(--borda-fina);
+    font-family: var(--fonte-serifa);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--vinho) !important;
 }
 
-/* CAMPOS */
-
+/* =========================================
+   CAMPOS E LABELS (ENTREGA E PAGAMENTO)
+========================================= */
 .campo {
     display: flex;
     flex-direction: column;
+    gap: 7px;
     margin-bottom: 18px;
 }
 
+.campo:last-child {
+    margin-bottom: 0;
+}
+
 .campo label {
-    font-weight: bold;
-    margin-bottom: 7px;
-    font-size: 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--vinho);
 }
 
 .campo input,
 .campo select {
-    padding: 12px;
-    border: 1px solid #f2d5e2;
-    border-radius: 7px;
-    font-family: Georgia, serif;
+    padding: 12px 15px;
+    border: 1px solid var(--borda-fina);
+    border-radius: 12px;
+    font-family: var(--fonte-sans);
     font-size: 14px;
     outline: none;
-    background-color: white;
-    color: #4e342e;
-    transition: 0.3s;
+    background-color: var(--branco-puro);
+    color: var(--texto-principal);
 }
 
 .campo input:focus,
 .campo select:focus {
-    border-color: #ed1685;
-    box-shadow: 0 0 5px rgba(237, 22, 133, 0.15);
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 0 0 3px var(--rosa-suave);
 }
 
-/* BOTÕES */
-
+/* =========================================
+   BOTÕES PRINCIPAIS (PADRÃO DO INDEX)
+========================================= */
 #btFinalizar,
 #btVoltar {
     width: 100%;
-    padding: 13px;
-    margin-top: 10px;
+    padding: 14px 24px;
+    margin-top: 12px;
     border: none;
-    border-radius: 20px;
-    font-family: Georgia, serif;
-    font-size: 15px;
-    font-weight: bold;
+    border-radius: 999px;
+    font-family: var(--fonte-sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
     cursor: pointer;
-    transition: 0.3s;
 }
 
+/* Finalizar pedido (destaque rosa escuro) */
 #btFinalizar {
-    background-color: #E91E91;
-    color: white;
-    box-shadow: 0 0 10px rgba(255, 47, 179, 0.3);
+    background-color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-escuro);
+    color: var(--creme-fundo);
+    margin-top: 16px;
 }
 
 #btFinalizar:hover {
-    background-color: #c91070;
+    background-color: #b03b70;
+    transform: translateY(-2px);
 }
 
+/* Voltar (amarelo manteiga / laranja claro) */
 #btVoltar {
-    background-color: #ffed9e;
-    color: #4e342e;
+    background-color: var(--laranja-claro);
+    box-shadow: 0 0 12px var(--laranja-claro);
+    color: var(--vinho);
 }
 
 #btVoltar:hover {
-    background-color: #f5dc7c;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
 }
 
-/* MENSAGEM */
-
+/* MENSAGEM DE FEEDBACK */
 #mensagem {
     text-align: center;
-    margin-top: 18px;
+    margin-top: 20px;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--vinho);
 }
 
-/* RESPONSIVIDADE */
+/* =========================================
+   RODAPÉ (CASO EXISTA NO HTML)
+========================================= */
+footer {
+    background-color: var(--vinho);
+    color: var(--creme-fundo);
+    padding: 42px 6%;
+    text-align: center;
+    font-size: 13.5px;
+}
 
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
 @media (max-width: 600px) {
-
     main {
-        padding: 25px 15px;
-    }
-
-    .pagamento {
-        padding: 22px 18px;
+        padding: 28px 4% 55px;
     }
 
     header h1 {
-        font-size: 26px;
+        font-size: 30px;
+    }
+
+    .pagamento {
+        padding: 26px 18px;
+        border-radius: 18px;
+    }
+
+    .pagamento > h2 {
+        font-size: 28px;
+    }
+
+    .resumo,
+    .dados-entrega,
+    .forma-pagamento {
+        padding: 20px 16px;
     }
 }

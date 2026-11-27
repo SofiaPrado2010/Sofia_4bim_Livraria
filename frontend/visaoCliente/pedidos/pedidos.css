@@ -1,110 +1,173 @@
-/* CONFIGURAÇÕES GERAIS */
+/* FONTES EDITORIAIS (ESTILO BOUTIQUE / LIVRARIA) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* CONFIGURAÇÕES GERAIS E VARIÁVEIS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    background-color: #fffbf3;
-    color: #593B4B;
-    font-family: Arial, sans-serif;
+:root {
+    --creme-fundo: #FAF7F2;
+    --creme-card: #F3EDE4;
+    --branco-puro: #FFFFFF;
+
+    --rosa-blush: #F4D8DC;
+    --rosa-suave: #FBECEF;
+    --amarelo-manteiga: #F7E8C3;
+    --amarelo-ouro-suave: #E6B85C;
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;
+
+    --vinho: #674257;
+    --vinho-hover: #3D1724;
+    --texto-principal: #332227;
+    --texto-suave: #756267;
+    --borda-fina: #E5DCD5;
+
+    --fonte-serifa: 'Cormorant Garamond', Georgia, serif;
+    --fonte-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
 }
 
-/* CABEÇALHO */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--creme-fundo);
+    color: var(--texto-principal);
+    font-family: var(--fonte-sans);
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* =========================================
+   CABEÇALHO MINIMALISTA
+========================================= */
 header {
-    padding: 25px;
+    padding: 24px 6%;
     text-align: center;
-    background-color: #FCE4EF;
-    border-bottom: 3px solid #f7c5dc;
+    background: linear-gradient(to right, #f0a8c9, #F7E8C3);
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 .titulo h1 {
-    font-family: Georgia, serif;
-    font-size: 42px;
-    color: #e91e87;
+    font-family: var(--fonte-serifa);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--vinho);
 }
 
 .titulo p {
-    font-size: 14px;
-    margin-top: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--texto-suave);
+    margin-top: 4px;
 }
 
-/* CONTEÚDO PRINCIPAL */
+/* =========================================
+   CONTEÚDO PRINCIPAL
+========================================= */
 main {
     width: 90%;
-    max-width: 1100px;
-    min-height: 75vh;
-    margin: 45px auto;
+    max-width: 1060px;
+    flex: 1;
+    margin: 45px auto 75px;
 }
 
 /* APRESENTAÇÃO DOS PEDIDOS */
 .cabecalho-pedidos {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 20px;
+    align-items: flex-end;
+    gap: 24px;
+    padding-bottom: 24px;
     margin-bottom: 35px;
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 .cabecalho-pedidos span {
-    color: #e91e87;
+    display: block;
+    color: var(--vinho);
     font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 2px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
 .cabecalho-pedidos h2 {
-    font-family: Georgia, serif;
-    font-size: 32px;
-    margin: 12px 0;
+    font-family: var(--fonte-serifa);
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--texto-principal);
+    line-height: 1.15;
+    margin-bottom: 8px;
 }
 
 .cabecalho-pedidos p {
-    color: #765968;
+    color: var(--texto-suave);
     font-size: 14px;
     line-height: 1.6;
 }
 
-/* BOTÕES */
-button {
-    cursor: pointer;
-    border: none;
-    transition: 0.2s;
-}
-
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
+/* BOTÃO VOLTAR (MESMO PADRÃO DO #btLogin) */
 #btVoltar {
-    background-color: #E91E91;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: bold;
+    background-color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-escuro);
+    color: var(--creme-fundo);
+    padding: 11px 24px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
     white-space: nowrap;
 }
 
 #btVoltar:hover {
-    background-color: #C91678;
+    background-color: #b03b70;
+    transform: translateY(-1px);
 }
 
-/* LISTA DE PEDIDOS */
+/* =========================================
+   LISTA DE PEDIDOS
+========================================= */
 .lista-pedidos {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
 }
 
 .pedido-card {
-    background-color: white;
-    border: 1px solid #F7C5DC;
-    border-radius: 15px;
-    padding: 23px;
-    box-shadow: 0 3px 12px rgba(246, 102, 181, 0.12);
+    background-color: var(--branco-puro);
+    border: 1px solid var(--borda-fina);
+    border-radius: 18px;
+    padding: 26px 28px;
+    box-shadow: 0 4px 16px rgba(51, 34, 39, 0.04);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pedido-card:hover {
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 8px 24px rgba(103, 66, 87, 0.08);
 }
 
 .informacoes-pedido {
@@ -112,157 +175,191 @@ button:disabled {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 18px;
 }
 
 .numero-pedido {
-    color: #e91e87;
-    font-family: Georgia, serif;
-    font-size: 21px;
-    margin-bottom: 10px;
+    color: var(--vinho);
+    font-family: var(--fonte-serifa);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .informacoes-pedido p {
-    color: #765968;
-    font-size: 14px;
-    margin-top: 7px;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    margin-top: 5px;
 }
 
 .valor-pedido {
-    font-size: 19px;
-    font-weight: bold;
-    color: #593B4B;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--texto-principal);
 }
 
 .status-pedido {
     display: inline-block;
     margin-top: 12px;
-    padding: 7px 14px;
-    border-radius: 20px;
-    background-color: #FCE4EF;
-    color: #a31961;
+    padding: 6px 15px;
+    border-radius: 999px;
+    background-color: var(--amarelo-manteiga);
+    color: var(--vinho);
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .btDetalhes {
-    background-color: #E91E91;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
+    background-color: var(--rosa-suave);
+    color: var(--rosa-escuro);
+    border: 1px solid var(--rosa-blush);
+    box-shadow: 0 0 12px var(--rosa-blush);
+    padding: 10px 22px;
+    border-radius: 999px;
     font-size: 13px;
+    font-weight: 600;
     margin-top: 18px;
 }
 
 .btDetalhes:hover {
-    background-color: #C91678;
+    background-color: var(--rosa-escuro);
+    border-color: var(--rosa-escuro);
+    color: var(--branco-puro);
+    transform: translateY(-1px);
 }
 
 /* PRAZO DE PAGAMENTO */
 .informacao-prazo {
-    margin-top: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--borda-fina);
     font-size: 13px;
-    color: #765968;
+    color: var(--texto-suave);
 }
 
 .tempo-restante {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .prazo-valido {
-    color: #39834b;
+    color: #2e7d32;
 }
 
 .prazo-encerrado {
-    color: #c0392b;
+    color: #b83227;
 }
 
-/* MENSAGENS */
+/* MENSAGENS DE ESTADO VAZIO / ERRO */
 .mensagem {
-    background-color: white;
-    border: 1px solid #F7C5DC;
-    border-radius: 15px;
-    padding: 25px;
+    background-color: var(--branco-puro);
+    border: 1px solid var(--borda-fina);
+    border-radius: 18px;
+    padding: 36px 24px;
     text-align: center;
+    font-size: 14.5px;
     line-height: 1.7;
-    color: #765968;
+    color: var(--texto-suave);
 }
 
-/* DETALHES DO PEDIDO */
+/* =========================================
+   DETALHES DO PEDIDO
+========================================= */
 .detalhes-pedido {
-    background-color: white;
-    border: 1px solid #F7C5DC;
-    border-radius: 15px;
-    padding: 25px;
+    background-color: var(--branco-puro);
+    border: 1px solid var(--borda-fina);
+    border-radius: 22px;
+    padding: 32px;
     margin-top: 35px;
-    box-shadow: 0 3px 12px rgba(246, 102, 181, 0.12);
+    box-shadow: 0 12px 32px rgba(51, 34, 39, 0.08);
 }
 
 .cabecalho-detalhes {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--borda-fina);
 }
 
 .cabecalho-detalhes h2 {
-    font-family: Georgia, serif;
-    color: #e91e87;
+    font-family: var(--fonte-serifa);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--rosa-escuro);
+    font-weight: bold;
 }
 
 #btFecharDetalhes {
-    background: none;
-    color: #e91e87;
-    font-size: 23px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--rosa-blush);
+    border: 1px solid var(--borda-fina);
+    border-radius: 50%;
+    color: var(--vinho);
+    font-size: 17px;
 }
 
 #btFecharDetalhes:hover {
-    color: #C91678;
+    background-color: var(--rosa-blush);
+    border-color: var(--rosa-escuro);
+    color: var(--rosa-escuro);
 }
 
 /* INFORMAÇÕES GERAIS */
 .bloco-detalhes {
-    margin-bottom: 25px;
+    margin-bottom: 26px;
 }
 
 .bloco-detalhes h3 {
-    font-family: Georgia, serif;
-    color: #a31961;
-    font-size: 19px;
-    margin-bottom: 13px;
+    font-family: var(--fonte-serifa);
+    color: var(--vinho);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
 }
 
 .bloco-detalhes p {
     font-size: 14px;
-    line-height: 1.8;
-    color: #593B4B;
+    line-height: 1.75;
+    color: var(--texto-principal);
 }
 
-/* LIVROS */
+/* LIVROS DO PEDIDO */
 .item-livro {
-    padding: 15px;
-    border: 1px solid #F7C5DC;
-    border-radius: 10px;
+    padding: 16px 18px;
+    background-color: var(--amarelo-manteiga);
+    border: 1px solid var(--borda-fina);
+    border-radius: 14px;
     margin-bottom: 10px;
 }
 
 .item-livro h4 {
-    color: #593B4B;
-    margin-bottom: 8px;
+    font-family: var(--fonte-serifa);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--vinho);
+    margin-bottom: 6px;
 }
 
 .item-livro p {
-    font-size: 13px;
+    font-size: 13.5px;
+    color: var(--texto-suave);
 }
 
 /* TOTAL */
 .total-detalhes {
-    border-top: 1px solid #F7C5DC;
-    padding-top: 18px;
+    border-top: 1px solid var(--borda-fina);
+    padding-top: 20px;
     text-align: right;
-    font-size: 21px;
-    font-weight: bold;
-    color: #e91e87;
+    font-family: var(--fonte-serifa);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--vinho);
 }
 
 /* AÇÕES DO PEDIDO */
@@ -270,63 +367,74 @@ button:disabled {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 25px;
+    margin-top: 26px;
 }
 
 #btPagarPedido {
-    background-color: #39834b;
-    color: white;
-    padding: 12px 22px;
-    border-radius: 22px;
-    font-size: 14px;
-    font-weight: bold;
+    background-color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-escuro);
+    color: var(--creme-fundo);
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 #btPagarPedido:hover {
-    background-color: #2d683c;
+    background-color: #b03b70;
+    transform: translateY(-2px);
 }
 
 #btCancelarPedido {
-    background-color: #c0392b;
-    color: white;
-    padding: 12px 22px;
-    border-radius: 22px;
-    font-size: 14px;
-    font-weight: bold;
+    background-color: var(--laranja-claro);
+    box-shadow: 0 0 12px var(--laranja-claro);
+    color: var(--vinho);
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 #btCancelarPedido:hover {
-    background-color: #962d22;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
 }
 
-/* RODAPÉ */
+/* =========================================
+   RODAPÉ (PADRÃO DO INDEX)
+========================================= */
 footer {
-    background-color: #d8538f;
-    color: white;
-    padding: 35px 5%;
+    background-color: var(--vinho);
+    color: var(--creme-fundo);
+    padding: 42px 6%;
     text-align: center;
-    border-top: 4px solid #e5a900;
 }
 
 footer p {
-    font-size: 13px;
+    font-size: 13.5px;
+    color: rgba(250, 247, 242, 0.85);
 }
 
-/* TELAS MENORES */
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
 @media (max-width: 650px) {
-
     main {
         width: 92%;
-        margin: 30px auto;
+        margin: 30px auto 55px;
     }
 
     .titulo h1 {
-        font-size: 34px;
+        font-size: 30px;
     }
 
     .cabecalho-pedidos {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .cabecalho-pedidos h2 {
+        font-size: 30px;
     }
 
     .informacoes-pedido {
@@ -336,7 +444,7 @@ footer p {
 
     .pedido-card,
     .detalhes-pedido {
-        padding: 18px;
+        padding: 20px;
     }
 
     .acoes-pedido {

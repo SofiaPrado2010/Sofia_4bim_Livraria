@@ -4,15 +4,18 @@ let oQueEstaFazendo = '';
 let cliente = null;
 let pessoaExistente = false;
 
+// CONFIGURAÇÃO INICIAL
 bloquearAtributos(true);
 visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
 
 // Procurar cliente pelo CPF
 async function procurePorChavePrimaria(chave) {
     try {
-        const resposta = await fetch(`${URL_API}/cliente/${chave}`);
-        const data = await resposta.json();
+        const resposta = await fetch(`${URL_API}/cliente/${chave}`, {
+            credentials: 'include'
+        });
 
+        const data = await resposta.json();
         return data.sucesso ? data.cliente : null;
 
     } catch (erro) {
@@ -24,9 +27,11 @@ async function procurePorChavePrimaria(chave) {
 // Procurar pessoa pelo CPF
 async function procurePorPessoa(cpf) {
     try {
-        const resposta = await fetch(`${URL_API}/cliente/pessoa/${cpf}`);
-        const data = await resposta.json();
+        const resposta = await fetch(`${URL_API}/cliente/pessoa/${cpf}`, {
+            credentials: 'include'
+        });
 
+        const data = await resposta.json();
         return data.sucesso ? data.pessoa : null;
 
     } catch (erro) {
@@ -50,7 +55,6 @@ async function buscar() {
     oQueEstaFazendo = '';
     pessoaExistente = false;
 
-    // Verificar se já é cliente
     if (cliente) {
         mostrarDadosCliente(cliente);
 
@@ -59,25 +63,19 @@ async function buscar() {
         return;
     }
 
-    // Verificar se já existe como pessoa
     const pessoa = await procurePorPessoa(cpf);
 
     if (pessoa) {
         pessoaExistente = true;
-
         mostrarDadosPessoa(pessoa);
-
         bloquearAtributos(true, true);
         document.getElementById('inputRenda').readOnly = false;
-
         visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
         oQueEstaFazendo = 'inserindo';
-
         mostrarAviso('Pessoa encontrada! Informe a renda mensal e clique em salvar.');
         return;
     }
 
-    // CPF ainda não cadastrado
     limparAtributos();
     document.getElementById('inputCpf').value = cpf;
 
@@ -88,16 +86,12 @@ async function buscar() {
 // Preparar inclusão
 function incluir() {
     const cpf = document.getElementById('inputCpf').value.trim();
-
     limparAtributos();
     document.getElementById('inputCpf').value = cpf;
-
     bloquearAtributos(false);
     document.getElementById('inputCpf').readOnly = true;
-
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'inserindo';
-
     mostrarAviso('INSERINDO - Preencha os dados pessoais e do cliente.');
 }
 
@@ -110,10 +104,8 @@ function alterar() {
 
     bloquearAtributos(true, true);
     document.getElementById('inputRenda').readOnly = false;
-
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'alterando';
-
     mostrarAviso('ALTERANDO - Modifique a renda mensal e clique em salvar.');
 }
 
@@ -125,10 +117,8 @@ function excluir() {
     }
 
     bloquearAtributos(true, true);
-
     visibilidadeDosBotoes('none', 'none', 'none', 'none', 'inline');
     oQueEstaFazendo = 'excluindo';
-
     mostrarAviso('EXCLUINDO - Clique em salvar para confirmar a exclusão.');
 }
 
@@ -163,7 +153,6 @@ async function salvar() {
 
         // Inclusão
         if (oQueEstaFazendo === 'inserindo') {
-
             if (
                 !cpf_pessoa ||
                 !/^\d{11}$/.test(cpf_pessoa) ||
@@ -175,7 +164,6 @@ async function salvar() {
                 return;
             }
 
-            // Se a pessoa ainda não existe, exigir os dados pessoais
             if (
                 !pessoaExistente &&
                 (
@@ -193,7 +181,6 @@ async function salvar() {
                 return;
             }
 
-            // Validar email de uma pessoa nova
             if (!pessoaExistente) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -205,6 +192,7 @@ async function salvar() {
 
             resposta = await fetch(`${URL_API}/cliente`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -214,7 +202,6 @@ async function salvar() {
 
         // Alteração
         else if (oQueEstaFazendo === 'alterando') {
-
             if (
                 renda_cliente === '' ||
                 !Number.isFinite(Number(renda_cliente)) ||
@@ -226,6 +213,7 @@ async function salvar() {
 
             resposta = await fetch(`${URL_API}/cliente/${cpf_pessoa}`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -238,7 +226,8 @@ async function salvar() {
         // Exclusão
         else if (oQueEstaFazendo === 'excluindo') {
             resposta = await fetch(`${URL_API}/cliente/${cpf_pessoa}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             });
         }
 
@@ -262,7 +251,6 @@ async function salvar() {
             mostrarAviso('Cliente excluído com sucesso!');
         }
 
-        // Finalizar operação
         limparAtributos();
         document.getElementById('inputCpf').value = '';
 
@@ -283,7 +271,11 @@ async function salvar() {
 // Listar clientes
 async function listar() {
     try {
-        const resposta = await fetch(`${URL_API}/cliente`);
+        const resposta = await fetch(`${URL_API}/cliente`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
         const data = await resposta.json();
 
         if (data.sucesso) {
@@ -332,6 +324,8 @@ async function listar() {
         } else {
             document.getElementById('outputSaida').innerHTML =
                 `Erro no banco: ${data.mensagem}`;
+
+            console.error('Erro retornado pela API:', data.mensagem);
         }
 
     } catch (erro) {
@@ -346,29 +340,24 @@ async function listar() {
 function cancelar() {
     limparAtributos();
     document.getElementById('inputCpf').value = '';
-
     bloquearAtributos(true);
     visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
-
     oQueEstaFazendo = '';
     pessoaExistente = false;
 
     mostrarAviso('Operação cancelada.');
 }
 
-// Mostrar mensagem na barrinha
+// Mostrar mensagem
 function mostrarAviso(mensagem) {
-    document.getElementById('divAviso').innerHTML = mensagem;
+    document.getElementById('divAviso').textContent = mensagem;
 }
 
 // Mostrar dados do cliente
 function mostrarDadosCliente(c) {
     document.getElementById('inputCpf').value = c.cpf_cliente;
     document.getElementById('inputNome').value = c.nome_pessoa;
-
-    document.getElementById('inputDataNascimento').value =
-        (c.data_nascimento_pessoa || '').substring(0, 10);
-
+    document.getElementById('inputDataNascimento').value = (c.data_nascimento_pessoa || '').substring(0, 10);
     document.getElementById('inputEndereco').value = c.endereco_pessoa;
     document.getElementById('inputCidade').value = c.cidade_pessoa;
     document.getElementById('inputEstado').value = c.estado_pessoa;
@@ -385,10 +374,7 @@ function mostrarDadosCliente(c) {
 function mostrarDadosPessoa(p) {
     document.getElementById('inputCpf').value = p.cpf_pessoa;
     document.getElementById('inputNome').value = p.nome_pessoa;
-
-    document.getElementById('inputDataNascimento').value =
-        (p.data_nascimento_pessoa || '').substring(0, 10);
-
+    document.getElementById('inputDataNascimento').value = (p.data_nascimento_pessoa || '').substring(0, 10);
     document.getElementById('inputEndereco').value = p.endereco_pessoa;
     document.getElementById('inputCidade').value = p.cidade_pessoa;
     document.getElementById('inputEstado').value = p.estado_pessoa;

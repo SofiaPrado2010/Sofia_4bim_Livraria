@@ -107,7 +107,7 @@ btSair.onclick = async function () {
 
         if (resposta.ok) {
 
-            window.location.href = '../../visaoCliente/login/login.html';
+            window.location.href = '../../visaoCliente/index.html';
 
         } else {
 

@@ -10,7 +10,10 @@ visibilidadeDosBotoes('inline', 'none', 'none', 'none', 'none');
 // Procurar funcionário pela chave primária
 async function procurePorChavePrimaria(chave) {
     try {
-        const resposta = await fetch(`${URL_API}/funcionario/${chave}`);
+        const resposta = await fetch(`${URL_API}/funcionario/${chave}`, {
+            credentials: 'include'
+        });
+
         const data = await resposta.json();
 
         return data.sucesso ? data.funcionario : null;
@@ -24,7 +27,10 @@ async function procurePorChavePrimaria(chave) {
 // Procurar pessoa pelo CPF
 async function procurePorPessoa(cpf) {
     try {
-        const resposta = await fetch(`${URL_API}/funcionario/pessoa/${cpf}`);
+        const resposta = await fetch(`${URL_API}/funcionario/pessoa/${cpf}`, {
+            credentials: 'include'
+        });
+
         const data = await resposta.json();
 
         return data.sucesso ? data.pessoa : null;
@@ -220,6 +226,7 @@ async function salvar() {
 
             resposta = await fetch(`${URL_API}/funcionario`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -250,6 +257,7 @@ async function salvar() {
 
             resposta = await fetch(`${URL_API}/funcionario/${cpf_pessoa}`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -265,7 +273,8 @@ async function salvar() {
         // Exclusão
         else if (oQueEstaFazendo === 'excluindo') {
             resposta = await fetch(`${URL_API}/funcionario/${cpf_pessoa}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             });
         }
 
@@ -312,7 +321,10 @@ async function listar() {
     try {
         await listarCargos();
 
-        const resposta = await fetch(`${URL_API}/funcionario`);
+        const resposta = await fetch(`${URL_API}/funcionario`, {
+            credentials: 'include'
+        });
+
         const data = await resposta.json();
 
         if (data.sucesso) {
@@ -368,7 +380,10 @@ async function listar() {
 // Listar cargos no select
 async function listarCargos() {
     try {
-        const resposta = await fetch(`${URL_API}/cargo/listar`);
+        const resposta = await fetch(`${URL_API}/cargo/listar`, {
+            credentials: 'include'
+        });
+
         const data = await resposta.json();
 
         if (!data.sucesso) {

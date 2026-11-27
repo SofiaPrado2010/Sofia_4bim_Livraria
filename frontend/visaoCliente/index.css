@@ -18,11 +18,14 @@
     --rosa-blush: #F4D8DC;        /* Rosa empoeirado das faixas */
     --rosa-suave: #FBECEF;        /* Rosa bem clarinho para hover/tags */
     --amarelo-manteiga: #F7E8C3;  /* Amarelo creme acolhedor */
-    --amarelo-ouro-suave: #E6B85C;/* Amarelo queimado para detalhes */
+    --amarelo-ouro-suave: #E6B85C;
+    --rosa-escuro: #d8538f;
+    --laranja-claro: #fccb42;
+    --laranja-escuro: #e5a900;/* Amarelo queimado para detalhes */
 
     /* Contraste Profundo (10% - substitui o verde escuro das referências) */
-    --borgonha-escuro: #542334;   /* Botões principais e títulos fortes */
-    --borgonha-hover: #3D1724;
+    --vinho: #674257;   /* Botões principais e títulos fortes */
+    --vinho-hover: #3D1724;
     --texto-principal: #332227;
     --texto-suave: #756267;
     --borda-fina: #E5DCD5;
@@ -75,7 +78,7 @@ main {
     justify-content: space-between;
     align-items: center;
     gap: 28px;
-    background-color: #fadff0;
+    background: linear-gradient(to right, #f0a8c9, #F7E8C3);
     border-bottom: 1px solid var(--borda-fina);
 }
 
@@ -87,13 +90,13 @@ main {
     font-size: 30px;
     font-weight: 700;
     letter-spacing: -0.3px;
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
     white-space: nowrap;
 }
 
 .titulo h1 i {
     font-size: 20px;
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
 }
 
 .titulo p {
@@ -137,7 +140,7 @@ main {
 }
 
 .pesquisa:focus-within {
-    border-color: var(--borgonha-escuro);
+    border-color: var(--vinho);
 }
 
 /* BOTÕES DO CABEÇALHO */
@@ -171,7 +174,8 @@ main {
 /* Botão Entrar / Aceitar Cookies (Sólido e Elegante, sem brilho neon) */
 #btLogin,
 #btAceitarCookies {
-    background-color: var(--borgonha-escuro);
+    background-color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-escuro);
     color: var(--creme-fundo);
     font-size: 13px;
     font-weight: 500;
@@ -184,7 +188,7 @@ main {
 
 #btLogin:hover,
 #btAceitarCookies:hover {
-    background-color: var(--borgonha-hover);
+    background-color: #b03b70;
     transform: translateY(-1px);
 }
 
@@ -192,7 +196,7 @@ main {
 #btCarrinho,
 #btUsuario {
     background: transparent;
-    color: var(--texto-principal);
+    color: var(--rosa-escuro);
     font-size: 19px;
     padding: 6px;
     cursor: pointer;
@@ -201,7 +205,7 @@ main {
 
 #btCarrinho:hover,
 #btUsuario:hover {
-    color: var(--borgonha-escuro);
+    color: #b03b70;
     transform: translateY(-1px);
 }
 
@@ -240,7 +244,7 @@ main {
 
 .opcoes-usuario button:hover {
     background-color: var(--rosa-suave);
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
 }
 
 /* =========================================
@@ -294,9 +298,9 @@ main {
     inset: 0;
     background: linear-gradient(
         90deg,
-        rgba(64, 28, 48, 0.78) 0%,
-        rgba(64, 28, 40, 0.48) 50%,
-        rgba(64, 28, 40, 0.12) 100%
+        rgba(255, 245, 250, 0.867) 0%,
+        rgba(255, 240, 245, 0.555) 50%,
+        rgba(254, 225, 234, 0.088) 100%
     );
     z-index: -1;
 }
@@ -312,7 +316,7 @@ main {
 
 .subtitulo-banner {
     display: block;
-    color: var(--amarelo-manteiga);
+    color: var(--vinho);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 2.8px;
@@ -321,7 +325,7 @@ main {
 }
 
 .banner-conteudo h2 {
-    color: var(--branco-puro);
+    color: var(--vinho);
     font-family: var(--fonte-serifa);
     font-size: 52px;
     font-weight: 600;
@@ -330,7 +334,7 @@ main {
 }
 
 .banner-conteudo p {
-    color: rgba(255, 250, 245, 0.92);
+    color: rgba(88, 57, 76, 0.92);
     font-size: 15px;
     font-weight: 400;
     line-height: 1.65;
@@ -344,8 +348,9 @@ main {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background-color: var(--amarelo-manteiga);
-    color: var(--borgonha-escuro);
+    background-color: var(--laranja-claro);
+    box-shadow: 0 0 12px var(--laranja-claro);
+    color: var(--vinho);
     border: none;
     font-size: 13.5px;
     font-weight: 600;
@@ -356,8 +361,8 @@ main {
 }
 
 .botao-banner:hover {
-    background-color: var(--rosa-blush);
-    color: var(--borgonha-escuro);
+    background-color: var(--laranja-escuro);
+    color: var(--vinho);
     transform: translateY(-2px);
 }
 
@@ -382,7 +387,7 @@ main {
     height: 38px;
     border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(92, 91, 91, 0.204);
     backdrop-filter: blur(4px);
     color: var(--branco-puro);
     font-size: 13px;
@@ -393,7 +398,7 @@ main {
 
 .banner-seta:hover {
     background-color: var(--creme-fundo);
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
 }
 
 .banner-anterior {
@@ -421,14 +426,14 @@ main {
     padding: 0;
     border: none;
     border-radius: 999px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 222, 38, 0.61);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .banner-indicador.ativo {
     width: 24px;
-    background-color: var(--amarelo-manteiga);
+    background-color: var(--laranja-claro);
 }
 
 /* =========================================
@@ -442,7 +447,7 @@ main {
 
 .titulo-secao > span {
     display: block;
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 2.5px;
@@ -516,9 +521,10 @@ main {
     justify-content: center;
     border-radius: 50%;
     background-color: var(--rosa-blush);
+    box-shadow: 0 0 12px var(--amarelo-ouro-suave);
     border: 1px solid rgba(84, 35, 52, 0.12);
     font-size: 22px;
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
     transition: all 0.25s ease;
 }
 
@@ -535,21 +541,21 @@ main {
 }
 
 .cartao-genero:hover i {
-    background-color: var(--creme-fundo);
-    border-color: var(--borgonha-escuro);
+    background-color: #fba3ca;
+    border-color: var(--vinho);
 }
 
 /* Gênero Selecionado */
 .cartao-genero.selecionado i {
-    background-color: var(--borgonha-escuro);
+    background-color: var(--rosa-escuro);
     color: var(--amarelo-manteiga);
-    border-color: var(--borgonha-escuro);
+    border-color: var(--rosa-escuro);
     box-shadow: 0 6px 16px rgba(84, 35, 52, 0.22);
 }
 
 .cartao-genero.selecionado span {
     font-weight: 700;
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
 }
 
 /* =========================================
@@ -587,7 +593,7 @@ main {
 }
 
 .area-filtros > span i {
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
     margin-right: 5px;
 }
 
@@ -599,7 +605,8 @@ main {
 
 .lista-filtros button {
     background-color: var(--branco-puro);
-    color: var(--texto-principal);
+    color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-blush);
     border: 1px solid var(--borda-fina);
     border-radius: 999px;
     padding: 8px 20px;
@@ -615,9 +622,10 @@ main {
 }
 
 .lista-filtros button.selecionado {
-    background-color: var(--borgonha-escuro);
+    background-color: var(--rosa-escuro);
     color: var(--creme-fundo);
-    border-color: var(--borgonha-escuro);
+    border-color: var(--rosa-escuro);
+    box-shadow: 0 0 12px var(--rosa-escuro);
 }
 
 /* =========================================
@@ -644,7 +652,7 @@ main {
 
 .texto-cookies h3 {
     font-family: var(--fonte-serifa);
-    color: var(--borgonha-escuro);
+    color: var(--vinho);
     margin-bottom: 4px;
     font-size: 19px;
     display: flex;
@@ -667,7 +675,7 @@ main {
    RODAPÉ (BLOCO ESCURO CONTRASTANTE COMO NA IMAGEM 2)
 ========================================= */
 footer {
-    background-color: var(--borgonha-escuro);
+    background-color: var(--vinho);
     color: var(--creme-fundo);
     padding: 55px 6%;
 }
